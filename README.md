@@ -1,6 +1,9 @@
 # Townie
 Code repository for the app Townie.
 
+
+I recommend you use Visual Studio. It has good github integration and is a pretty light code editor with lots of extensions!
+
 To get svelte working:
 
 cd myapp
