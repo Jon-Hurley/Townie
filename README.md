@@ -4,9 +4,11 @@ Code repository for the app Townie.
 
 I recommend you use Visual Studio. It has good github integration and is a pretty light code editor with lots of extensions!
 
+If you do not have Node installed, download it here: https://nodejs.org/en/
+
 To get svelte working:
 
-cd myapp
+cd townie
 npm install
 npm run dev
 
@@ -28,4 +30,4 @@ python manage.py migrate
 
 python manage.py runserver
 
-Source: https://www.digitalocean.com/community/tutorials/build-a-to-do-application-using-django-and-react
+https://masteringbackend.com/posts/django-tutorial-the-ultimate-guide
