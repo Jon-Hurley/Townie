@@ -1,9 +1,16 @@
 from django.db import models
 
-# Create your models here.
+# This is the location class -- this will hold the latitude and longitude of
+# each place that we use in our functions, like the current location of a user
+# and the locations of our destinations for the games.
+
 class Location(models.Model):
     longitude = models.DecimalField(max_digits=15, decimal_places=13)
     latitude = models.DecimalField(max_digits=15, decimal_places=13)
+
+
+# This is the Destination class -- this will hold the name, location, address
+# and point value associated with the destination for the game.
 
 class Destination(models.Model):
     name = models.CharField(max_length=100)
@@ -20,6 +27,9 @@ class Destination(models.Model):
     def getPoints(self):
         return self.points
 
+# This is the Group class -- this holds the name of the group and a list of
+# users that are currently in the group.
+
 class Group(models.Model):
     groupName = models.CharField(max_length = 20)
     #members = models.ManytoManyField(GroupUser)
@@ -29,14 +39,33 @@ class Group(models.Model):
     
     def getMembers(self):
         return self.members
+
+    # This function adds a user to the list of players, which will be invoked
+    # when a user tries to join the group.
     
     def addUser(self, otherUser):
+
+        # To add a user, we simply cast the list of members to a list, and use
+        # the append function to add the member to the list.
+
         groupMembers = self.members
         list(groupMembers).append(otherUser)
+
+    # This function removes a user from the list of players, which is invoked
+    # when a user attempts to leave the game.
     
     def removeUser(self, otherUser):
+
+        # To remove the user, we simply cast the list of members to a list, and
+        # then use the remove function to remove the user from the list.
+
         groupMembers = self.members
         list(groupMembers).remove(otherUser)
+
+# This is the GameSettings class which holds the information for a game. An
+# object of type GameSettings holds four boolean values that represent which
+# modes of transportation, a radius, a time for intended completion, and a
+# string representing the theme of the game (food, museums, etc.)
 
 class GameSettings(models.Model):
     busAllowed = models.BooleanField()
@@ -47,7 +76,14 @@ class GameSettings(models.Model):
     intendedCompletionTime = models.PositiveIntegerField()
     theme = models.CharField(max_length = 50)
 
+    # This is the function that gets the transportation modes for the game.
+
     def getTransportation(self):
+
+        # To handle getting the transportation modes without using four
+        # different functions to get each mode, we return an list of four
+        # transportation modes.
+
         transportation = []
         transportation.append(self.busAllowed)
         transportation.append(self.carAllowed)
@@ -65,6 +101,11 @@ class GameSettings(models.Model):
     def getTheme(self):
         return self.theme
 
+# This is the Game class, which holds the data for the central element of the
+# project, the game. It holds the game ID which is used for joining, the start
+# time, the maximum time allowed to play, the number of players who are
+# finished with the game, a Group object to show the members, the list of
+# destinations, and an object that holds all of the settings.
 
 class Game(models.Model):
     gameID = models.IntegerField()
