@@ -10,7 +10,7 @@ To get svelte working:
 
 cd townie
 npm install
-npm run dev
+npm run dev <- starts the frontend
 
 Source: https://svelte.dev
 
@@ -24,10 +24,13 @@ pipenv shell
 
 pipenv install django
 
-cd townie_game
+cd townie_project
+
+python manage.py runserver <- runs the server
+
+NOTE: when you make a change in models or otherwise, you have to run:
+python manage.py makemigrations <- ensure that there are no warnings or errors in this stage before migrating. 
 
 python manage.py migrate
 
-python manage.py runserver
-
-https://masteringbackend.com/posts/django-tutorial-the-ultimate-guide
+Source: https://www.ginkgobioworks.com/2021/02/04/creating-a-rest-api-using-django-rest-framework/
