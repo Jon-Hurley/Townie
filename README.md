@@ -16,7 +16,7 @@ Source: https://svelte.dev
 
 To get django working:
 
-cd django-townie
+cd backend
 
 pip install pipenv
 
@@ -24,7 +24,7 @@ pipenv shell
 
 pipenv install django
 
-cd backend
+cd townie_game
 
 python manage.py migrate
 
