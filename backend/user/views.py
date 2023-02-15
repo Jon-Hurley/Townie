@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from twilio_con import t
+from .twilio_con import t
 
 def signup(request):
     return JsonResponse({
