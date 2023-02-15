@@ -40,6 +40,8 @@ declare module '$env/static/private' {
 	export const DriverData: string;
 	export const EDITOR: string;
 	export const EXEPATH: string;
+	export const FPS_BROWSER_APP_PROFILE_STRING: string;
+	export const FPS_BROWSER_USER_PROFILE_STRING: string;
 	export const GIT_ASKPASS: string;
 	export const GIT_LFS_PATH: string;
 	export const GPU_FORCE_64BIT_PTR: string;
@@ -86,7 +88,6 @@ declare module '$env/static/private' {
 	export const NVM_HOME: string;
 	export const NVM_SYMLINK: string;
 	export const NVTOOLSEXT_PATH: string;
-	export const OLDPWD: string;
 	export const OneDrive: string;
 	export const OneDriveCommercial: string;
 	export const ORIGINAL_XDG_CURRENT_DESKTOP: string;
@@ -138,6 +139,7 @@ declare module '$env/static/private' {
  */
 declare module '$env/static/public' {
 	export const PUBLIC_BACKEND_API: string;
+	export const PUBLIC_BACKEND_WS: string;
 }
 
 /**
@@ -168,6 +170,8 @@ declare module '$env/dynamic/private' {
 		DriverData: string;
 		EDITOR: string;
 		EXEPATH: string;
+		FPS_BROWSER_APP_PROFILE_STRING: string;
+		FPS_BROWSER_USER_PROFILE_STRING: string;
 		GIT_ASKPASS: string;
 		GIT_LFS_PATH: string;
 		GPU_FORCE_64BIT_PTR: string;
@@ -214,7 +218,6 @@ declare module '$env/dynamic/private' {
 		NVM_HOME: string;
 		NVM_SYMLINK: string;
 		NVTOOLSEXT_PATH: string;
-		OLDPWD: string;
 		OneDrive: string;
 		OneDriveCommercial: string;
 		ORIGINAL_XDG_CURRENT_DESKTOP: string;
@@ -271,6 +274,7 @@ declare module '$env/dynamic/private' {
 declare module '$env/dynamic/public' {
 	export const env: {
 		PUBLIC_BACKEND_API: string;
+		PUBLIC_BACKEND_WS: string;
 		[key: `PUBLIC_${string}`]: string | undefined;
 	}
 }

@@ -1,4 +1,5 @@
 <script>
+	import { goto } from '$app/navigation';
 	import { PUBLIC_BACKEND_API } from '$env/static/public';
     import axios from 'axios';
 
@@ -12,7 +13,7 @@
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'user/login/'
         );
-        console.log(res)
+        console.log(res);
 	};
 </script>
 
