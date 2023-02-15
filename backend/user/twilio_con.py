@@ -23,6 +23,5 @@ def verifyUser(verified_number):
         .create(to=verified_number, code=otp_code)
     return verification_check.status
 
-
-res = verifyUser("3176909263", "12345")
-print(res)
+# res = verifyUser("+13176909263")
+# print(res)
