@@ -70,7 +70,7 @@ class Game(models.Model):
     gameID = models.IntegerField()
     startTime = models.DateTimeField(auto_now_add=True)
     maxTime = models.IntegerField()
-    numFinished = models.IntegerField();
+    numFinished = models.IntegerField()
     members = models.OneToOneField(Group, on_delete=models.DO_NOTHING)
     destinations = models.ManyToManyField(Destination)
     settings = models.OneToOneField(GameSettings, on_delete=models.CASCADE)
