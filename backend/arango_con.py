@@ -11,13 +11,21 @@ client = ArangoClient(hosts=[host])
 db = client.db('_system', username='root', password=password)
 
 users = db.collection('User')
-res = users.insert({
-  'username': 'Arnav',
-  'passwordHash': 'password',
-  'phone': '+13176909263',
-  'points': 50,
-  'rank': 'explorer',
-  'purchases': []
-})
+# res = users.insert({
+#   'username': 'Jon',
+#   'passwordHash': 'password123',
+#   'phone': '+11234567890',
+#   'points': 1250,
+#   'rank': 'spaceman',
+#   'purchases': []
+# })
 
-print(res)
+query = "FOR user IN User FILTER CONTAINS(LOWER(user.username), LOWER(@substr)) RETURN { user }"
+
+cursor = db.aql.execute(
+    query, bind_vars={'substr': 'arnav'}
+)
+
+print(cursor.batch())
+
+# print(res)
