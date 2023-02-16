@@ -9,5 +9,6 @@ urlpatterns = [
     path('complete-password-reset/', views.completePasswordReset),
     path('request-friend/', views.requestFriend),
     path('accept-friend/', views.acceptFriend),
-    path('remove-friend/', views.removeFriend)
+    path('remove-friend/', views.removeFriend),
+    path('search-users/', views.searchUsers)
 ]

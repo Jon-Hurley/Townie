@@ -20,22 +20,28 @@ users = db.collection('User')
 #   'purchases': []
 # })
 
-getUsersBySubstring = "FOR user IN User FILTER CONTAINS(LOWER(user.username), LOWER(@substr)) RETURN { username: user.username, id: user._key }"
+def getUsersBySubstring(substr):
+    cursor = db.aql.execute(
+        "FOR user IN User FILTER CONTAINS(LOWER(user.username), LOWER(@substr)) RETURN { username: user.username, id: user._key }",
+        bind_vars={'substr': substr}
+    )
+    return cursor
+     
 
-getUserWithID = "FOR user IN User FILTER user._key == '10907' RETURN { user }"
+# getUserWithID = "FOR user IN User FILTER user._key == '10907' RETURN { user }"
 
-cursor = db.aql.execute(
-    getUsersBySubstring, bind_vars={'substr': 'arnav'}
-)
+# cursor = db.aql.execute(
+#     getUsersBySubstring, bind_vars={'substr': 'arnav'}
+# )
 
-cursor2 = db.aql.execute(
-    getUserWithID
-)
+# cursor2 = db.aql.execute(
+#     getUserWithID
+# )
 
-print("Printing substrings test!")
-print(cursor.batch())
+# print("Printing substrings test!")
+# print(cursor.batch())
 
-print("Printing user id test!")
-print(cursor2.batch())
+# print("Printing user id test!")
+# print(cursor2.batch())
 
-# print(res)
+# # print(res)
