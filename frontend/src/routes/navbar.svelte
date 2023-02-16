@@ -1,14 +1,11 @@
 <script>
 	import '../app.css';
-    import { goto } from '$app/navigation'
-	import { onMount } from 'svelte';
+    import { goto } from '$app/navigation';
+    import { page } from '$app/stores';
+	import { logout } from '../stores';
 
     let currentPage;
-
-    onMount(() => {
-        currentPage = window.location.pathname;
-        console.log(currentPage);
-    })
+    page.subscribe(v => currentPage = v.route.id);
 
     const pages = [
         {
@@ -34,7 +31,7 @@
     ]
 </script>
 
-{#if !['/login', '/signup'].includes(currentPage)}
+{#if currentPage && !['/login', '/signup'].includes(currentPage)}
     <nav
         class="
             absolute
@@ -66,9 +63,8 @@
 
                 on:click={() => {
                     if (page === '/login') {
-                        // logout function
+                        logout();
                     }
-                    currentPage = page;
                     goto(page);
                 }}
             >
