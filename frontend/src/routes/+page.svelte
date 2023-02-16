@@ -14,7 +14,7 @@
 </div>
 
 <div>
-    signup:
+    Signup:
     <a href="/signup">
         kit.svelte.dev
     </a>
