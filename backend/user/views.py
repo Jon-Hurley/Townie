@@ -40,7 +40,7 @@ def searchUsers(request):
     print(res)
     # print()
     return JsonResponse({
-        'res': list(res)
+        'users': list(res)
     })
 
 def requestFriend(request):

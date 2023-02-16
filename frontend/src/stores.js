@@ -6,7 +6,7 @@ export const userStore = writable();
 
 let ws;
 
-export const login = () => {
+export const joinLobby = () => {
     ws = new WebSocket(PUBLIC_BACKEND_WS)
     console.log(ws)
 }
