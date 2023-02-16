@@ -2,6 +2,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .twilio_con import t
 import arango_con
+import json
 
 def signup(request):
     return JsonResponse({
@@ -33,11 +34,13 @@ def completePasswordReset(request):
 @csrf_exempt
 def searchUsers(request):
     res = arango_con.getUsersBySubstring(
-        request.body.substr
-    )
+        json.loads(request.body)['substr']
+    ).batch()
+
+    print(res)
     # print()
     return JsonResponse({
-        'res': 'hi'
+        'res': list(res)
     })
 
 def requestFriend(request):
