@@ -3,8 +3,13 @@
     import { goto } from '$app/navigation'
 	import { onMount } from 'svelte';
     import Navbar from './navbar.svelte';
+    import AccountBar from './account-bar.svelte';
 </script>
 
-<slot />
+<AccountBar/>
+
+<div class="m-0 w-full p-4">
+    <slot/>
+</div>
 
 <Navbar/>

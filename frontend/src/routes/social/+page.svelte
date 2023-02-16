@@ -3,12 +3,14 @@
     import { PUBLIC_BACKEND_API } from '$env/static/public'
     import { goto } from '$app/navigation'
 
-    let displayResults = false;
     let userSearch = '';
     let results = [];
 
     const getUsers = async() => {
-        console.log("searching...", userSearch)
+        if (userSearch.length === 0) {
+            results = [];
+            return;
+        }
         try {
             const res = await axios.post(
                 PUBLIC_BACKEND_API + 'user/search-users/',
@@ -25,10 +27,17 @@
 </script>
 
 
-
-<div
-    class="m-0 w-full p-2"
->
+<div class="w-full flex justify-end items-center relative focus:indigo-500 text-gray-400">
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke-width="1.5"
+        stroke="currentColor"
+        class="w-6 h-6 absolute mr-2 w-10"
+    >
+        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+    </svg>
     <input
         bind:value={userSearch}
         on:input={() => {
@@ -36,14 +45,14 @@
             timeout = setTimeout(getUsers, 500);
         }}
         type="text"
-        class="m-0 w-full p-2 pl-8 rounded border border-gray-200 bg-gray-200 focus:bg-white focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent"
+        class="m-0 w-full p-2 pl-8 rounded border border-gray-200 bg-gray-200 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
         placeholder="Search Users"
     >
 </div>
 
 {#if userSearch.length}
     <div
-        class="absolute top-12 m-0 w-full p-2"
+        class="absolute top-28 m-0 w-full left-0 p-4"
     >
         <ul
             class="w-full rounded-md bg-white text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
@@ -62,17 +71,11 @@
                 {#each results as r}
                     <li
                         class="w-full text-gray-900 relative cursor-pointer p-2"
-                        on:click={() => {
-                            console.log("going")
-                            goto('/user/' + r.id)
-                        }}
-                        on:keydown={() => {
-                            console.log("going")
-                            goto('/user/' + r.id)
-                        }}
                     >
-                        <!-- <img></img> -->
-                        {r.username} #{r.id}
+                        <a href={"/user/" + r.id}>
+                            <!-- <img></img> -->
+                            {r.username} #{r.id}
+                        </a>
                     </li>
                 {/each}
             {/if}
