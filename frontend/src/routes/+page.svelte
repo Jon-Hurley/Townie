@@ -14,6 +14,13 @@
 </div>
 
 <div>
+    signup:
+    <a href="/signup">
+        kit.svelte.dev
+    </a>
+</div>
+
+<div>
     Lobby:
     <a href="/lobby">
         kit.svelte.dev
