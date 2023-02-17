@@ -70,7 +70,15 @@
             {:else}
                 {#each results as r}
                     <li
-                        class="w-full text-gray-900 relative cursor-pointer p-2"
+                        class="
+                            w-full
+                            text-gray-900
+                            relative
+                            cursor-pointer
+                            p-2
+                            flex
+                            justify-between
+                        "
                     >
                         <a href={"/user/" + r.id}>
                             <!-- <img></img> -->
