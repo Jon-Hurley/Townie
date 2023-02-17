@@ -1,5 +1,4 @@
 from django.db import models
-
 # Create your models here.
 class Location(models.Model):
     longitude = models.DecimalField(max_digits=15, decimal_places=13)

@@ -19,3 +19,10 @@
         kit.svelte.dev
     </a>
 </div>
+// I ADDED THIS
+<div>
+    Map:
+    <a href="/map">
+        kit.svelte.dev
+    </a>
+</div>
