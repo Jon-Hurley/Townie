@@ -58,4 +58,4 @@ def map(request):
     #location.longitude = longitude
     #print(latitude)
 
-    return JsonResponse({"result":result},safe=False)
+    return JsonResponse({"name": name},safe=False)
