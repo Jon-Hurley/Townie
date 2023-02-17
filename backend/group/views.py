@@ -32,16 +32,30 @@ def default(request):
 
 @csrf_exempt
 def map(request):
+    #print(request)
     gmaps = googlemaps.Client(key=os.environ.get('GOOGLE_API_KEY'))
+    places = json.dumps(gmaps.find_place(str("Purdue University"),str("textquery")))
+    places2 = json.loads(places)
+
+    #print(places2)
     result = json.dumps(gmaps.geocode(str('900 John R Wooden Dr, West Lafayette, IN 47907')))
+    #print(result)
     result2 = json.loads(result)
+
     addressComponents = result2[0]['formatted_address']
-    print(addressComponents)
+    #print(addressComponents)
     latitude = result2[0]['geometry']['location']['lat']
     longitude = result2[0]['geometry']['location']['lng']
+    place_info = json.dumps(gmaps.places("restaurant", (latitude,longitude)))
+    place3 = json.loads(place_info)
+    #print(place3['results'][0])
+    place4 = json.dumps(gmaps.place(place3['results'][0]['place_id']))
+    place5 = json.loads(place4)
+    name = place3['results'][0]['name']
+    print(name)
     #location = Location
     #location.latitude = latitude
     #location.longitude = longitude
-    print(latitude)
+    #print(latitude)
 
-    return JsonResponse({"location":addressComponents,"latitude":latitude,"longitude":longitude},safe=False)
+    return JsonResponse({"result":result},safe=False)
