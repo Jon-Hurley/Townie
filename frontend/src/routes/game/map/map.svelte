@@ -3,54 +3,84 @@
 	import { subscribeToLocation, unsubscribeToLocation, locationStore } from '../../../stores';
     import { PUBLIC_GOOGLE_MAPS_DARK_MODE, PUBLIC_GOOGLE_MAPS_LIGHT_MODE } from '$env/static/public';
 
-	let container;
-	let map;
-    let darkMode = false;
+	let mapState = {
+        container: undefined,
+        map: undefined,
+        darkMode: false
+    };
 
-    const createMap = () => {
-        const mapLoc = map?.getCenter();
-        map = new google.maps.Map(container, {
+    const regenerateMap = () => {
+        const mapLoc = mapState.map?.getCenter();
+        mapState.map = new google.maps.Map(mapState.container, {
             zoom: 20,
-            mapId: darkMode ? PUBLIC_GOOGLE_MAPS_DARK_MODE
-                            : PUBLIC_GOOGLE_MAPS_LIGHT_MODE,
+            mapId: mapState.darkMode ? PUBLIC_GOOGLE_MAPS_DARK_MODE
+                                     : PUBLIC_GOOGLE_MAPS_LIGHT_MODE,
             disableDefaultUI: true
         });
-        if (mapLoc) map.setCenter(mapLoc);
+        if (mapLoc) mapState.map?.setCenter(mapLoc);
     }
 
     onMount(() => {
-        createMap();
-        subscribeToLocation(({ location }) => {
-            if (!location) return;
-            const center = new google.maps.LatLng(
-                location.lat, location.lng
-            );
-            map.panTo(center);
-        });
-    })
+        regenerateMap();
+        subscribeToLocation(mapState);
+    });
 
     onDestroy(() => {
         unsubscribeToLocation();
-    })
+    });
+
+    const checkboxes = [
+        {
+            title: "Dark Mode",
+            fn: regenerateMap,
+            mapProp: "darkMode"
+        },
+        {
+            title: "Snap Location",
+            fn: () => {},
+            mapProp: "snapLocation"
+        }
+    ]
 </script>
 
-<div class="flex items-center absolute bottom-20 right-4 z-10">
-    <input
-        id="purple-checkbox"
-        type="checkbox"
-        class="w-4 h-4 text-indigo-600 bg-gray-100 border-gray-300 rounded focus:ring-indigo-500 dark:focus:ring-indigo-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-        bind:checked={darkMode}
-        on:change={createMap}
-    >
-    <label for="purple-checkbox" class="ml-2 text-lg font-medium text-gray-400">
-        Dark Mode
-    </label>
+<div
+    class="
+        absolute top-[5rem] left-4 z-10
+        bg-gray-800 rounded
+        px-3 py-1
+    "
+>
+    {#each checkboxes as box}
+        <div class="py-1">
+            <input
+                id="checkbox"
+                type="checkbox"
+                class="
+                    w-4 h-4
+                    checked:bg-indigo-500
+                    border:none
+                    rounded
+                    appearance-none
+                    cursor-pointer
+                    ring-2 ring-gray-400
+                "
+                bind:checked={mapState[box.mapProp]}
+                on:change={box.fn}
+            >
+            <label
+                for="checkbox"
+                class="ml-2 text-lg text-gray-400"
+            >
+                {box.title}
+            </label>
+        </div>
+    {/each}
 </div>
 
 
 <div
     class="full-screen"
-    bind:this={container}
+    bind:this={mapState.container}
 />
 
 <style>

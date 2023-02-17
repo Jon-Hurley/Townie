@@ -31,7 +31,7 @@ export const joinLobby = () => {
 
 export const locationStore = writable();
 
-export const subscribeToLocation = (callback) => {
+export const subscribeToLocation = (mapState) => {
     let interval;
     
     const onLocationUpdate = (loc) => {
@@ -41,9 +41,10 @@ export const subscribeToLocation = (callback) => {
         } = loc.coords;
         const oldLoc = get(locationStore).location;
 
-        // REMOVE THIS BLOCK IF YOU WANT AUTO-RECENTER
-        if (lat === oldLoc?.lat && lng === oldLoc?.lng) {
-            return;
+        if (!mapState.snapLocation) {
+            if (lat === oldLoc?.lat && lng === oldLoc?.lng) {
+                return;
+            }
         }
 
         console.log("setting location store...")
@@ -61,10 +62,20 @@ export const subscribeToLocation = (callback) => {
 
     locationStore.set({ interval });
 
-    locationStore.subscribe(callback);
+    const setMapCenter = ({ location }) => {
+        if (!(location?.lat && location?.lng)) return;
+        const center = new google.maps.LatLng(
+            location.lat, location.lng
+        );
+        mapState.map.panTo(center);
+    }
+
+    locationStore.subscribe(setMapCenter);
 }
 
 export const unsubscribeToLocation = () => {
     const locObj = get(locationStore);
     clearInterval(locObj?.interval);
 }
+
+export const mapStore = writable();
