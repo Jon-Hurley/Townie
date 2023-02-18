@@ -30,9 +30,10 @@
 
 
 <AccountBar/>
-
-<div class="m-0 w-full p-4">
+<div
+    class="m-0 w-full p-4"
+    style="height: calc(100vh - 120px);"
+>
     <slot/>
 </div>
-
 <Navbar/>

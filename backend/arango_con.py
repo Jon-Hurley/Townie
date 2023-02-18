@@ -10,11 +10,11 @@ password = os.environ.get('ARANGO_PASSWD')
 client = ArangoClient(hosts=[host])
 db = client.db('_system', username='root', password=password)
 
-usersSet = db.collection('User')
-friendsGraph = db.collection('Friends') 
+userCollection = db.collection('User')
+friendsCollection = db.collection('Friends') 
 
 def createUser(username, password, phoneNumber):
-    usersSet.insert({
+    userCollection.insert({
         'username': username,
         'passwordHash': password,
         'phone': phoneNumber,
@@ -26,32 +26,54 @@ def createUser(username, password, phoneNumber):
     return
 
 def getUsersBySubstring(substr):
-    cursor = db.aql.execute(
-        """FOR user IN User
-        LET x = CONTAINS(LOWER(user.username), LOWER(@substr), true)
-        SORT x
-        FILTER x != -1
-        LIMIT 10
-        RETURN { username: user.username, id: user._key }""",
+    return db.aql.execute(
+        """
+        FOR user IN User
+            LET x = CONTAINS(LOWER(user.username), LOWER(@substr), true)
+            SORT x
+            FILTER x != -1
+            LIMIT 10
+            RETURN {
+                username: user.username,
+                id: user._key
+            }
+        """,
         bind_vars={'substr': substr}
     )
-    return cursor
 
 def getFriendsList(id):
-    cursor = db.aql.execute(
-        """WITH User
+    return db.aql.execute(
+        """
+        WITH User
         FOR v, e IN 1..1 ANY @id Friends
-        FILTER e.status
-        RETURN {
-        id: v._id,
-        username: v.username""",
+            FILTER e.status
+            RETURN {
+                id: v._id,
+                username: v.username
+            }
+        """,
         bind_vars={'id': id} 
     )
 
-    return cursor
+def getPendingFriendsList(id):
+    return db.aql.execute(
+        """
+        WITH User
+        FOR v, e IN 1..1 ANY @id Friends
+            FILTER NOT e.status
+            RETURN {
+                friendshipKey: e._key,
+                friendId: v._id,
+                friendUsername: v.username,
+                'inbound': e._from == v._id,
+                timestamp: e.timestamp
+            }
+        """,
+        bind_vars={'id': id} 
+    )
 
 def sendFriendRequest(toID, fromID):
-    friendsGraph.insert({
+    friendsCollection.insert({
     '_from': fromID,
     '_to': toID,
     'gamesPlayed': 11001,
@@ -59,3 +81,19 @@ def sendFriendRequest(toID, fromID):
     })
 
     return
+
+def acceptFriendRequest(friendshipKey):
+    return db.aql.execute(
+        """
+        UPDATE @key WITH { status: True } IN Friends
+        """,
+        bind_vars={'key': friendshipKey}
+    )
+
+def rejectFriendRequest(friendshipKey):
+    return db.aql.execute(
+        """
+        REMOVE @key IN Friends
+        """,
+        bind_vars={'key': friendshipKey}
+    )

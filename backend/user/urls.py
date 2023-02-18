@@ -7,8 +7,13 @@ urlpatterns = [
     path('token-login/', views.loginWithToken),
     path('initiate-password-reset/', views.initiatePasswordReset),
     path('complete-password-reset/', views.completePasswordReset),
-    path('request-friend/', views.requestFriend),
+    
+    path('search-users/', views.searchUsers),
+
+    path('friends/', views.getFriends),
+    path('pending-friends/', views.getPendingFriends),
     path('accept-friend/', views.acceptFriend),
-    path('remove-friend/', views.removeFriend),
-    path('search-users/', views.searchUsers)
+    path('reject-friend/', views.rejectFriend),
+
+    # path('request-friend/', views.requestFriend),
 ]

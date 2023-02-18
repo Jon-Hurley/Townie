@@ -2,7 +2,16 @@ import { get, writable } from 'svelte/store';
 import { PUBLIC_BACKEND_WS } from '$env/static/public';
 
 export const groupStore = writable();
-export const userStore = writable();
+export const userStore = writable({
+    id: 'User/10942',
+    key: 10907,
+    passwordHash: 'password',
+    phone: +13176909263,
+    points:	50,
+    purchases: [],
+    rank: 'explorer',   
+    username: 'Arnav'
+});
 
 export const logout = () => {
 
