@@ -10,7 +10,9 @@ password = os.environ.get('ARANGO_PASSWD')
 client = ArangoClient(hosts=[host])
 db = client.db('_system', username='root', password=password)
 
-users = db.collection('User')
+usersSet = db.collection('User')
+friendsGraph = db.collection('Friends') 
+
 # res = users.insert({
 #   'username': 'Jon',
 #   'passwordHash': 'password123',
@@ -19,6 +21,17 @@ users = db.collection('User')
 #   'rank': 'spaceman',
 #   'purchases': []
 # })
+
+def createUser(username, password, phoneNumber):
+    usersSet.insert({
+        'username': username,
+        'password': password,
+        'phone': phoneNumber,
+        'points': 0,
+        'rank': 'beginner'
+    })
+
+    return
 
 def getUsersBySubstring(substr):
     cursor = db.aql.execute(
@@ -44,22 +57,13 @@ def getFriendsList(id):
     )
 
     return cursor
-     
 
-# getUserWithID = "FOR user IN User FILTER user._key == '10907' RETURN { user }"
+def sendFriendRequest(toID, fromID):
+    friendsGraph.insert({
+    '_from': fromID,
+    '_to': toID,
+    'gamesPlayed': 11001,
+    'status': False
+    })
 
-# cursor = db.aql.execute(
-#     getUsersBySubstring, bind_vars={'substr': 'arnav'}
-# )
-
-# cursor2 = db.aql.execute(
-#     getUserWithID
-# )
-
-# print("Printing substrings test!")
-# print(cursor.batch())
-
-# print("Printing user id test!")
-# print(cursor2.batch())
-
-# # print(res)
+    return

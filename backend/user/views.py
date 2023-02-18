@@ -55,7 +55,10 @@ def getFriends(request):
     })
 
 def requestFriend(request):
-
+    res = arango_con.sendFriendRequest(
+        json.loads(request.body)['id']
+        ## TODO: Get the user ID who is requesting the friend and put it here!!
+    )
 
     return JsonResponse({
         'status': 'failed!'
