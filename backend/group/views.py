@@ -32,6 +32,7 @@ def default(request):
 
 @csrf_exempt
 def map(request):
+    list = []
     #print(request)
     gmaps = googlemaps.Client(key=os.environ.get('GOOGLE_API_KEY'))
     places = json.dumps(gmaps.find_place(str("Purdue University"),str("textquery")))
@@ -48,14 +49,24 @@ def map(request):
     longitude = result2[0]['geometry']['location']['lng']
     place_info = json.dumps(gmaps.places("restaurant", (latitude,longitude)))
     place3 = json.loads(place_info)
+    #print(place3)
     #print(place3['results'][0])
-    place4 = json.dumps(gmaps.place(place3['results'][0]['place_id']))
-    place5 = json.loads(place4)
-    name = place3['results'][0]['name']
-    print(name)
+        #place4 = json.dumps(gmaps.place(place3['results'][i]['place_id']))
+        #place5 = json.loads(place4)
+    for i in range(5):
+        name_dest = place3['results'][i]['name']
+        address = place3['results'][i]['formatted_address']
+        latitude = place3['results'][i]['geometry']['location']['lat']
+        longitude = place3['results'][i]['geometry']['location']['lng']
+        points = 1000
+        destination = dict(name=name_dest, addr=address, location=[latitude, longitude], pts=points)
+        list.append(destination)
+        print(destination)
     #location = Location
     #location.latitude = latitude
     #location.longitude = longitude
     #print(latitude)
 
-    return JsonResponse({"name": name},safe=False)
+
+
+    return JsonResponse(list,safe=False)
