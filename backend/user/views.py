@@ -43,7 +43,20 @@ def searchUsers(request):
         'users': list(res)
     })
 
+def getFriends(request):
+    res = arango_con.getFriendsList(
+        json.loads(request.body)['id']
+    ).batch
+
+    print(res)
+
+    return JsonResponse({
+        'friends': list(res)
+    })
+
 def requestFriend(request):
+
+
     return JsonResponse({
         'status': 'failed!'
     })

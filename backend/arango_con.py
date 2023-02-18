@@ -22,9 +22,27 @@ users = db.collection('User')
 
 def getUsersBySubstring(substr):
     cursor = db.aql.execute(
-        "FOR user IN User FILTER CONTAINS(LOWER(user.username), LOWER(@substr)) RETURN { username: user.username, id: user._key }",
+        """FOR user IN User
+        LET x = CONTAINS(LOWER(user.username), LOWER(@substr), true)
+        SORT x
+        FILTER x != -1
+        LIMIT 10
+        RETURN { username: user.username, id: user._key }""",
         bind_vars={'substr': substr}
     )
+    return cursor
+
+def getFriendsList(id):
+    cursor = db.aql.execute(
+        """WITH User
+        FOR v, e IN 1..1 ANY @id Friends
+        FILTER e.status
+        RETURN {
+        id: v._id,
+        username: v.username""",
+        bind_vars={'id': id} 
+    )
+
     return cursor
      
 
