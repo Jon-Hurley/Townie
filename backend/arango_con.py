@@ -13,22 +13,14 @@ db = client.db('_system', username='root', password=password)
 usersSet = db.collection('User')
 friendsGraph = db.collection('Friends') 
 
-# res = users.insert({
-#   'username': 'Jon',
-#   'passwordHash': 'password123',
-#   'phone': '+11234567890',
-#   'points': 1250,
-#   'rank': 'spaceman',
-#   'purchases': []
-# })
-
 def createUser(username, password, phoneNumber):
     usersSet.insert({
         'username': username,
-        'password': password,
+        'passwordHash': password,
         'phone': phoneNumber,
         'points': 0,
-        'rank': 'beginner'
+        'rank': 'beginner',
+        'purchases': []
     })
 
     return
