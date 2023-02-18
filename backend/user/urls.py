@@ -1,19 +1,18 @@
 from django.urls import path
-from . import views
+from .views import friend, account, search
 
 urlpatterns = [
-    path('login/', views.login),
-    path('signup/', views.signup),
-    path('token-login/', views.loginWithToken),
-    path('initiate-password-reset/', views.initiatePasswordReset),
-    path('complete-password-reset/', views.completePasswordReset),
+    path('login/', account.login),
+    path('signup/', account.signup),
+    path('token-login/', account.loginWithToken),
+    path('initiate-password-reset/', account.initiatePasswordReset),
+    path('complete-password-reset/', account.completePasswordReset),
     
-    path('search-users/', views.searchUsers),
+    path('search-users/', search.searchUsers),
 
-    path('friends/', views.getFriends),
-    path('pending-friends/', views.getPendingFriends),
-    path('accept-friend/', views.acceptFriend),
-    path('reject-friend/', views.rejectFriend),
-
-    # path('request-friend/', views.requestFriend),
+    path('friends/', friend.getFriends),
+    path('pending-friends/', friend.getPendingFriends),
+    path('accept-friend/', friend.acceptFriend),
+    path('reject-friend/', friend.rejectFriend),
+    # path('request-friend/', friend.requestFriend),
 ]
