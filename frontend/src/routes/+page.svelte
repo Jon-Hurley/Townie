@@ -21,6 +21,13 @@
 </div>
 
 <div>
+    Verification:
+    <a href="/verification">
+        kit.svelte.dev
+    </a>
+</div>
+
+<div>
     Lobby:
     <a href="/lobby">
         kit.svelte.dev
