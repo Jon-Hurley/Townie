@@ -47,21 +47,25 @@ def map(request):
     #print(addressComponents)
     latitude = result2[0]['geometry']['location']['lat']
     longitude = result2[0]['geometry']['location']['lng']
-    place_info = json.dumps(gmaps.places("restaurant", (latitude,longitude)))
+    place_info = json.dumps(gmaps.places("art museum", (latitude,longitude)))
     place3 = json.loads(place_info)
     #print(place3)
     #print(place3['results'][0])
-        #place4 = json.dumps(gmaps.place(place3['results'][i]['place_id']))
-        #place5 = json.loads(place4)
-    for i in range(5):
+    place4 = json.dumps(gmaps.place(place3['results'][0]['place_id']))
+    place5 = json.loads(place4)
+    #print(len(place_info))
+    print(place3)
+    for i in range(len(place3['results'])):
         name_dest = place3['results'][i]['name']
+        print(name_dest)
         address = place3['results'][i]['formatted_address']
         latitude = place3['results'][i]['geometry']['location']['lat']
         longitude = place3['results'][i]['geometry']['location']['lng']
+
         points = 1000
         destination = dict(name=name_dest, addr=address, location=[latitude, longitude], pts=points)
         list.append(destination)
-        print(destination)
+        #print(destination)
     #location = Location
     #location.latitude = latitude
     #location.longitude = longitude
