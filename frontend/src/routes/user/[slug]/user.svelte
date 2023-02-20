@@ -1,5 +1,5 @@
 <script>
-	import { acceptFriend, rejectFriend } from "../../../requests/friend";
+	import { acceptFriend, rejectFriend, sendFriendRequest } from "../../../requests/friend";
 	import { userStore } from "../../../stores";
 
     export let user;
@@ -14,6 +14,52 @@
         focus:outline-none focus:ring-0
         transition duration-150 ease-in-out
     `;
+    const redStyle = `
+        border-red-500
+        text-red-500
+    `;
+    const greenStyle = `
+        border-green-500
+        text-green-500
+    `;
+    const blueStyle = `
+        border-blue-500
+        text-blue-500
+    `;
+    const indigoStyle = `
+        border-indigo-500
+        text-indigo-500
+    `;
+
+    const _acceptFriend = async() => {
+        const res = await acceptFriend(user.friendship[0].key);
+        if (res) {
+            user.friendship[0].status = true;
+            user = user;
+        }
+    };
+
+    const _rejectFriend = async() => {
+        const res = await rejectFriend(user.friendship[0].key);
+        if (res) {
+            user.friendship = [];
+            user = user;
+        }
+    };
+
+    const _sendFriendRequest = async() => {
+        const newFriendshipKey = await sendFriendRequest(user.key);
+        if (newFriendshipKey) {
+            user.friendship = [
+                {
+                    key: newFriendshipKey,
+                    status: false,
+                    inbound: false
+                }
+            ];
+            user = user;
+        }
+    };
 </script>
 
 
@@ -30,75 +76,43 @@
 {#if user.key !== $userStore.key}
     <div class="flex justify-center flex-wrap">
         <button
-            class="
-                border-indigo-500
-                text-indigo-500
-                ${buttonStyle}
-            "
+            disabled
+            class="{indigoStyle} {buttonStyle}"
         >
             Message
         </button>
 
         {#if !user.friendship.length}
             <button
-                class="
-                    border-blue-500
-                    text-blue-500
-                    ${buttonStyle}
-                "
+                class="{blueStyle} {buttonStyle}"
+                on:click={_sendFriendRequest}
             >
                 Send Friend Request
             </button>
         {:else if user.friendship[0].status}
             <button
-                class="
-                    border-red-500
-                    text-red-500
-                    ${buttonStyle}
-                "
+                class="{redStyle} {buttonStyle}"
+                on:click={_rejectFriend}
             >
                 Remove Friend
             </button>
         {:else if user.friendship[0].inbound}
             <button
-                class="
-                    border-green-500
-                    text-green-500
-                    ${buttonStyle}
-                "
-                on:click={async() => {
-                    const res = await acceptFriend(user.friendship[0].key);
-                    if (res) {
-                        user.friendship[0].status = true;
-                        user = user;
-                    }
-                }}
+                class="{greenStyle} {buttonStyle}"
+                on:click={_acceptFriend}
             >
                 Accept Friend Request
             </button>
             <button
-                class="
-                    border-red-500
-                    text-red-500
-                    ${buttonStyle}
-                "
-                on:click={async() => {
-                    const res = await rejectFriend(user.friendship[0].key);
-                    if (res) {
-                        user.friendship = [];
-                        user = user;
-                    }
-                }}
+                class="{redStyle} {buttonStyle}"
+                on:click={_rejectFriend}
             >
                 Reject Friend Request
             </button>
         {:else}
             <button
-                class="
-                    border-red-500
-                    text-red-500
-                    ${buttonStyle}
-                "
+                class="{redStyle} {buttonStyle}"
+                on:click={_rejectFriend}
             >
                 Cancel Friend Request
             </button>
@@ -121,7 +135,7 @@
 </div>
 <hr class={hr}>
 <div class="h-full overflow-auto">
-    <div class="flex flex-wrap gap-2 px-2 py-4">
+    <div class="flex flex-wrap justify-center gap-2 px-2 py-4">
         {#each user.purchases as p}
             <div
                 class="

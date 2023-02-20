@@ -3,12 +3,12 @@ import { PUBLIC_BACKEND_API } from '$env/static/public';
 import { get } from 'svelte/store';
 import { userStore } from '../stores';
 
-export const getFriends = async(key) => {
+export const getFriends = async() => {
     try {
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'user/friends/',
             {
-                key
+                key: get(userStore).key
             }
         );
         console.log(res);
@@ -19,27 +19,29 @@ export const getFriends = async(key) => {
     }
 };
 
-export const sendFriendRequest = async(key) => {
+
+export const sendFriendRequest = async(toKey) => {
     try {
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'user/request-friend/',
             {
-                key
+                fromKey: get(userStore).key,
+                toKey
             }
         );
-        return true;
+        return res.data.key;
     } catch (err) {
         console.log(err);
         return false;
     }
 };
 
-export const acceptFriend = async(key) => {
+export const acceptFriend = async(friendshipKey) => {
     try {
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'user/accept-friend/',
             {
-                key
+                key: friendshipKey
             }
         );
         return true;
@@ -49,12 +51,16 @@ export const acceptFriend = async(key) => {
     }
 };
 
-export const rejectFriend = async(key) => {
+// Deletes a friendship edge. User for:
+//      canceling a friend request
+//      removing a friend
+//      reject a friend request
+export const rejectFriend = async(friendshipKey) => {
     try {
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'user/reject-friend/',
             {
-                key
+                key: friendshipKey
             }
         );
         return true;
@@ -65,9 +71,14 @@ export const rejectFriend = async(key) => {
 };
 
 const processPending = (pendingRes) => {
+    
     const pendingList = pendingRes?.data?.pending || [];
+    console.log({pendingList})
     pendingList.forEach(
-        x => x.title = 'Incoming Friend Request'
+        x => {
+            x.title = x.inbound ? 'Incoming Friend Request'
+                                : 'Outgoing Friend Request'
+        }
     );
     return pendingList;
 };

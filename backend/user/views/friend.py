@@ -37,7 +37,7 @@ def rejectFriend(request):
 @csrf_exempt
 def requestFriend(request):
     res = arango_con.sendFriendRequest(
-        json.loads(request.body)['toId'],
-        json.loads(request.body)['fromId']
-    ).batch()
-    return JsonResponse({})
+        json.loads(request.body)['toKey'],
+        json.loads(request.body)['fromKey']
+    )
+    return JsonResponse({'key': res['_key']})

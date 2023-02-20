@@ -9,12 +9,6 @@
     
     onMount(async() => {
         friends = await getFriends($userStore.key);
-        friends = [ ...friends, ...friends ]
-        friends = [ ...friends, ...friends ]
-        friends = [ ...friends, ...friends ]
-        friends = [ ...friends, ...friends ]
-        friends = [ ...friends, ...friends ]
-        friends = [ ...friends, ...friends ]
         loading = false;
     });
 </script>

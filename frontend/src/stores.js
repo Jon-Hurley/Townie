@@ -10,7 +10,7 @@ export const userStore = writable({
     points:	50,
     purchases: [],
     rank: 'explorer',   
-    username: 'Arnav'
+    username: 'ArnavSuccs'
 });
 
 export const logout = () => {

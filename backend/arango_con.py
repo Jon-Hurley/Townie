@@ -93,7 +93,7 @@ def getPendingFriendsList(key):
         FOR v, e IN 1..1 ANY CONCAT("User/", @key) Friends
             FILTER NOT e.status
             RETURN {
-                friendshipKey: e._key,
+                key: e._key,
                 friend: {
                     key: v._key,
                     username: v.username
@@ -105,10 +105,10 @@ def getPendingFriendsList(key):
         bind_vars={'key': key} 
     )
 
-def sendFriendRequest(toID, fromID):
+def sendFriendRequest(toKey, fromKey):
     return friendsCollection.insert({
-        '_from': fromID,
-        '_to': toID,
+        '_from': 'User/' + fromKey,
+        '_to': 'User/' + toKey,
         'gamesPlayed': 0,
         'status': False,
         'timestamp': time.time()
