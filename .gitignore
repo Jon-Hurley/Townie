@@ -10,3 +10,5 @@ vite.config.ts.timestamp-*
 package-lock.json
 migrations
 __pycache__
+backend/backend.env
+frontend/frontend.env
