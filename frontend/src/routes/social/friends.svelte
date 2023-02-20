@@ -2,74 +2,76 @@
 	import { onMount } from 'svelte';
     import { userStore } from '../../stores';
     import { getFriends } from '../../requests/friend';
+	import Loading from '../../components/loading.svelte';
 
     let friends = [];
+    let loading = true;
     
     onMount(async() => {
         friends = await getFriends($userStore.key);
+        friends = [ ...friends, ...friends ]
+        friends = [ ...friends, ...friends ]
+        friends = [ ...friends, ...friends ]
+        friends = [ ...friends, ...friends ]
+        friends = [ ...friends, ...friends ]
+        friends = [ ...friends, ...friends ]
+        loading = false;
     });
 </script>
 
-<div class="my-4 text-2xl text-center font-bold text-gray-700">
+<div style="height: 100%">
+<div class="my-2 text-2xl text-center font-bold text-gray-700">
     Your Friends List
 </div>
 
-<div
-    class="overflow-auto"
-    style="height: 100%"
->
-    <ul
-        tabindex="-1"
-        role="listbox"
-        aria-labelledby="listbox-label"
-        aria-activedescendant="listbox-option-3"
+{#if loading}
+    <Loading/>
+{:else}
+    <div
+        class="
+            overflow-auto
+            inline-flex flex-wrap justify-center
+            gap-2
+            p-2
+            w-full
+        "
+        style="max-height: 100%"
     >
-        {#if friends.length === 0}
-            <li
-                class="
-                    bg-white
-                    mb-2
-                    p-2
-                    rounded
-
-                    border-gray-200
-                    border-2
-
-                    w-full
-                    text-gray-900
-                    relative
-                    cursor-default
-                    select-none
-                "
-            >
-                You have no friends.
-            </li>
-        {:else}
+        {#if friends.length}
             {#each friends as r}
-                <li
+                <div
                     class="
-                        bg-white
-                        mb-2
-                        p-2
-                        rounded
+                        px-4 py-2 h-11 w-36 m-0
 
-                        border-gray-200
-                        border-2
+                        border-gray-200 border-2 rounded
 
-                        w-full
-                        text-gray-900
-                        relative
-                        flex
-                        justify-between
+                        text-gray-900 text-center
+                        
                         cursor-pointer
+                        hover:scale-110
                     "
                 >
                     <a href={"/user/" + r.key}>
                         <!-- <img></img> -->
-                        {r.username} #{r.key}
+                        {r.username}
                     </a>
-                </li>
+                </div>
             {/each}
+        {:else}
+            <div
+                class="
+                    px-4 py-2
+                    w-full
+
+                    border-gray-200 border-2 rounded
+
+                    text-gray-900
+                    cursor-default
+                "
+            >
+                You have no friends.
+            </div>
         {/if}
-    </ul>
+    </div>
+{/if}
 </div>

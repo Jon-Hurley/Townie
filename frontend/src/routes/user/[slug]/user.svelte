@@ -4,10 +4,10 @@
 
     export let user;
 
-    const title = "text-gray-700 font-bold text-lg mt-6";
-    const hr = "mt-2 mb-5 bg-gray-200 h-[2px]";
+    const title = "text-gray-700 font-semibold text-lg mt-6";
+    const hr = "my-2 bg-gray-100 h-[2px]";
     const buttonStyle = `
-        p-2 m-1 ml-2
+        p-2 m-1
         border-2 rounded
         font-medium text-sm
         hover:bg-black hover:bg-opacity-5
@@ -25,6 +25,7 @@
         #{user.key}
     </div>
 </div>
+
 
 {#if user.key !== $userStore.key}
     <div class="flex justify-center flex-wrap">
@@ -106,20 +107,11 @@
 {/if}
 
 
-<!-- <div class={title}>
-    Points
-</div>
-<hr class={hr}>
-<div>
-    {user.points}
-</div> -->
-
-
 <div class={title}>
     Rank
 </div>
 <hr class={hr}>
-<div>
+<div class="px-2 py-4 uppercase">
     {user.rank}
 </div>
 
@@ -129,13 +121,13 @@
 </div>
 <hr class={hr}>
 <div class="h-full overflow-auto">
-    <div class="flex flex-wrap gap-2 p-2">
+    <div class="flex flex-wrap gap-2 px-2 py-4">
         {#each user.purchases as p}
             <div
                 class="
                     border-gray-200 border-4 rounded-full
                     p-3 m-0
-                    text-indigo-700 font-semibold
+                    text-indigo-500 font-semibold
                     w-24 h-24
                     flex flex-col items-center justify-center
                     text-xs
