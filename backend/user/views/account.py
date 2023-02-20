@@ -1,6 +1,8 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from .twilio_con import t
+import twilio_con
+import arango_con
+import json
 
 def signup(request):
     return JsonResponse({
@@ -27,20 +29,4 @@ def initiatePasswordReset(request):
 def completePasswordReset(request):
     return JsonResponse({
         ":)": ":)"
-    })
-
-
-def requestFriend(request):
-    return JsonResponse({
-        'status': 'failed!'
-    })
-
-def acceptFriend(request):
-    return JsonResponse({
-        'newFriendsList': []
-    })
-
-def removeFriend(request):
-    return JsonResponse({
-        'newFriendsList': []
     })

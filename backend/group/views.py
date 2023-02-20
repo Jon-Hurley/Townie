@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from .redis_con import r
+import redis_con
 
 # CONNECT:
 def connect(request):

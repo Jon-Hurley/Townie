@@ -26,6 +26,8 @@
  * ```
  */
 declare module '$env/static/private' {
+	export const PRIVATE_GOOGLE_MAPS_SECRET: string;
+	export const SECRET_STRIPE_KEY: string;
 	export const ALLUSERSPROFILE: string;
 	export const APPDATA: string;
 	export const ChocolateyInstall: string;
@@ -126,6 +128,10 @@ declare module '$env/static/private' {
 declare module '$env/static/public' {
 	export const PUBLIC_BACKEND_API: string;
 	export const PUBLIC_BACKEND_WS: string;
+	export const PUBLIC_GOOGLE_MAPS_API_KEY: string;
+	export const PUBLIC_GOOGLE_MAPS_DARK_MODE: string;
+	export const PUBLIC_GOOGLE_MAPS_LIGHT_MODE: string;
+	export const PUBLIC_STRIPE_KEY: string;
 }
 
 /**
@@ -142,6 +148,8 @@ declare module '$env/static/public' {
  */
 declare module '$env/dynamic/private' {
 	export const env: {
+		PRIVATE_GOOGLE_MAPS_SECRET: string;
+		SECRET_STRIPE_KEY: string;
 		ALLUSERSPROFILE: string;
 		APPDATA: string;
 		ChocolateyInstall: string;
@@ -247,6 +255,10 @@ declare module '$env/dynamic/public' {
 	export const env: {
 		PUBLIC_BACKEND_API: string;
 		PUBLIC_BACKEND_WS: string;
+		PUBLIC_GOOGLE_MAPS_API_KEY: string;
+		PUBLIC_GOOGLE_MAPS_DARK_MODE: string;
+		PUBLIC_GOOGLE_MAPS_LIGHT_MODE: string;
+		PUBLIC_STRIPE_KEY: string;
 		[key: `PUBLIC_${string}`]: string | undefined;
 	}
 }

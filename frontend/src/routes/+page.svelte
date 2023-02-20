@@ -1,21 +1,14 @@
-<h1>
-    Welcome to SvelteKit
-</h1>
+<script>
+    import { page } from '$app/stores';
+    import { goto } from '$app/navigation';
+    import { userStore } from '../stores';
+	import { onMount } from 'svelte';
 
-<p>
-    Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation
-</p>
-
-<div>
-    Login:
-    <a href="/login">
-        kit.svelte.dev
-    </a>
-</div>
-
-<div>
-    Lobby:
-    <a href="/lobby">
-        kit.svelte.dev
-    </a>
-</div>
+    onMount(() => {
+        if ($userStore) {
+            goto('/account');
+        } else {
+            goto('/login')
+        }
+    });
+</script>
