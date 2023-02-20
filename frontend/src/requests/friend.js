@@ -19,6 +19,21 @@ export const getFriends = async(key) => {
     }
 };
 
+export const sendFriendRequest = async(key) => {
+    try {
+        const res = await axios.post(
+            PUBLIC_BACKEND_API + 'user/request-friend/',
+            {
+                key
+            }
+        );
+        return true;
+    } catch (err) {
+        console.log(err);
+        return false;
+    }
+};
+
 export const acceptFriend = async(key) => {
     try {
         const res = await axios.post(

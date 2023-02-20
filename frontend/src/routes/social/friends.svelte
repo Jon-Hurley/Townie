@@ -19,8 +19,7 @@
     });
 </script>
 
-<div style="height: 100%">
-<div class="my-2 text-2xl text-center font-bold text-gray-700">
+<div class="my-4 text-2xl text-center font-bold text-gray-700">
     Your Friends List
 </div>
 
@@ -74,4 +73,3 @@
         {/if}
     </div>
 {/if}
-</div>

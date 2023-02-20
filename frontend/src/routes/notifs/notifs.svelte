@@ -32,7 +32,7 @@
     Your Notifications
 </div>
 
-<div class="rounded h-full overflow-auto">
+<div class="rounded h-full overflow-auto p-2">
     <ul
         tabindex="-1"
         role="listbox"
@@ -60,8 +60,6 @@
 
                     w-full
                     text-gray-900
-                    relative
-                    cursor-default
                     select-none
                 "
             >
