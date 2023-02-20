@@ -1,7 +1,7 @@
 <script>
 	import '../app.css';
-    import Navbar from './navbar.svelte';
-    import AccountBar from './account-bar.svelte';
+    import Navbar from '../components/navbar.svelte';
+    import AccountBar from '../components/account-bar.svelte';
 
     import { onMount } from 'svelte';
     import { PUBLIC_GOOGLE_MAPS_API_KEY } from '$env/static/public';
@@ -26,7 +26,6 @@
         />
     {/if}
 </svelte:head>
-
 
 
 <AccountBar/>

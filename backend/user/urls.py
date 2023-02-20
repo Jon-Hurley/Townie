@@ -8,11 +8,12 @@ urlpatterns = [
     path('initiate-password-reset/', account.initiatePasswordReset),
     path('complete-password-reset/', account.completePasswordReset),
     
-    path('search-users/', search.searchUsers),
+    path('search/', search.searchUsers),
+    path('profile/<str:key>/', search.getUser),
 
     path('friends/', friend.getFriends),
     path('pending-friends/', friend.getPendingFriends),
     path('accept-friend/', friend.acceptFriend),
     path('reject-friend/', friend.rejectFriend),
-    # path('request-friend/', friend.requestFriend),
+    path('request-friend/', friend.requestFriend),
 ]

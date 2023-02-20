@@ -11,6 +11,7 @@
 
     const regenerateMap = () => {
         const mapLoc = mapState.map?.getCenter();
+        const mapZoom = mapState.map?.getZoom();
         mapState.map = new google.maps.Map(mapState.container, {
             zoom: 20,
             mapId: mapState.darkMode ? PUBLIC_GOOGLE_MAPS_DARK_MODE
@@ -18,6 +19,8 @@
             disableDefaultUI: true
         });
         if (mapLoc) mapState.map?.setCenter(mapLoc);
+        if (mapZoom) mapState.map?.setZoom(mapZoom);
+        mapState = mapState;
     }
 
     onMount(() => {
@@ -47,16 +50,17 @@
     class="
         absolute top-[5rem] left-4 z-10
         bg-gray-800 rounded
-        px-3 py-1
+        px-2 py-1
+        opacity-50
     "
 >
     {#each checkboxes as box}
-        <div class="py-1">
+        <div>
             <input
                 id="checkbox"
                 type="checkbox"
                 class="
-                    w-4 h-4
+                    w-3 h-3
                     checked:bg-indigo-500
                     border:none
                     rounded
@@ -69,7 +73,7 @@
             >
             <label
                 for="checkbox"
-                class="ml-2 text-lg text-gray-400"
+                class="ml-1 text-md text-gray-400"
             >
                 {box.title}
             </label>

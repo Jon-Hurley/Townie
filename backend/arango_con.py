@@ -1,6 +1,7 @@
 from arango import ArangoClient
 from dotenv import load_dotenv
 import os
+import time
 
 load_dotenv()
 
@@ -14,7 +15,7 @@ userCollection = db.collection('User')
 friendsCollection = db.collection('Friends') 
 
 def createUser(username, password, phoneNumber):
-    userCollection.insert({
+    return userCollection.insert({
         'username': username,
         'passwordHash': password,
         'phone': phoneNumber,
@@ -23,7 +24,37 @@ def createUser(username, password, phoneNumber):
         'purchases': []
     })
 
-    return
+def getUser(userKey, targetKey):
+    return db.aql.execute(
+        """
+        LET userId = CONCAT("User/", @userKey)
+
+        LET f = (
+            FOR v, e IN 1..1 ANY userId Friends
+                FILTER v._key == @targetKey
+                return {
+                    status: e.status,
+                    'inbound': e._to == userId,
+                    key: e._key
+                }
+        )
+
+        FOR user IN User
+            FILTER user._key == @targetKey
+            RETURN {
+                key: user._key,
+                rank: user.rank,
+                username: user.username,
+                points: user.points,
+                purchases: user.purchases,
+                friendship: f
+            }
+        """,
+        bind_vars={
+            'targetKey': targetKey,
+            'userKey': userKey
+        }
+    )
 
 def getUsersBySubstring(substr):
     return db.aql.execute(
@@ -34,53 +65,54 @@ def getUsersBySubstring(substr):
             FILTER x != -1
             LIMIT 10
             RETURN {
-                username: user.username,
-                id: user._key
+                key: user._key,
+                username: user.username
             }
         """,
         bind_vars={'substr': substr}
     )
 
-def getFriendsList(id):
+def getFriendsList(key):
     return db.aql.execute(
         """
         WITH User
-        FOR v, e IN 1..1 ANY @id Friends
+        FOR v, e IN 1..1 ANY CONCAT("User/", @key) Friends
             FILTER e.status
             RETURN {
-                id: v._id,
+                key: v._key,
                 username: v.username
             }
         """,
-        bind_vars={'id': id} 
+        bind_vars={'key': key} 
     )
 
-def getPendingFriendsList(id):
+def getPendingFriendsList(key):
     return db.aql.execute(
         """
         WITH User
-        FOR v, e IN 1..1 ANY @id Friends
+        FOR v, e IN 1..1 ANY CONCAT("User/", @key) Friends
             FILTER NOT e.status
             RETURN {
                 friendshipKey: e._key,
-                friendId: v._id,
-                friendUsername: v.username,
+                friend: {
+                    key: v._key,
+                    username: v.username
+                },
                 'inbound': e._from == v._id,
                 timestamp: e.timestamp
             }
         """,
-        bind_vars={'id': id} 
+        bind_vars={'key': key} 
     )
 
 def sendFriendRequest(toID, fromID):
-    friendsCollection.insert({
-    '_from': fromID,
-    '_to': toID,
-    'gamesPlayed': 11001,
-    'status': False
+    return friendsCollection.insert({
+        '_from': fromID,
+        '_to': toID,
+        'gamesPlayed': 0,
+        'status': False,
+        'timestamp': time.time()
     })
-
-    return
 
 def acceptFriendRequest(friendshipKey):
     return db.aql.execute(

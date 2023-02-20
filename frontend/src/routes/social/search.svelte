@@ -1,33 +1,25 @@
 <script>
-    import axios from 'axios';
-    import { PUBLIC_BACKEND_API } from '$env/static/public'
-    import { goto } from '$app/navigation'
+    import { getUsers } from '../../requests/search';
 
     let userSearch = '';
     let results = [];
 
-    const getUsers = async() => {
-        if (userSearch.length === 0) {
-            results = [];
-            return;
-        }
-        try {
-            const res = await axios.post(
-                PUBLIC_BACKEND_API + 'user/search-users/',
-                { substr: userSearch }
-            )
-            if (res?.data?.users)
-                results = res.data.users;
-        } catch (e) {
-            console.log(e)
-        }
+    const updateResults = async() => {
+        results = await getUsers(userSearch);
     }
 
-    let timeout = setTimeout(getUsers, 500);
+    let timeout = setTimeout(updateResults, 500);
 </script>
 
 
-<div class="w-full flex justify-end items-center relative focus:indigo-500 text-gray-400">
+<div
+    class="
+        w-full mb-4
+        flex justify-end items-center
+        focus:indigo-500
+        text-gray-400
+    "
+>
     <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
@@ -42,10 +34,15 @@
         bind:value={userSearch}
         on:input={() => {
             clearTimeout(timeout);
-            timeout = setTimeout(getUsers, 500);
+            timeout = setTimeout(updateResults, 500);
         }}
         type="text"
-        class="m-0 w-full p-2 pl-8 rounded border border-gray-200 bg-gray-200 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+        class="
+            m-0 w-full p-2 pl-8
+            rounded border border-gray-200
+            bg-gray-200
+            focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent
+        "
         placeholder="Search Users"
     >
 </div>
@@ -90,9 +87,9 @@
                             justify-between
                         "
                     >
-                        <a href={"/user/" + r.id}>
+                        <a href={"/user/" + r.key}>
                             <!-- <img></img> -->
-                            {r.username} #{r.id}
+                            {r.username} #{r.key}
                         </a>
                     </li>
                 {/each}

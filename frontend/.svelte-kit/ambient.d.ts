@@ -89,7 +89,6 @@ declare module '$env/static/private' {
 	export const NVM_HOME: string;
 	export const NVM_SYMLINK: string;
 	export const NVTOOLSEXT_PATH: string;
-	export const OLDPWD: string;
 	export const OneDrive: string;
 	export const OneDriveCommercial: string;
 	export const ORIGINAL_XDG_CURRENT_DESKTOP: string;
@@ -224,7 +223,6 @@ declare module '$env/dynamic/private' {
 		NVM_HOME: string;
 		NVM_SYMLINK: string;
 		NVTOOLSEXT_PATH: string;
-		OLDPWD: string;
 		OneDrive: string;
 		OneDriveCommercial: string;
 		ORIGINAL_XDG_CURRENT_DESKTOP: string;

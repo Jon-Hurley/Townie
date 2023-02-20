@@ -31,8 +31,8 @@
         >
             {n.title}:
         </div>
-        <a href={"/user/" + n.id}>
-            {n.friendUsername} #{n.friendId}
+        <a href={"/user/" + n.friend.key}>
+            {n.friend.username} #{n.friend.key}
         </a>
     </div>
 
@@ -55,8 +55,8 @@
             <button
                 type="button"
                 class="
-                    border-red-600
-                    text-red-600                    
+                    border-red-500
+                    text-red-500                    
                     ${buttonStyle}
                 "
                 on:click={rejectFriend}

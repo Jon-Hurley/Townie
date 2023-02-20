@@ -5,7 +5,12 @@ import json
 
 @csrf_exempt
 def searchUsers(request):
-    res = arango_con.getUsersBySubstring(
-        json.loads(request.body)['substr']
-    ).batch()
+    substr = json.loads(request.body)['substr']
+    res = arango_con.getUsersBySubstring(substr).batch()
     return JsonResponse({ 'users': list(res) })
+
+@csrf_exempt
+def getUser(request, key):
+    userKey = json.loads(request.body)['key']
+    res = arango_con.getUser(userKey, targetKey=key).batch()[0]
+    return JsonResponse(res)

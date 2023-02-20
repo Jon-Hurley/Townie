@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from ..twilio_con import t
+import twilio_con
 import arango_con
 import json
 
