@@ -13,6 +13,7 @@
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'user/login/'
         );
+		goto('/lobby');//TODO: add if(res) == success
         console.log(res);
 	};
 </script>
@@ -98,7 +99,7 @@
 
 			
 			<div class="text-sm text-center">
-				<a href="/signup" class="font-medium text-indigo-600 hover:text-indigo-500">
+				<a href="/signup" class="font-medium text-indigo-600 hover:text-indigo-400">
 					New around here?
 				</a>
 			</div>

@@ -14,9 +14,10 @@
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'user/signup/'
         );
-        goto('/verification');
+        goto('/verification'); //TODO: add if(res) == success
         console.log(res);
 	};
+
 </script>
 
 <div class="flex min-h-full items-center justify-center mt-20 py-12 px-4 sm:px-6 lg:px-8">
@@ -93,7 +94,7 @@
                 </button>
 
                 <div class="text-sm text-center">
-                    <a href="/login" class="font-medium text-indigo-600 hover:text-indigo-500">
+                    <a href="/login" class="font-medium text-indigo-600 hover:text-indigo-400">
                         Back to login
                     </a>
                 </div>

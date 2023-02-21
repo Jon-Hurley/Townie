@@ -12,6 +12,7 @@
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'user/verification/'
         );
+        goto('/lobby'); //TODO: add if(res) == success
         console.log(res);
 	};
 </script>
@@ -70,5 +71,12 @@
                     Verify
                 </button>
         </form>
+        <div class="text-sm text-center">
+            <button
+            on:click={resendVerification()} 
+            class="font-medium text-indigo-600 mt-2 hover:text-indigo-400">
+                Resend Email
+            </button>
+        </div>
     </div>
 </div>
