@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-import redis_con
+import redis # used to be redis_con
 import googlemaps
 import json
 import os
