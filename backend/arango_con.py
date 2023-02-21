@@ -24,6 +24,30 @@ def createUser(username, password, phoneNumber):
         'purchases': []
     })
 
+def login(username, password):
+    return db.aql.execute(
+        """
+        LET temp = TRUE
+        FOR user IN User
+            LET x = LOWER(user.username) == LOWER(@username)
+            LET y = LOWER(user.password) == LOWER(@password)
+            IF (x AND y)
+                temp = FALSE
+                RETURN {
+                    success: true,
+                    key: user._key,
+                    username: user.username
+                }
+            END
+        IF (temp == FALSE)
+            RETURN { success: false }
+        """,
+        bind_vars={
+            'username': username,
+            'password': password
+        }
+    )
+
 def getUser(userKey, targetKey):
     return db.aql.execute(
         """
