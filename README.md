@@ -17,4 +17,6 @@ To get started:
         pip install Django
         pip install django-cors-headers
         pip install python-dotenv
+        pip install googlemaps
+        pip install python-arango
 
