@@ -13,11 +13,12 @@
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'user/login/'
         );
+		goto('/lobby');//TODO: add if(res) == success
         console.log(res);
 	};
 </script>
 
-<div class="flex min-h-full items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+<div class="flex min-h-full items-center justify-center mt-20 py-12 px-4 sm:px-6 lg:px-8">
 	<div class="w-full max-w-md space-y-8">
         <!-- <img class="mx-auto h-12 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600" alt="Your Company"> -->
         <h2 class="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
@@ -95,6 +96,13 @@
                 </span>
                 Log in
             </button>
+
+			
+			<div class="text-sm text-center">
+				<a href="/signup" class="font-medium text-indigo-600 hover:text-indigo-400">
+					New around here?
+				</a>
+			</div>
 		</form>
 	</div>
 </div>

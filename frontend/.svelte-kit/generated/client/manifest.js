@@ -22,10 +22,11 @@ export const dictionary = {
 	"/game/lobby": [5],
 	"/game/map": [6],
 	"/login": [7],
-	"/notifs": [8],
-	"/social": [9],
-	"/store": [10],
-	"/user/[slug]": [11]
+  "/verification": [8],
+	"/notifs": [9],
+	"/social": [10],
+	"/store": [11],
+	"/user/[slug]": [12]
 };
 
 export const hooks = {
