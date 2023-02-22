@@ -12,7 +12,8 @@ client = ArangoClient(hosts=[host])
 db = client.db('_system', username='root', password=password)
 
 userCollection = db.collection('User')
-friendsCollection = db.collection('Friends') 
+friendsCollection = db.collection('Friends')
+lobbyCollection = db.collection('Lobbies')
 
 def createUser(username, password, phoneNumber):
     return userCollection.insert({
@@ -129,3 +130,19 @@ def rejectFriendRequest(friendshipKey):
         """,
         bind_vars={'key': friendshipKey}
     )
+
+def createLobby(startTime, maxTime, group, destinations, transportation, radius, completionTime, theme):
+    return lobbyCollection.insert({
+        'startTime': startTime,
+        'maxTime': maxTime,
+        'numFinished': 0,
+        'members': group,
+        'destinations': destinations,
+        'busAllowed': transportation[0],
+        'carAllowed': transportation[1],
+        'subwayAllowed': transportation[2],
+        'boatAllowed': transportation[3],
+        'radius': radius,
+        'intendedCompletionTime': completionTime,
+        'theme': theme
+    })

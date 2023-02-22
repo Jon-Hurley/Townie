@@ -4,6 +4,7 @@ import redis_con
 import googlemaps
 import json
 import os
+import arango_con
 
 # CONNECT:
 def connect(request):
@@ -29,6 +30,33 @@ def leaveGroup(request):
 
 def default(request):
     return JsonResponse({})
+
+# CREATE A LOBBY/GAME
+
+def createLobby(request):
+    startTime = json.loads(request.body)['startTime']
+    maxTime = json.loads(request.body)['maxTime']
+    intendedCompletionTime = json.loads(request.body)['intendedCompletionTime']
+
+    group = json.loads(request.body)['group']
+
+    destinations = json.loads(request.body)['destinations']
+
+    transportation = []
+    transportation.append(json.loads(request.body)['busAllowed'])
+    transportation.append(json.loads(request.body)['carAllowed'])
+    transportation.append(json.loads(request.body)['subwayAllowed'])
+    transportation.append(json.loads(request.body)['boatAllowed'])
+
+    radius = json.loads(request.body)['radius']
+
+    theme = json.loads(request.body)['theme']
+
+    res = arango_con.createLobby(startTime, maxTime, group, destinations, transportation, radius, intendedCompletionTime, theme)
+
+    return JsonResponse({
+        'key': res['_key']
+    })
 
 @csrf_exempt
 def map(request):
