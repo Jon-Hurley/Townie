@@ -1,5 +1,6 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from user.queries import *
 import twilio_con
 import arango_con
 import json
@@ -11,11 +12,11 @@ def signup(request):
         password = data.get('password')
         phoneNumber = data.get('phoneNumber')
 
-        res = arango_con.getUsersBySubstring(username).batch()
+        res = getUsersBySubstring(username).batch()
         if len(list(res)) is 0:
             return JsonResponse({'success': False})
-        arango_con.createUser(username, password, phoneNumber)
-        user = arango_con.login(request, username=username, password=password)
+        createUser(username, password, phoneNumber)
+        user = login(request, username=username, password=password)
         login(request, user)
     return JsonResponse({'success': True})
 
@@ -25,7 +26,7 @@ def login(request):
         data = json.loads(request.body)
         username = data.get('username')
         password = data.get('password')
-        user = arango_con.login(request, username=username, password=password)
+        user = login(request, username=username, password=password)
         if user is not None:
             login(request, user)
             return JsonResponse({'success': True})

@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 import json
-import queries
+from group.queries import *
 
 # CONNECT: JOIN GAME
 def connect(request):
@@ -35,7 +35,7 @@ def default(request):
 # GET REQUEST: CREATE A LOBBY/GAME
 
 def createGame(request):
-    res = queries.createGame()
+    res = createGame()
     return JsonResponse({'key': res['_key']})
 
     # startTime = json.loads(request.body)['startTime']

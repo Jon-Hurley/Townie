@@ -1,19 +1,18 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-import queries
+from user.queries import *
 import json
-
 
 @csrf_exempt
 def getFriends(request):
-    res = queries.getFriendsList(
+    res = getFriendsList(
         json.loads(request.body)['key']
     ).batch()
     return JsonResponse({ 'friends': list(res) })
 
 @csrf_exempt
 def getPendingFriends(request):
-    res = queries.getPendingFriendsList(
+    res = getPendingFriendsList(
         json.loads(request.body)['key']
     ).batch()
     return JsonResponse({ 'pending': list(res) })
@@ -21,14 +20,14 @@ def getPendingFriends(request):
 
 @csrf_exempt
 def acceptFriend(request):
-    res = queries.acceptFriendRequest(
+    res = acceptFriendRequest(
         json.loads(request.body)['key']
     ).batch()
     return JsonResponse({})
 
 @csrf_exempt
 def rejectFriend(request):
-    res = queries.rejectFriendRequest(
+    res = rejectFriendRequest(
         json.loads(request.body)['key']
     ).batch()
     return JsonResponse({})
@@ -36,7 +35,7 @@ def rejectFriend(request):
 
 @csrf_exempt
 def requestFriend(request):
-    res = queries.sendFriendRequest(
+    res = sendFriendRequest(
         json.loads(request.body)['toKey'],
         json.loads(request.body)['fromKey']
     )
