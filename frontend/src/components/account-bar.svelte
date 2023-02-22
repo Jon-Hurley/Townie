@@ -28,15 +28,10 @@
 {#if currentPage && !['/login', '/signup'].includes(currentPage)}
     <nav
         class="
-            w-full
-            p-6
-            h-16
-            flex
-            items-center
-            justify-between
+            w-full p-6 h-16
+            flex items-center justify-between
             overflow-hidden
-            border-b-2
-            border-gray-100 
+            border-b-2 border-gray-100 
         "
     >
         {#each pages as { page, tooltip, svg, text, styles }}

@@ -131,18 +131,66 @@ def rejectFriendRequest(friendshipKey):
         bind_vars={'key': friendshipKey}
     )
 
-def createLobby(startTime, maxTime, group, destinations, transportation, radius, completionTime, theme):
+def createGame():
     return lobbyCollection.insert({
-        'startTime': startTime,
-        'maxTime': maxTime,
+        'page': 'lobby',
+        'startTime': 0,
+        'maxTime': 0,
         'numFinished': 0,
-        'members': group,
-        'destinations': destinations,
-        'busAllowed': transportation[0],
-        'carAllowed': transportation[1],
-        'subwayAllowed': transportation[2],
-        'boatAllowed': transportation[3],
-        'radius': radius,
-        'intendedCompletionTime': completionTime,
-        'theme': theme
+        'members': [],
+        'destinations': [],
+        'trueCompletionTime': 0,
+        'settings': {
+            'radius': 5,
+            'busAllowed': True,
+            'carAllowed': True,
+            'subwayAllowed': True,
+            'boatAllowed': True,
+            'theme': "",
+            'intendedCompletionTime': 0
+        }
     })
+
+def startGame(gameKey, settings):
+    # lobbyRes = lobbyCollection.get({
+    #     '_key': gameKey
+    # });
+    # settings = lobbyRes['settings']
+
+    # TRIGGER WEB-SCRAPER
+    # destinations = getDestinations(settings)
+    result = {
+        'destinations': [],
+        'trueCompletionTime': 0
+    }
+
+    t = time.time()
+    return lobbyCollection.update({
+        '_key': gameKey,
+        'startTime': t,
+        'maxTime': t + 24 * 60 * 60,
+        'destinations': result['destinations'],
+        'trueCompletionTime': result['trueCompletionTime']
+    });
+    
+def updateGameSettings(gameKey):
+    t = time.time()
+    lobbyRes = lobbyCollection.get({
+        '_key': gameKey
+    });
+    # TRIGGER WEB-SCRAPER
+    return lobbyCollection.update({
+        'startTime': t,
+        'maxTime': t + 24 * 60 * 60,
+        'numFinished': 0,
+        'members': [],
+        'destinations': [],
+        
+        'radius': 5,
+        'busAllowed': True,
+        'carAllowed': True,
+        'subwayAllowed': True,
+        'boatAllowed': True,
+        'theme': "",
+        'completionTime': 0 
+    });

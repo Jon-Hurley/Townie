@@ -1,11 +1,11 @@
 <script>
-    import { page } from '$app/stores';
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
     import { goto } from '$app/navigation';
-
-    let currentPage = '/game/lobby';
+	import { gamePage, unsubscribeToLocation } from '../../stores';
     
     onMount(() => {
-        goto(currentPage)
-    })
+        goto($gamePage);
+    });
 </script>
+
+<slot/>

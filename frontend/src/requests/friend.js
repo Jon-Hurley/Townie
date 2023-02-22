@@ -19,7 +19,6 @@ export const getFriends = async() => {
     }
 };
 
-
 export const sendFriendRequest = async(toKey) => {
     try {
         const res = await axios.post(

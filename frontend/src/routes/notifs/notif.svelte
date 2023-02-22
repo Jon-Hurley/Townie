@@ -1,34 +1,18 @@
 <script>
+	import { greenStyle, redStyle, buttonBaseStyle, gridItem } from "../../css";
+
     export let n, acceptFriend, rejectFriend;
 
     const buttonStyle = `
-        p-1 m-1 ml-2
-
+        p-1 m-1 ml-2 text-xs
         border-2 rounded
-        font-medium text-xs
-        
-        hover:bg-black hover:bg-opacity-5
-        focus:outline-none focus:ring-0
-        
-        transition duration-150 ease-in-out
+        ${buttonBaseStyle}
     `;
 </script>
 
-<li
-    class="
-        bg-white text-gray-900
-        mb-2 p-3 w-full
-        border-gray-200 border-2 rounded
-
-        cursor-pointer        
-
-        flex justify-between items-center
-    "
->
+<li class="{gridItem}">
     <div>
-        <div
-            class="font-semibold mb-1"
-        >
+        <div class="font-semibold mb-1">
             {n.title}
         </div>
         <a href={"/user/" + n.friend.key}>
@@ -40,11 +24,7 @@
         {#if n.title === 'Incoming Friend Request'}
             <button
                 type="button"
-                class="
-                    border-green-500
-                    text-green-500
-                    ${buttonStyle}
-                "
+                class="{greenStyle} {buttonStyle}"
                 on:click={acceptFriend}
             >
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
@@ -53,11 +33,7 @@
             </button>
             <button
                 type="button"
-                class="
-                    border-red-500
-                    text-red-500                    
-                    ${buttonStyle}
-                "
+                class="{redStyle} {buttonStyle}"
                 on:click={rejectFriend}
             >
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
@@ -67,11 +43,7 @@
         {:else if n.title === 'Outgoing Friend Request'}
             <button
                 type="button"
-                class="
-                    border-red-500
-                    text-red-500                    
-                    ${buttonStyle}
-                "
+                class="{redStyle} {buttonStyle}"
                 on:click={rejectFriend}
             >
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">

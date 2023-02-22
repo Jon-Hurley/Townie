@@ -1,0 +1,10 @@
+{
+    "dev": {
+        "django_settings": "core.settings",
+        "profile_name": "default",
+        "project_name": "backend",
+        "runtime": "python3.8",
+        "s3_bucket": "zappa-0c1u239kh",
+        "aws_region": "us-east-1"
+    }
+}

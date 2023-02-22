@@ -1,7 +1,6 @@
 import { get, writable } from 'svelte/store';
 import { PUBLIC_BACKEND_WS } from '$env/static/public';
 
-export const groupStore = writable();
 export const userStore = writable({
     id: 'User/10942',
     key: '10942',
@@ -29,11 +28,22 @@ export const signin = () => {
 
 }
 
-let ws;
+export const groupStore = writable();
 
-export const joinLobby = () => {
-    ws = new WebSocket(PUBLIC_BACKEND_WS)
-    console.log(ws)
+
+export const joinLobby = async(lobbyKey) => {
+    try {
+        let ws = new WebSocket(`${PUBLIC_BACKEND_WS}/${lobbyKey}/${get(userStore).key}`);
+        await new Promise((res, rej) => { 
+            ws.onopen(() => {
+                groupStore.set({ ws });
+                res();
+            })
+        });
+        console.log(ws);
+    } catch (err) {
+        console.log(err);
+    }
 }
 
 
@@ -88,3 +98,5 @@ export const unsubscribeToLocation = () => {
 }
 
 export const mapStore = writable();
+
+export const gamePage = writable('/game/join');

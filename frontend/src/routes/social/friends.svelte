@@ -3,6 +3,7 @@
     import { userStore } from '../../stores';
     import { getFriends } from '../../requests/friend';
 	import Loading from '../../components/loading.svelte';
+	import { gridItem, largeTitle, listItem } from '../../css';
 
     let friends = [];
     let loading = true;
@@ -13,7 +14,7 @@
     });
 </script>
 
-<div class="my-4 text-2xl text-center font-bold text-gray-700">
+<div class="{largeTitle}">
     Your Friends List
 </div>
 
@@ -32,18 +33,7 @@
     >
         {#if friends.length}
             {#each friends as r}
-                <div
-                    class="
-                        px-4 py-2 h-11 w-36 m-0
-
-                        border-gray-200 border-2 rounded
-
-                        text-gray-900 text-center
-                        
-                        cursor-pointer
-                        hover:scale-110
-                    "
-                >
+                <div class="{gridItem}">
                     <a href={"/user/" + r.key}>
                         <!-- <img></img> -->
                         {r.username}
@@ -52,15 +42,7 @@
             {/each}
         {:else}
             <div
-                class="
-                    px-4 py-2
-                    w-full
-
-                    border-gray-200 border-2 rounded
-
-                    text-gray-900
-                    cursor-default
-                "
+                class="{listItem}"
             >
                 You have no friends.
             </div>

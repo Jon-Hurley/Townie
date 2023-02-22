@@ -3,6 +3,7 @@
 	import { acceptFriend, loadNotifications, rejectFriend } from '../../requests/friend';
 	import { onMount } from 'svelte';
 	import Loading from '../../components/loading.svelte';
+	import { largeTitle, listItem } from '../../css';
 
     let notifs = [];
     let loading = true;
@@ -31,7 +32,7 @@
     });
 </script>
 
-<div class="my-4 text-2xl text-center font-bold text-gray-700">
+<div class="{largeTitle}">
     Your Notifications
 </div>
 
@@ -54,21 +55,7 @@
                     />
                 {/each}
             {:else}
-                <li
-                    class="
-                        bg-white
-                        mb-2
-                        p-2
-                        rounded
-
-                        border-gray-200
-                        border-2
-
-                        w-full
-                        text-gray-900
-                        select-none
-                    "
-                >
+                <li class="{listItem}">
                     You have no notifications.
                 </li>
             {/if}
