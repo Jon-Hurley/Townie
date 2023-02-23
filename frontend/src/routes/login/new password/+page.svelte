@@ -5,14 +5,15 @@
 
     let remember;
 	const form = {
-		verification: ''
+		password: '',
+        confirmPassword: ''
 	};
 
-    const verify = async () => {
+    const reset = async () => {
         const res = await axios.post(
-            PUBLIC_BACKEND_API + 'user/verification/'
+            PUBLIC_BACKEND_API + 'user/initiate-password-reset/'
         );
-        goto('/lobby'); //TODO: add if(res) == success
+        goto('/login'); //TODO: add if(res) == success
         console.log(res);
 	};
 </script>
@@ -21,33 +22,46 @@
 	<div class="w-full max-w-md">
         <!-- <img class="mx-auto h-12 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600" alt="Your Company"> -->
         <h1 class="mb-6 text-center text-5xl font-bold tracking-tight text-gray-900">
-            Townie Account Creation
+            Townie
         </h1>
         <h3 class="text-center text-2xl font-Courier New tracking-tight text-gray-900">
-            Verify it's you
+            Password Reset
         </h3>
         <h5 class="mt-1 text-center font-Courier New tracking-tight text-gray-900">
-            Please check your email for your verification code.
+            Please enter a new password.
         </h5>
 
         <form class="mt-2 space-y-6" method="post">
 			<input type="hidden" name="remember" value="true" />
 			<div class="-space-y-px rounded-md shadow-sm">
 				<div>
-					<label for="verification" class="sr-only">
-                        Verification
+					<label for="password" class="sr-only">
+                        Password
                     </label>
 					<input
-						bind:value={form.username}
-                        type="verification"
+						bind:value={form.password}
+                        type="password"
 						required
 						class="relative block justify-center w-full justify-center appearance-none rounded-b-md rounded-t-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none sm:text-sm"
-						placeholder="Verification Code"
+						placeholder="New Password"
+					/>
+				</div>
+
+                <div>
+					<label for="confirmPassword" class="sr-only">
+                        Confirm Password
+                    </label>
+					<input
+						bind:value={form.password}
+                        type="confirmPassword"
+						required
+						class="relative block justify-center w-full justify-center appearance-none rounded-b-md rounded-t-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none sm:text-sm"
+						placeholder="Confirm New Password"
 					/>
 				</div>
             </div>
             <button
-                    on:click={verify}
+                    on:click={reset}
                     type="submit"
                     class="group relative flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white hover:bg-grey-100 focus:outline-gray-900 focus:ring-2 focus:ring-offset-2"
                 >
@@ -68,15 +82,13 @@
                             />
                         </svg>
                     </span>
-                    Verify
+                    Reset Password
                 </button>
         </form>
         <div class="text-sm text-center">
-            <button
-            on:click={resendVerification()} 
-            class="font-medium text-indigo-600 mt-2 hover:text-indigo-400">
-                Resend Email
-            </button>
+            <a href="/login" class="font-medium text-indigo-600 hover:text-indigo-400">
+                Return to Login
+            </a>
         </div>
     </div>
 </div>
