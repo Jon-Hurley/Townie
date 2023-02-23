@@ -3,9 +3,10 @@
 	"version": "0.0.1",
 	"private": true,
 	"scripts": {
-		"start": "start npm run frontend && start npm run backend",
+		"start": "start npm run frontend && start npm run backend && start npm run wsapi",
 		"frontend": "npm run --prefix ./frontend dev",
-		"backend": "python ./backend/manage.py runserver"
+		"backend": "python ./backend/manage.py runserver",
+		"wsapi": "python -m uvicorn wsapi.main:app --reload --port 8001"
 	},
 	"type": "module",
 	"dependencies": {}

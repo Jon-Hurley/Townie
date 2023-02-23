@@ -1,6 +1,9 @@
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
-from fastapi.responses import HTMLResponse
-from connection import manager
+from fastapi import Request, FastAPI, WebSocket, WebSocketDisconnect
+from fastapi.responses import HTMLResponse, JSONResponse
+from wsapi.connection import manager
+from pydantic import BaseModel
+import json
+import asyncio
 
 app = FastAPI()
 
@@ -8,14 +11,24 @@ app = FastAPI()
 async def get():
     return HTMLResponse()
 
-@app.websocket("/ws/{lobby_key}/{client_key}")
-async def websocket_endpoint(websocket: WebSocket, lobby_key: int, client_key: int):
-    await manager.connect(websocket, lobby_key, client_key)
+@app.post("/update/")
+async def updateUser(request: Request):
+    body = await request.json()
+    userKey = body['userKey']
+    game = body['game']
+    # print("Updating user", userKey, "with:", game)
+    manager.send(userKey, game)
+    return JSONResponse({}) 
+
+@app.websocket("/ws/{gameKey}/{userKey}")
+async def websocket_endpoint(websocket: WebSocket, gameKey: int, userKey: int):
+    await manager.connect(websocket, gameKey, userKey)
     try:
         while True:
-            data = await websocket.receive_text()
-            await manager.send_personal_message(f"You wrote: {data}", websocket)
-            await manager.broadcast(f"Client #{client_key} says: {data}")
+            data = await websocket.receive_json()
+            await asyncio.sleep(30)
+            # await manager.send_personal_message(f"You wrote: {data}", websocket)
+            # await manager.broadcast(f"Client #{client_key} says: {data}")
     except WebSocketDisconnect:
         manager.disconnect(websocket)
         await manager.broadcast(f"Client #{client_key} left the chat")

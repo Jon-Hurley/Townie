@@ -1,19 +1,22 @@
 <script>
     import { buttonStyle, blueStyle, indigoStyle, inputStyle } from '../../../css';
-	import { gamePage, joinLobby } from '../../../stores';
-    import { createLobby } from '../../../requests/group';
+	import { gamePage, joinGame } from '../../../stores';
+    import { createGame } from '../../../requests/group';
 
     let lobbyInput;
 
     const _joinLobby = async() => {
-        await joinLobby(lobbyInput);
+        const res = await joinGame(lobbyInput);
+        if (!res) return;
         gamePage.set('/game/lobby');
     };
 
     const _createLobby = async() => {
-        const lobbyKey = await createLobby();
+        const lobbyKey = await createGame();
         if (!lobbyKey) return;
-        await joinLobby(lobbyKey);
+        console.log("lobby created w/ key: ", lobbyKey);
+        const res = await joinGame(lobbyKey);
+        if (!res) return;
         gamePage.set('/game/lobby');
     };
 </script>

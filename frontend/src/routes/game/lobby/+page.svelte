@@ -1,11 +1,7 @@
 <script>
 	import { onMount } from "svelte";
 	import { buttonStyle, indigoStyle } from "../../../css";
-    import { gamePage, groupStore, joinLobby } from "../../../stores";
-
-    // onMount(() => {
-    //     joinLobby();
-    // });
+    import { gamePage } from "../../../stores";
 </script>
 
 <div class="mb-5">

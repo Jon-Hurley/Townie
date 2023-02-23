@@ -1,10 +1,10 @@
 import axios from 'axios';
 import { PUBLIC_BACKEND_API } from '$env/static/public';
 
-export const createLobby = async() => {
+export const createGame = async() => {
     try {
         const res = await axios.get(
-            PUBLIC_BACKEND_API + 'group/create-lobby'
+            PUBLIC_BACKEND_API + 'group/create-game'
         );
         return res.data.key;
     } catch (err) {

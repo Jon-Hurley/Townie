@@ -1,28 +1,33 @@
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from dotenv import load_dotenv
 import requests
+import os
+load_dotenv()
 
-BACKEND_URL = "http://127.0.0.1:8000/"
+# BACKEND_URL = os.environ.get('BACKEND_URL')
+BACKEND_URL = 'http://127.0.0.1:8000/'
 
 class ConnectionManager:
     def __init__(self):
         self.connections = {}
 
-    async def connect(self, websocket: WebSocket, lobby_key: int, client_key: int):
+    async def connect(self, websocket: WebSocket, gameKey: int, userKey: int):
         await websocket.accept()
-        requests.post(
-            BACKEND_URL + '/group/on-connect',
-            data={
-                'lobby_key': lobby_key,
-                'client_key': client_key
+        res = requests.post(
+            BACKEND_URL + 'group/on-connect/',
+            json={
+                'gameKey': gameKey,
+                'userKey': userKey
             }
         )
-        self.connections[client_key] = websocket
+        print(res)
+        self.connections[userKey] = websocket
 
-    def disconnect(self, websocket: WebSocket):
-        self.active_connections.remove(websocket)
+    def disconnect(self, userKey):
+        self.connections.pop(userKey)
 
-    async def send_personal_message(self, message: str, websocket: WebSocket):
-        await websocket.send_text(message)
+    async def send(self, userKey, data):
+        await self.connections[userKey].send_json(data)
 
     async def broadcast(self, message: str):
         for connection in self.active_connections:

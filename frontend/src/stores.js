@@ -28,21 +28,46 @@ export const signin = () => {
 
 }
 
-export const groupStore = writable();
+export const gameStore = writable();
 
-
-export const joinLobby = async(lobbyKey) => {
+export const joinGame = async(gameKey) => {
     try {
-        let ws = new WebSocket(`${PUBLIC_BACKEND_WS}/${lobbyKey}/${get(userStore).key}`);
+        const ws = new WebSocket(`${PUBLIC_BACKEND_WS}/${gameKey}/${get(userStore).key}`);
         await new Promise((res, rej) => { 
-            ws.onopen(() => {
-                groupStore.set({ ws });
+            ws.onopen = (e) => {
+                gameStore.set({
+                    ws,
+                    gameKey
+                });
+                ws.onerror = (e) => {
+                    console.log(e);
+                    ws.close();
+                }
+                ws.onmessage = (m) => {
+                    console.log(m)
+                }
                 res();
-            })
+            }
+            ws.onerror = (e) => {
+                rej();
+            }
         });
-        console.log(ws);
+        return true;
     } catch (err) {
         console.log(err);
+        return false;
+    }
+}
+
+export const leaveGame = async(gameKey) => {
+    try {
+        /** @type {WebSocket} */
+        const ws = get(gameStore).ws;
+        ws.close();
+        return true;
+    } catch (err) {
+        console.log(err);
+        return false;
     }
 }
 
