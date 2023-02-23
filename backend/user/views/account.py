@@ -38,10 +38,10 @@ def login(request):
     passwordHash = hash(password, phoneNumber)
     res = arango_con.login(request, username, passwordHash)
     data = json.loads(res.body)
-    if data.get('success') == False:
+    if not data.get('success'):
         return JsonResponse({'success': False})
     key = data.get('key')
-    return JsonResponse({'success': True,
+    return JsonResponse({ 'success': True,
                           'key': key, 
                           'username' : username})
 
@@ -49,6 +49,30 @@ def loginWithToken(request):
     return JsonResponse({
         ":)": ":)"
     })
+
+def updateInfo(request):
+    data = json.loads(request.body)
+    username = data.get('username')
+    key = data.get('key')
+    phoneNumber = data.get('phoneNumber')
+    res = arango_con.updateInfo(key, username, phoneNumber)
+    data = json.loads(res.body)
+    if not data.get('success'):
+        return JsonResponse({'success': False})
+    return JsonResponse({ 'success': True,
+                          'key': data['key'], 
+                          'username' : data['username'],
+                          'phoneNumber': data['phone']})
+
+def deleteUser(request):
+    data = json.loads(request.body)
+    key = data.get('key')
+    res = arango_con.deleteUser(key)
+    data = json.loads(res.body)
+    if not data.get('success'):
+        return JsonResponse({'success': False})
+    return JsonResponse({ 'success': True })
+
 
 
 def initiatePasswordReset(request):

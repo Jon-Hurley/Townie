@@ -29,9 +29,9 @@ def login(username, password):
         """
         LET temp = TRUE
         FOR user IN User
-            LET x = LOWER(user.username) == LOWER(@username)
+            FILTER LOWER(user.username) == LOWER(@username)
             LET y = LOWER(user.password) == LOWER(@password)
-            IF (x AND y)
+            IF (y)
                 temp = FALSE
                 RETURN {
                     success: true,
@@ -47,6 +47,48 @@ def login(username, password):
             'password': password
         }
     )
+
+def updateInfo(userKey, newUser, newPhone):
+    return db.aql.execute(
+        """
+        LET result = (
+            FOR user IN User
+                FILTER user._key == (@userKey)
+                UPDATE user WITH MERGE(user, { username: (@newUser), phone: (@newPhone) }) IN User
+                RETURN {
+                        success: true,
+                        key: user._key,
+                        username: user.username
+                        phone: user.phone
+                }
+        )
+        IF LENGTH(result) == 0
+            RETURN { success: false }
+        ELSE
+            RETURN result
+        END
+        """,
+        bind_vars={
+            'userKey': userKey,
+            'newUser': newUser,
+            'newPhone': newPhone
+        }
+    )
+
+def deleteUser(userKey):
+    return db.aql.execute(
+        """
+        LET result = REMOVE @key IN User
+
+        IF result.deleted == 0
+            RETURN { success: false }
+        ELSE
+            RETURN { success: true }
+        END 
+        """,
+        bind_vars={'key': userKey}
+    )
+       
 
 def getUser(userKey, targetKey):
     return db.aql.execute(
