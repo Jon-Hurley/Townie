@@ -13,7 +13,7 @@
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'user/login/'
         );
-		goto('/lobby');//TODO: add if(res) == success
+		goto('/lobby');
         console.log(res);
 	};
 </script>
