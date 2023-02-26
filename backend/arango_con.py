@@ -143,6 +143,7 @@ def getNearbyDestinations(lat, lng, radius):
     #technially deprecated
     return destinationCollection.find_in_radius(lat, lng, radius/0.000621371)
 
+#ONLY USED FOR TESTING DESTINATION COLLECTION
 def main():
     createDestination("Purdue University", 40.423538, -86.921738)
     list = getNearbyDestinations(40.417912, -86.930481, 1)

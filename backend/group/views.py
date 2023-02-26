@@ -1,6 +1,7 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-import redis # used to be redis_con
+import redis_con
+import arango_con
 import googlemaps
 import json
 import os
@@ -47,14 +48,9 @@ def map(request):
     #print(addressComponents)
     latitude = result2[0]['geometry']['location']['lat']
     longitude = result2[0]['geometry']['location']['lng']
-    place_info = json.dumps(gmaps.places("art museum", (latitude,longitude)))
+    place_info = json.dumps(gmaps.places("art museum", (latitude,longitude), 1/0.000621371)) #check this conversion factor
     place3 = json.loads(place_info)
-    #print(place3)
-    #print(place3['results'][0])
-    place4 = json.dumps(gmaps.place(place3['results'][0]['place_id']))
-    place5 = json.loads(place4)
-    #print(len(place_info))
-    print(place3)
+    place4 = json.dumps(gmaps.place(place3['results'][0]['place_id'])) # extra info about a place
     for i in range(len(place3['results'])):
         name_dest = place3['results'][i]['name']
         print(name_dest)
@@ -65,11 +61,6 @@ def map(request):
         points = 1000
         destination = dict(name=name_dest, addr=address, location=[latitude, longitude], pts=points)
         list.append(destination)
-        #print(destination)
-    #location = Location
-    #location.latitude = latitude
-    #location.longitude = longitude
-    #print(latitude)
 
 
 
