@@ -6,7 +6,7 @@ import { userStore } from '../stores';
 export const login = async(username, password) => {
     try {
         const res = await axios.post(
-            PUBLIC_BACKEND_API + 'user/account/',
+            PUBLIC_BACKEND_API + 'user/login/',
             {
                 password: password,
                 username: username
@@ -29,46 +29,97 @@ export const login = async(username, password) => {
         return true;        
     } catch (err) {
         console.log(err);
-        return [];
+        return false;
     }
 };
 
-export const signup = async() => {
+export const signup = async(username, password, phoneNumber) => {
     try {
         const res = await axios.post(
-            PUBLIC_BACKEND_API + 'user/account/',
+            PUBLIC_BACKEND_API + 'user/signup/',
             {
-                key: get(userStore).key
+                username: username,
+                password: password,
+                phoneNumber: phoneNumber
             }
         );
-        console.log(res);
-        return res.data.account || [];        
+        
+        data = JSON.parse(res);
+        success = data.success;
+        if (success == false) {
+            return false;
+        }
+
+        username = data.username;
+        key = data.key;
+        phone = data.phoneNumber;
+        points = data.points;
+        purchases = data.purchases;
+        rank = data.rank;
+        token = Math.floor(Date.now() / 1000);
+
+        userStore.set(username + "/" + key, key, passwordHash, phone, points, purchases, rank, token);
+        return true;        
     } catch (err) {
         console.log(err);
-        return [];
+        return false;
     }
 };
 
-export const verification = async() => {
+export const verification = async(verifCode) => {
     try {
         const res = await axios.post(
-            PUBLIC_BACKEND_API + 'user/account/',
+            PUBLIC_BACKEND_API + 'user/verification/',
             {
-                key: get(userStore).key
+                code: verifCode
             }
         );
-        console.log(res);
-        return res.data.account || [];        
+
+        data = JSON.parse(res);
+        return data.success;
     } catch (err) {
         console.log(err);
-        return [];
+        return false;
+    }
+};
+
+export const updateAccount = async(username, phoneNumber) => {
+    try {
+        if (phoneNumber != userStore.phoneNumber) {
+            if (verification) {
+                const res = await axios.post(
+                    PUBLIC_BACKEND_API + 'user/account/',
+                    {
+                        username: username,
+                        phoneNumber: phoneNumber
+                    }
+                );
+
+                data = JSON.parse(res);
+                return data.success;
+            }
+            return false;
+        } else {
+            const res = await axios.post(
+                PUBLIC_BACKEND_API + 'user/account/',
+                {
+                    username: username
+                }
+            );
+
+            data = JSON.parse(res);
+            return data.success;
+        }
+    } catch (err) {
+        console.log(err);
+        return false;
     }
 };
 
 export const loginWithToken = async() => {
     try {
         const res = await axios.post(
-            PUBLIC_BACKEND_API + 'user/account/',
+            PUBLIC_BACKEND_API + 'user/token-login/',
             {
                 key: get(userStore).key
             }

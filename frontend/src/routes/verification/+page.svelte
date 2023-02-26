@@ -1,7 +1,6 @@
 <script>
 	import { goto } from '$app/navigation';
-	import { PUBLIC_BACKEND_API } from '$env/static/public';
-    import axios from 'axios';
+	import { verification } from "../../../requests/account";
 
     let remember;
 	const form = {
@@ -9,12 +8,16 @@
 	};
 
     const verify = async () => {
-        const res = await axios.post(
-            PUBLIC_BACKEND_API + 'user/verification/'
-        );
-        goto('/lobby'); //TODO: add if(res) == success
+        const res = await verification(form.verification);
+        if (res) {
+            goto('/lobby');
+        }
         console.log(res);
 	};
+
+    const resendVerification = async () => {
+
+    }
 </script>
 
 <div class="flex min-h-full full rounded-md center items-center justify-center mt-20 py-12 px-4 sm:px-6 lg:px-8">
@@ -38,7 +41,7 @@
                         Verification
                     </label>
 					<input
-						bind:value={form.username}
+						bind:value={form.verification}
                         type="verification"
 						required
 						class="relative block justify-center w-full justify-center appearance-none rounded-b-md rounded-t-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none sm:text-sm"

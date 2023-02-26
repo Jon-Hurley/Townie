@@ -10,7 +10,8 @@ export const userStore = writable({
     points:	50,
     purchases: [],
     rank: 'explorer',   
-    username: 'ArnavSuccs'
+    username: 'ArnavSuccs',
+    token: '9248523'
 });
 
 
