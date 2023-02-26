@@ -12,17 +12,17 @@ export const login = async(username, password) => {
                 username: username
             }
         );
-        data = json.loads(res.body);
-        success = data.get('success');
+        data = JSON.parse(res);
+        success = data.success;
         if (success == false) {
             return false;
         }
-        username = data.get('username');
-        key = data.get('key');
-        phone = data.get('phone');
-        points = data.get('points');
-        purchases = data.get('purchases')
-        rank = data.get('rank');
+        username = data.username;
+        key = data.key;
+        phone = data.phoneNumber;
+        points = data.points;
+        purchases = data.purchases;
+        rank = data.rank;
 
         userStore.set(username + "/" + key, key, passwordHash, phone, points, purchases, rank);
         console.log(res);
