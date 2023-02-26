@@ -11,7 +11,9 @@ export const nodes = [() => import('./nodes/0'),
 	() => import('./nodes/8'),
 	() => import('./nodes/9'),
 	() => import('./nodes/10'),
-	() => import('./nodes/11')];
+	() => import('./nodes/11'),
+	() => import('./nodes/12'),
+	() => import('./nodes/13')];
 
 export const server_loads = [];
 
@@ -23,9 +25,11 @@ export const dictionary = {
 	"/game/map": [6],
 	"/login": [7],
 	"/notifs": [8],
-	"/social": [9],
-	"/store": [10],
-	"/user/[slug]": [11]
+	"/signup": [9],
+	"/social": [10],
+	"/store": [11],
+	"/user/[slug]": [12],
+	"/verification": [13]
 };
 
 export const hooks = {

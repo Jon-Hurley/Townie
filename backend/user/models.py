@@ -77,7 +77,7 @@ class User(models.Model):
     phoneNumber = models.PositiveIntegerField()
     totalPoints = models.PositiveIntegerField()
     rank = models.PositiveIntegerField()
-    purchases = models.ManyToManyField(Purchase)
+    #purchases = models.ManyToManyField(Purchase)
     friends = models.ManyToManyField(Friendship)
 
     # Creates a new instance of Friendship
@@ -98,12 +98,12 @@ class User(models.Model):
 
     # Set certain User fields to new parameters, non-specified fields are kept at
     # current values 
-    def set(self, user=username, p=passwordHash, phone=phoneNumber, tp=totalPoints, r=rank, pur=purchases, f=friends):
-        self.username = user
-        self.passwordHash = p
-        self.phoneNumber = phone
-        self.totalPoints = tp
-        self.rank = r
+    #def set(self, user=username, p=passwordHash, phone=phoneNumber, tp=totalPoints, r=rank, pur=purchases, f=friends):
+        #self.username = user
+        #self.passwordHash = p
+        #self.phoneNumber = phone
+        #self.totalPoints = tp
+        #self.rank = r
         #purchases = 
         #friends = 
 
