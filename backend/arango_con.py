@@ -36,7 +36,11 @@ def login(username, password):
                 RETURN {
                     success: true,
                     key: user._key,
-                    username: user.username
+                    username: user.username,
+                    phoneNumber: user.phone,
+                    points: user.points,
+                    rank: user.ranks,
+                    purchases: user.purchases
                 }
             END
         IF (temp == FALSE)
@@ -56,10 +60,13 @@ def updateInfo(userKey, newUser, newPhone):
                 FILTER user._key == (@userKey)
                 UPDATE user WITH MERGE(user, { username: (@newUser), phone: (@newPhone) }) IN User
                 RETURN {
-                        success: true,
-                        key: user._key,
-                        username: user.username
-                        phone: user.phone
+                    success: true,
+                    key: user._key,
+                    username: user.username,
+                    phoneNumber: user.phone,
+                    points: user.points,
+                    rank: user.ranks,
+                    purchases: user.purchases
                 }
         )
         IF LENGTH(result) == 0

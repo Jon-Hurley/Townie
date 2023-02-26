@@ -43,7 +43,11 @@ def login(request):
     key = data.get('key')
     return JsonResponse({ 'success': True,
                           'key': key, 
-                          'username' : username})
+                          'username' : username,
+                          'phoneNumber': data['phone'],
+                          'points': data['points'],
+                          'rank': data['ranks'],
+                          'purchases': data['purchases']})
 
 def loginWithToken(request):
     return JsonResponse({
@@ -60,9 +64,12 @@ def updateInfo(request):
     if not data.get('success'):
         return JsonResponse({'success': False})
     return JsonResponse({ 'success': True,
-                          'key': data['key'], 
-                          'username' : data['username'],
-                          'phoneNumber': data['phone']})
+                          'key': key, 
+                          'username' : username,
+                          'phoneNumber': data['phone'],
+                          'points': data['points'],
+                          'rank': data['ranks'],
+                          'purchases': data['purchases']})
 
 def deleteUser(request):
     data = json.loads(request.body)
@@ -72,6 +79,9 @@ def deleteUser(request):
     if not data.get('success'):
         return JsonResponse({'success': False})
     return JsonResponse({ 'success': True })
+
+def verification(request): 
+    data = json.loads(request.body)
 
 
 
