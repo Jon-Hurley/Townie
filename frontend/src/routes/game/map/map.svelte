@@ -9,6 +9,8 @@
         darkMode: false
     };
 
+    let location=locationStore;
+
     const regenerateMap = () => {
         const mapLoc = mapState.map?.getCenter();
         const mapZoom = mapState.map?.getZoom();
@@ -18,6 +20,17 @@
                                      : PUBLIC_GOOGLE_MAPS_LIGHT_MODE,
             disableDefaultUI: true
         });
+
+        let circle = new google.maps.Circle({
+        strokeColor: "#FF0000",
+        strokeOpacity: 0.8,
+        strokeWeight: 2,
+        fillColor: "#FF0000",
+        fillOpacity: 0.35,
+        map: mapState.map,
+        center: { lat: 40.423538, lng: -86.921738 },
+        radius: 20,
+    })
         if (mapLoc) mapState.map?.setCenter(mapLoc);
         if (mapZoom) mapState.map?.setZoom(mapZoom);
         mapState = mapState;
