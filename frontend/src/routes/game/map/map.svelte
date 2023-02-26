@@ -10,15 +10,15 @@
         darkMode: false
     };
 
-    const regenerateMap = () => {
-        mapState.map = new google.maps.Map(mapState.container, {
-            zoom: 20,
-            // TODO: Get user current location
-            center: {lat: 40.4251, lng: -86.9129},
-            mapId: mapState.darkMode ? PUBLIC_GOOGLE_MAPS_DARK_MODE
-                                     : PUBLIC_GOOGLE_MAPS_LIGHT_MODE,
-            disableDefaultUI: true
-        });
+    const regenerateMap = (mapState) => {
+        // mapState.map = new google.maps.Map(mapState.container, {
+        //     zoom: 20,
+        //     // TODO: Get user current location
+        //     center: {lat: 40.4251, lng: -86.9129},
+        //     mapId: mapState.darkMode ? PUBLIC_GOOGLE_MAPS_DARK_MODE
+        //                              : PUBLIC_GOOGLE_MAPS_LIGHT_MODE,
+        //     disableDefaultUI: true
+        // });
 
         console.log(mapState.map)
         const mapLoc = mapState.map?.getCenter();
@@ -35,14 +35,25 @@
             radius: 20,
         })
 
+        let userCircle = new google.maps.Circle({
+            strokeColor: "#FF0000",
+            strokeOpacity: 0.8,
+            strokeWeight: 2,
+            fillColor: "#FF0000",
+            fillOpacity: 0.35,
+            map: mapState.map,
+            center: {lat: 40.4251, lng: -86.9129},
+            radius: 20,
+        })
+
         var bounds = new google.maps.LatLngBounds();
-        bounds.extend({ lat: mapLoc.lat(), lng: mapLoc.lng() });
+        bounds.extend(userCircle['center']);
         bounds.extend(circle['center']);
         mapState.map.setCenter(bounds.getCenter);
         mapState.map.fitBounds(bounds);
 
-        const midpointLat = (mapLoc.lat() + circle['center']['lat']) / 2;
-        const midpointLng = (mapLoc.lng() + circle['center']['lng']) / 2;
+        const midpointLat = (userCircle['center']['lat'] + circle['center']['lat']) / 2;
+        const midpointLng = (userCircle['center']['lng'] + circle['center']['lng']) / 2;
         mapState.map.setCenter({ lat: midpointLat, lng: midpointLng });
 
         if (mapLoc) mapState.map?.setCenter(mapLoc);
@@ -55,12 +66,13 @@
         const mapZoom = mapState.map?.getZoom();
         mapState.map = new google.maps.Map(mapState.container, {
             zoom: 20,
+            center: {lat: 40.4251, lng: -86.9129},
             mapId: mapState.darkMode ? PUBLIC_GOOGLE_MAPS_DARK_MODE
                                      : PUBLIC_GOOGLE_MAPS_LIGHT_MODE,
             disableDefaultUI: true
         });
 
-        regenerateMap();
+        regenerateMap(mapState);
         subscribeToLocation(mapState);
     });
 

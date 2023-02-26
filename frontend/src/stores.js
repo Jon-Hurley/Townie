@@ -57,10 +57,10 @@ export const subscribeToLocation = (mapState) => {
         }
 
         console.log("setting location store...")
-        locationStore.set({
-            interval,
-            location: { lat, lng }
-        });
+        // locationStore.set({
+        //     interval,
+        //     location: { lat, lng }
+        // });
     }
 
     interval = setInterval(() => {
