@@ -1,6 +1,6 @@
 <script>
-	import { PUBLIC_BACKEND_API } from '$env/static/public';
-    import axios from 'axios';
+    import { goto } from '$app/navigation';
+	import { updateAccount } from "../../../requests/account";
     import { userStore } from "../../stores";
 
     let remember;
@@ -10,9 +10,17 @@
 	};
 
     const update = async () => {
-        const res = await axios.post(
-            PUBLIC_BACKEND_API + 'user/account/'
-        );
+        if (username == null) {
+            username = userStore.username;
+        }
+        if (phoneNumber == null) {
+            phoneNumber = userStore.phoneNumber;
+        }
+        
+        const res = await updateAccount(form.username, form.password);
+		if (res) {
+			goto('/lobby');
+		}
         console.log(res);
 	};
 </script>

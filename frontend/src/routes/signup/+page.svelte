@@ -1,7 +1,6 @@
 <script>
 	import { goto } from '$app/navigation';
-	import { PUBLIC_BACKEND_API } from '$env/static/public';
-    import axios from 'axios';
+    import { signup } from "../../../requests/account";
 
     let remember;
 	const form = {
@@ -10,11 +9,11 @@
         phoneNumber: ''
 	};
 
-    const signup = async () => {
-        const res = await axios.post(
-            PUBLIC_BACKEND_API + 'user/signup/'
-        );
-        goto('/verification'); //TODO: add if(res) == success
+    const _signup = async () => {
+        const res = await signup(form.username, form.password, form. phoneNumber);
+        if (res) {
+            goto('/verification');
+        }
         console.log(res);
 	};
 
@@ -69,7 +68,7 @@
 			</div>
 
                 <button
-                    on:click={signup}
+                    on:click={_signup}
                     type="submit"
                     class="group relative flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                 >

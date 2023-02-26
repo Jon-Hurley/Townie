@@ -1,7 +1,6 @@
 <script>
 	import { goto } from '$app/navigation';
-	import { PUBLIC_BACKEND_API } from '$env/static/public';
-    import axios from 'axios';
+	import { login } from "../../../requests/account";
 
     let remember;
 	const form = {
@@ -10,9 +9,7 @@
 	};
 
     const _login = async () => {
-        const res = await axios.post(
-            PUBLIC_BACKEND_API + 'user/login/'
-        );
+        const res = await login(form.username, form.password);
 		if (res) {
 			goto('/lobby');
 		}
