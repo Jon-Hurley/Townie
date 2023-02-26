@@ -1,8 +1,10 @@
 from django.http import JsonResponse
+from django_otp.oath import hotp
 from django.views.decorators.csrf import csrf_exempt
 import twilio_con
 import arango_con
 import json
+import requests
 from hashlib import sha256
 
 def hash(password, phoneNumber):
@@ -80,8 +82,12 @@ def deleteUser(request):
         return JsonResponse({'success': False})
     return JsonResponse({ 'success': True })
 
-def verification(request): 
+def verification(request):
     data = json.loads(request.body)
+    phoneNumber = data['phoneNumber']
+    res = twilio_con.verifyUser(phoneNumber)
+    return JsonResponse({ 'success': res})
+
 
 
 

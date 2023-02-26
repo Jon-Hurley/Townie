@@ -14,6 +14,22 @@ export const userStore = writable({
     token: '9248523'
 });
 
+export const logout = () => {
+
+}
+
+export const login = () => {
+
+}
+
+export const autoLogin = () => {
+
+}
+
+export const signin = () => {
+
+}
+
 
 let ws;
 
