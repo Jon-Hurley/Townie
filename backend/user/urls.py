@@ -4,7 +4,7 @@ from .views import friend, account, search
 urlpatterns = [
     path('login/', account.login),
     path('signup/', account.signup),
-    path('verification/', views.verification),
+    path('verification/', account.verification),
     path('token-login/', account.loginWithToken),
     path('initiate-password-reset/', account.initiatePasswordReset),
     path('complete-password-reset/', account.completePasswordReset),

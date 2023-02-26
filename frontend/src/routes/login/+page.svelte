@@ -9,11 +9,13 @@
 		password: ''
 	};
 
-    const login = async () => {
+    const _login = async () => {
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'user/login/'
         );
-		goto('/lobby');
+		if (res) {
+			goto('/lobby');
+		}
         console.log(res);
 	};
 </script>
@@ -29,7 +31,7 @@
 			<input type="hidden" name="remember" value="true" />
 			<div class="-space-y-px rounded-md shadow-sm">
 				<div>
-					<label for="Username" class="sr-only">
+					<label for="username" class="sr-only">
                         Username
                     </label>
 					<input
@@ -74,7 +76,7 @@
 			</div>
 
             <button
-                on:click={login}
+                on:click={_login}
                 type="submit"
                 class="group relative flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
             >

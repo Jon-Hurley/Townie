@@ -13,21 +13,6 @@ export const userStore = writable({
     username: 'ArnavSuccs'
 });
 
-export const logout = () => {
-
-}
-
-export const login = () => {
-
-}
-
-export const autoLogin = () => {
-
-}
-
-export const signin = () => {
-
-}
 
 let ws;
 
