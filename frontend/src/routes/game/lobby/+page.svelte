@@ -2,6 +2,7 @@
 	import { onMount } from "svelte";
 	import { buttonStyle, indigoStyle } from "../../../css";
     import { gamePage } from "../../../stores";
+
 </script>
 
 <div class="mb-5">

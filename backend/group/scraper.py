@@ -2,14 +2,15 @@ from django.http import JsonResponse
 import googlemaps
 import json
 import os
+from django.views.decorators.csrf import csrf_exempt
 
+@csrf_exempt
 def map(request):
     list = []
-    #print(request)
     gmaps = googlemaps.Client(key=os.environ.get('GOOGLE_API_KEY'))
     places = json.dumps(gmaps.find_place(str("Purdue University"),str("textquery")))
     places2 = json.loads(places)
-
+    stuff = json.loads(request.body)
     #print(places2)
     result = json.dumps(gmaps.geocode(str('900 John R Wooden Dr, West Lafayette, IN 47907')))
     #print(result)
@@ -19,7 +20,7 @@ def map(request):
     #print(addressComponents)
     latitude = result2[0]['geometry']['location']['lat']
     longitude = result2[0]['geometry']['location']['lng']
-    place_info = json.dumps(gmaps.places("art museum", (latitude,longitude)))
+    place_info = json.dumps(gmaps.places(stuff['theme'], (stuff['lat'], stuff['lng']), stuff['radius']))
     place3 = json.loads(place_info)
     #print(place3)
     #print(place3['results'][0])

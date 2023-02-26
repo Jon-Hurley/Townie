@@ -2,6 +2,7 @@
     import { buttonStyle, blueStyle, indigoStyle, inputStyle } from '../../../css';
 	import { gamePage, joinGame } from '../../../stores';
     import { createGame } from '../../../requests/group';
+    import Dests from "./dests.svelte";
 
     let lobbyInput;
 
@@ -54,3 +55,5 @@
         Create Lobby
     </button>
 </div>
+
+<Dests/>
