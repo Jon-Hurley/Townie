@@ -12,7 +12,8 @@ client = ArangoClient(hosts=[host])
 db = client.db('_system', username='root', password=password)
 
 userCollection = db.collection('User')
-friendsCollection = db.collection('Friends') 
+friendsCollection = db.collection('Friends')
+destinationCollection = db.collection('Destinations')
 
 def createUser(username, password, phoneNumber):
     return userCollection.insert({
@@ -129,3 +130,26 @@ def rejectFriendRequest(friendshipKey):
         """,
         bind_vars={'key': friendshipKey}
     )
+
+def createDestination(name, lat, lng):
+    list = [lat, lng]
+    return destinationCollection.insert({
+        'latitude': lat,
+        'longitude': lng,
+        'name': name
+    })
+
+def getNearbyDestinations(lat, lng, radius):
+    #technially deprecated
+    return destinationCollection.find_in_radius(lat, lng, radius/0.000621371)
+
+def main():
+    createDestination("Purdue University", 40.423538, -86.921738)
+    list = getNearbyDestinations(40.417912, -86.930481, 1)
+    if not list.empty():
+        print(list.count())
+        first = list.pop()
+        print(first)
+
+if __name__ == "__main__":
+    main()
