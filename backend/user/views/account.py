@@ -7,9 +7,9 @@ import json
 import requests
 from hashlib import sha256
 
-def hash(password, phoneNumber):
+def hash(password):
     h = sha256()
-    password += phoneNumber + "Townie"
+    password += "Townie"
     temp = password.encode('utf-8')
     h.update(temp)
     hash = h.hexdigest()
@@ -22,7 +22,7 @@ def signup(request):
     password = data.get('password')
     phoneNumber = data.get('phoneNumber')
 
-    passwordHash = hash(password, phoneNumber)
+    passwordHash = hash(password)
 
     try:
         user = arango_con.createUser(username, passwordHash, phoneNumber)
@@ -37,8 +37,8 @@ def login(request):
     username = data.get('username')
     password = data.get('password')
     phoneNumber = data.get('phoneNumber')
-    passwordHash = hash(password, phoneNumber)
-    res = arango_con.login(request, username, passwordHash)
+    passwordHash = hash(password)
+    res = arango_con.login(username, passwordHash)
     data = json.loads(res.body)
     if not data.get('success'):
         return JsonResponse({'success': False})

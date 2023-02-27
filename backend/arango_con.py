@@ -30,8 +30,7 @@ def login(username, password):
         LET temp = TRUE
         FOR user IN User
             FILTER LOWER(user.username) == LOWER(@username)
-            LET y = LOWER(user.password) == LOWER(@password)
-            IF (y)
+            IF(user.passwordHash == @password) {
                 temp = FALSE
                 RETURN {
                     success: true,
@@ -42,9 +41,10 @@ def login(username, password):
                     rank: user.ranks,
                     purchases: user.purchases
                 }
-            END
-        IF (temp == FALSE)
-            RETURN { success: false }
+            }
+        END
+        IF (temp)
+            THEN RETURN { success: false }
         """,
         bind_vars={
             'username': username,

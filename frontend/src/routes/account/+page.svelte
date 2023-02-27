@@ -1,6 +1,6 @@
 <script>
     import { goto } from '$app/navigation';
-	import { updateAccount } from "../../../requests/account";
+	import { updateAccount } from "../../requests/account";
     import { userStore } from "../../stores";
 
     let remember;
