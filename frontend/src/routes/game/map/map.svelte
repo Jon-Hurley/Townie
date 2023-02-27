@@ -10,15 +10,19 @@
         darkMode: false
     };
 
+    const randomizeLat = (LatLng) => {
+
+    }
+
     const regenerateMap = (mapState) => {
-        // mapState.map = new google.maps.Map(mapState.container, {
-        //     zoom: 20,
-        //     // TODO: Get user current location
-        //     center: {lat: 40.4251, lng: -86.9129},
-        //     mapId: mapState.darkMode ? PUBLIC_GOOGLE_MAPS_DARK_MODE
-        //                              : PUBLIC_GOOGLE_MAPS_LIGHT_MODE,
-        //     disableDefaultUI: true
-        // });
+        mapState.map = new google.maps.Map(mapState.container, {
+            zoom: 20,
+            // TODO: Get user current location
+            center: {lat: 40.4251, lng: -86.9129},
+            mapId: mapState.darkMode ? PUBLIC_GOOGLE_MAPS_DARK_MODE
+                                     : PUBLIC_GOOGLE_MAPS_LIGHT_MODE,
+            disableDefaultUI: true
+        });
 
         console.log(mapState.map)
         const mapLoc = mapState.map?.getCenter();
@@ -31,8 +35,8 @@
             fillColor: "#FF0000",
             fillOpacity: 0.35,
             map: mapState.map,
-            center: { lat: 40.423538, lng: -86.921738 },
-            radius: 20,
+            center: { lat: 35.6762, lng: 135.4303 },
+            radius: 200000,
         })
 
         let userCircle = new google.maps.Circle({
@@ -43,7 +47,7 @@
             fillOpacity: 0.35,
             map: mapState.map,
             center: {lat: 40.4251, lng: -86.9129},
-            radius: 20,
+            radius: 200000,
         })
 
         var bounds = new google.maps.LatLngBounds();
