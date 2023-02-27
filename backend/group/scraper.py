@@ -3,6 +3,7 @@ import googlemaps
 import json
 import os
 from django.views.decorators.csrf import csrf_exempt
+import arango_con
 
 @csrf_exempt
 def map(request):
@@ -34,15 +35,15 @@ def map(request):
         address = place3['results'][i]['formatted_address']
         latitude = place3['results'][i]['geometry']['location']['lat']
         longitude = place3['results'][i]['geometry']['location']['lng']
-
+        arango_con.createDestination(latitude, longitude, name_dest)
         points = 1000
         destination = dict(name=name_dest, addr=address, location=[latitude, longitude], pts=points)
         list.append(destination)
-        #print(destination)
-    #location = Location
-    #location.latitude = latitude
-    #location.longitude = longitude
-    #print(latitude)
+    radius = float(stuff['radius'])
+    print(radius)
+    list2 = arango_con.getNearbyDestinations(latitude, longitude, radius)
+    for i in range(len(list2)):
+        list.append(list2.pop)
 
 
 

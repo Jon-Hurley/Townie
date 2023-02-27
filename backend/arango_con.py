@@ -133,12 +133,15 @@ def rejectFriendRequest(friendshipKey):
     )
 
 def createDestination(name, lat, lng):
-    list = [lat, lng]
-    return destinationCollection.insert({
-        'latitude': lat,
-        'longitude': lng,
-        'name': name
-    })
+    try:
+        list = [lat, lng]
+        return destinationCollection.insert({
+            'latitude': lat,
+            'longitude': lng,
+            'name': name
+        })
+    except:
+        pass
 
 def getNearbyDestinations(lat, lng, radius):
     #technially deprecated
