@@ -36,7 +36,6 @@ def login(request):
     data = json.loads(request.body)
     username = data.get('username')
     password = data.get('password')
-    phoneNumber = data.get('phoneNumber')
     passwordHash = hash(password)
     res = arango_con.login(username, passwordHash)
     data = json.loads(res.body)

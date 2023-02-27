@@ -29,18 +29,16 @@ def login(username, password):
         """
         LET temp = TRUE
         FOR user IN User
-            FILTER LOWER(user.username) == LOWER(@username)
-            IF(user.passwordHash == @password) {
-                temp = FALSE
-                RETURN {
-                    success: true,
-                    key: user._key,
-                    username: user.username,
-                    phoneNumber: user.phone,
-                    points: user.points,
-                    rank: user.ranks,
-                    purchases: user.purchases
-                }
+            FILTER user.username == @username && user.passwordHash == @password
+            temp = FALSE
+            RETURN {
+                success: true,
+                key: user._key,
+                username: user.username,
+                phoneNumber: user.phone,
+                points: user.points,
+                rank: user.ranks,
+                purchases: user.purchases
             }
         END
         IF (temp)
