@@ -32,7 +32,7 @@ export const gameStore = writable();
 
 export const joinGame = async(gameKey) => {
     try {
-        const ws = new WebSocket(`${PUBLIC_BACKEND_WS}/${gameKey}/${get(userStore).key}`);
+        const ws = new WebSocket(`${PUBLIC_BACKEND_WS}`);
         await new Promise((res, rej) => { 
             ws.onopen = (e) => {
                 gameStore.set({

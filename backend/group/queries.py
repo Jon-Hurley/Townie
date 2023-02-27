@@ -7,7 +7,6 @@ def createGame():
         'startTime': 0,
         'maxTime': 0,
         'numFinished': 0,
-        'destinations': [],
         'trueCompletionTime': 0,
         'settings': {
             'radius': 5,
@@ -16,22 +15,59 @@ def createGame():
             'subwayAllowed': True,
             'boatAllowed': True,
             'theme': "None",
-            'desiredCompletionTime': 180
+            'desiredCompletionTime': 180,
+            'lon': 0.0,
+            'lat': 0.0
         }
     })
 
-def addPlayer(gameKey, userKey):
-    return arango_con.playerCollection.insert({
-        '_from': 'User/' + str(userKey),
-        '_to': 'Games/' + str(gameKey),
-        'lon': 0,
-        'lat': 0
-    })
+def addPlayer(gameKey, userKey, connectionId):
+    # return arango_con.playerCollection.insert({
+    #     '_from': 'User/' + str(userKey),
+    #     '_to': 'Games/' + str(gameKey),
+    #     'connectionId': connectionId,
+    #     'lon': 0,
+    #     'lat': 0
+    # })
+    return arango_con.db.aql.execute(
+        """
+            UPSERT {
+                _from: CONCAT("User/", @userKey)
+            }
+            INSERT {
+                _from: CONCAT("User/", @userKey),
+                _to: CONCAT("Games/", @gameKey),
+                connectionId: @connectionId,
+                lon: 0,
+                lat: 0
+            }
+            UPDATE {
+                _to: CONCAT("Games/", @gameKey),
+                connectionId: @connectionId
+            }
+            IN Players
+        """,
+        bind_vars={
+            'gameKey': str(gameKey),
+            'userKey': str(userKey),
+            'connectionId': str(connectionId)
+        }
+    )
 
-def leaveGame(playerKey):
-    return arango_con.playerCollection.delete({
-        '_key': playerKey
-    })
+def leaveGame(connectionId):
+    return arango_con.db.aql.execute(
+        """
+            FOR p IN Players
+                FILTER p.connectionId == @connectionId
+                
+                LET gameKey = p._to
+                REMOVE p._key in Players
+                RETURN { gameKey }
+        """,
+        bind_vars={
+            'connectionId': str(connectionId)
+        }
+    )
 
 def startGame(gameKey, settings):
     # lobbyRes = lobbyCollection.get({
@@ -40,7 +76,7 @@ def startGame(gameKey, settings):
     # settings = lobbyRes['settings']
 
     # TRIGGER WEB-SCRAPER
-    # result = getDestinations(settings)
+    # result = WEB-SCRAPER(settings)
     
     # EXAMPLE RESULT
     result = {
@@ -84,6 +120,7 @@ def getGame(gameKey):
                     return {
                         key: v._key,
                         username: v.username,
+                        connectionId: e.connectionId,
                         lon: e.lon,
                         lat: e.lat
                     }

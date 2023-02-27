@@ -4,7 +4,8 @@ import json
 import group.queries as queries
 from dotenv import load_dotenv
 import os
-import requests
+from ws_con import propogateUpdates
+from pprint import pprint
 load_dotenv()
 
 # CONNECT: JOIN GAME
@@ -13,30 +14,32 @@ def onConnect(request):
     body = json.loads(request.body)
     gameKey = body['gameKey']
     userKey = body['userKey']
-    res = queries.addPlayer(gameKey, userKey)
-    playerKey = res['_key']
-    print("NEW GAME KEY:", gameKey)
-    propogateAllUpdates(gameKey)
-    return JsonResponse({
-        'key': playerKey
-    })
+    connectionId = body['connectionId']
+    print(gameKey, userKey, connectionId)
+    res = queries.addPlayer(gameKey, userKey, connectionId)
+    propogateAllUpdates(gameKey, { connectionId })
+    return JsonResponse({})
 
 # DISCONNECT: LEAVE GAME
 @csrf_exempt
 def onDisconnect(request):
     body = json.loads(request.body)
-    res = queries.leaveGame(body['playerKey'])
-    propogateAllUpdates()
-    print(request)
-    return res
+    connectionId = body['connectionId']
+    print(connectionId)
+    res = queries.leaveGame(connectionId)
+    gameKey = res.batch()[0]['gameKey'][6:] # [6:] = id -> key
+    propogateAllUpdates(gameKey, { connectionId })
+    return JsonResponse({})
 
 # DEFAULT:
 #       1. Update Game Settings
 #       2. Start Game
 #       3. Update Location
 @csrf_exempt
-def default(request):
+def onDefault(request):
+    print(request)
     body = json.loads(request.body)
+    print(body)
     if body['route'] == 'update-game-settings':
         return updateGameSettings(body)
     if body['route'] == 'start-game':
@@ -75,28 +78,11 @@ def startGame(body):
     propogateAllUpdates(gameKey)
     return JsonResponse(res)
 
-# PROPOGATE CHANGES BACK TO USERS VIA WS API
-# FUCK DJANGO AND ITS CONCURRENCY BS.
-
-WS_API = os.environ.get('WS_ENDPOINT')
-
-def propogateAllUpdates(gameKey):
+def propogateAllUpdates(gameKey, conExcl={}):
     data = queries.getGame(gameKey).batch()[0]
     users = data['users']
     game = data['game']
-    for user in users:
-        propogateToOne(user, game)
-
-def propogateToOne(user, game):
-    print("Propogating to user")
-    res = requests.post(
-        WS_API + 'update/',
-        json={
-            'game': game,
-            'userKey': user['key']
-        }
-    )
-    print(res)
+    propogateUpdates(users, str(game), conExcl)
 
 # GET REQUEST: CREATE A LOBBY/GAME
 
