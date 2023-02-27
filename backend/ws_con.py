@@ -35,3 +35,14 @@ def propogateUpdate(connectionId, data):
     except Exception as err:
         print(err)
         return None
+
+def forceDisconnect(connectionId):
+    try:
+        print("DISCONNECTING:", connectionId)
+        response = client.delete_connection(
+            ConnectionId=connectionId
+        )
+        return response
+    except Exception as err:
+        print(err)
+        return None

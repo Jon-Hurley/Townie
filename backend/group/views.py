@@ -2,11 +2,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 import group.queries as queries
-from dotenv import load_dotenv
-import os
-from ws_con import propogateUpdates
-from pprint import pprint
-load_dotenv()
+from ws_con import propogateUpdates, forceDisconnect
 
 # CONNECT: JOIN GAME
 @csrf_exempt
@@ -17,6 +13,9 @@ def onConnect(request):
     connectionId = body['connectionId']
     print(gameKey, userKey, connectionId)
     res = queries.addPlayer(gameKey, userKey, connectionId)
+    oldDoc = res.batch()[0]['oldDoc']
+    if oldDoc:
+        forceDisconnect(oldDoc['connectionId'])
     propogateAllUpdates(gameKey, { connectionId })
     return JsonResponse({})
 
@@ -26,12 +25,14 @@ def onDisconnect(request):
     body = json.loads(request.body)
     connectionId = body['connectionId']
     print(connectionId)
-    res = queries.leaveGame(connectionId)
-    gameKey = res.batch()[0]['gameKey'][6:] # [6:] = id -> key
-    propogateAllUpdates(gameKey, { connectionId })
+    res = queries.leaveGame(connectionId).batch()
+    if len(res): # a player was removed from DB.
+        gameKey = res[0]['gameKey'][6:] # [6:] = id -> key
+        propogateAllUpdates(gameKey, { connectionId })
+    # else: connection was already updated, and no longer exists anyways.
     return JsonResponse({})
 
-# DEFAULT:
+# DEFAULT: (right now will be done in http requests lol)
 #       1. Update Game Settings
 #       2. Start Game
 #       3. Update Location
@@ -40,13 +41,13 @@ def onDefault(request):
     print(request)
     body = json.loads(request.body)
     print(body)
-    if body['route'] == 'update-game-settings':
-        return updateGameSettings(body)
-    if body['route'] == 'start-game':
-        return startGame(body)
-    if body['route'] == 'update-location':
-        return updatePlayerLocation(body)
-    return JsonResponse({ 'status': 'unknown route: ' + body['route'] })
+    # if body['action'] == 'update-game-settings':
+    #     return updateGameSettings(body)
+    # if body['action'] == 'start-game':
+    #     return startGame(body)
+    # if body['action'] == 'update-location':
+    #     return updatePlayerLocation(body)
+    return JsonResponse({})
 
 def updatePlayerLocation(body):
     playerKey = body['key']

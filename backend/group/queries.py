@@ -46,6 +46,9 @@ def addPlayer(gameKey, userKey, connectionId):
                 connectionId: @connectionId
             }
             IN Players
+            RETURN {
+                oldDoc: OLD
+            }
         """,
         bind_vars={
             'gameKey': str(gameKey),
@@ -70,28 +73,23 @@ def leaveGame(connectionId):
     )
 
 def startGame(gameKey, settings):
+    # GET GAME SETTINGS
     # lobbyRes = lobbyCollection.get({
     #     '_key': gameKey
     # });
     # settings = lobbyRes['settings']
 
-    # TRIGGER WEB-SCRAPER
-    # result = WEB-SCRAPER(settings)
-    
-    # EXAMPLE RESULT
-    result = {
-        'destinations': [],
-        'trueCompletionTime': 0
-    }
+    # TRIGGER WEB-SCRAPER: (get destinations & auto add to the DB)
+    # trueCompletionTime = WEB-SCRAPER(gameKey, settings)
+    trueCompletionTime = 100
 
     t = time.time()
     return arango_con.gameCollection.update({
         '_key': gameKey,
         'page': 'map',
         'startTime': t,
-        'maxTime': t + 24 * 60 * 60,
-        'destinations': result['destinations'],
-        'trueCompletionTime': result['trueCompletionTime']
+        'maxTime': t + 24 * 60 * 60, # REPLACE W/ TTL index.
+        'trueCompletionTime': trueCompletionTime
     })
     
 def updateGameSettings(gameKey, field, value):
