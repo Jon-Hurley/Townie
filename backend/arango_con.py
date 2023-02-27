@@ -132,13 +132,15 @@ def rejectFriendRequest(friendshipKey):
         bind_vars={'key': friendshipKey}
     )
 
-def createDestination(name, lat, lng):
+def createDestination(lat, lng, name, pts, theme):
     try:
         list = [lat, lng]
         return destinationCollection.insert({
             'latitude': lat,
             'longitude': lng,
-            'name': name
+            'name': name,
+            'pts': pts,
+            'theme': theme
         })
     except:
         pass

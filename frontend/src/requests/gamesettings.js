@@ -16,7 +16,7 @@ export const sendPreferences = async() => {
                 }
         );
         console.log(res);
-        return res.data.destinations || [];
+        return res.data || [];
     } catch (err) {
         console.log(err)
         return [];
