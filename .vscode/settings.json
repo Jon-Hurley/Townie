@@ -1,6 +1,6 @@
 {
     "files.exclude": {
-        "**/README.md": true,
+        // "**/README.md": true,
 
         "**/.npmrc/": true,
         "**/.prettier*/": true,
