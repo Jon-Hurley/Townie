@@ -52,15 +52,19 @@ export const signup = async(username, password, phoneNumber) => {
             return false;
         }
 
-        username = data.username;
-        key = data.key;
-        phone = data.phoneNumber;
-        points = data.points;
-        purchases = data.purchases;
-        rank = data.rank;
-        token = Math.floor(Date.now() / 1000);
-
-        userStore.set(username + "/" + key, key, passwordHash, phone, points, purchases, rank, token);
+        let data = res.data;
+        console.log(res.data)
+        let success = data.success;
+        if (success == false) {
+            return false;
+        }
+        let key = data.key;
+        let phone = data.phoneNumber;
+        let points = data.points;
+        let purchases = data.purchases;
+        let rank = data.rank;
+        console.log(res.data);
+        userStore.set(res.data);
         return true;        
     } catch (err) {
         console.log(err);
