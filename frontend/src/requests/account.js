@@ -14,23 +14,23 @@ export const login = async(username, password) => {
             }, 
             /*{withCredentials: true}*/
         );
-        data = res.data;
-        success = data.success;
+        console.log(res);
+        let data = res.data;
+        console.log(res.data)
+        let success = data.success;
         if (success == false) {
             return false;
         }
-        username = data.username;
-        key = data.key;
-        phone = data.phoneNumber;
-        points = data.points;
-        purchases = data.purchases;
-        rank = data.rank;
-
-        userStore.set(username + "/" + key, key, passwordHash, phone, points, purchases, rank);
+        let key = data.key;
+        let phone = data.phoneNumber;
+        let points = data.points;
+        let purchases = data.purchases;
+        let rank = data.rank;
+        console.log(res.data);
+        userStore.set(res.data);
 
         //axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`
-
-        console.log(res);
+        
         return true;        
     } catch (err) {
         console.log(err);

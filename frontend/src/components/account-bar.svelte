@@ -8,7 +8,7 @@
     let currentPage;
     page.subscribe(v => currentPage = v.route.id);
 
-    const pages = [
+    $: pages = [
         {
             page: '/account',
             tooltip: 'Account',

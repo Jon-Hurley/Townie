@@ -5,10 +5,6 @@
 	import { onMount } from 'svelte';
   
     onMount(() => {
-        if ($userStore) {
-            goto('/game/lobby');
-        } else {
             goto('/login')
-        }
     });
 </script>

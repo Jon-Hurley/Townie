@@ -108,12 +108,13 @@ def getUser(userKey, targetKey):
         FOR user IN User
             FILTER user._key == @targetKey
             RETURN {
+                success: true,
                 key: user._key,
-                rank: user.rank,
                 username: user.username,
                 phone: user.phone,
                 points: user.points,
-                purchases: user.purchases,
+                rank: user.rank,
+                purchases: user.purchases
                 friendship: f
             }
         """,
