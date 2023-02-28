@@ -12,7 +12,7 @@
     const _signup = async () => {
         const res = await signup(form.username, form.password, form. phoneNumber);
         if (res) {
-            goto('/game/lobby');
+            goto('/verification');
         }
         console.log(res);
 	};
@@ -26,7 +26,7 @@
             Create Account
         </h2>
 
-		<form class="mt-8 space-y-6">
+		<form class="mt-8 space-y-6" method="post">
 			<input type="hidden" name="remember" value="true" />
 			<div class="-space-y-px rounded-md shadow-sm">
 				<div>
@@ -69,6 +69,7 @@
 
                 <button
                     on:click={_signup}
+                    type="submit"
                     class="group relative flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                 >
                 
