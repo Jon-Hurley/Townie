@@ -11,23 +11,26 @@ export const login = async(username, password) => {
             {
                 password: password,
                 username: username
-            }
+            }, 
+            /*{withCredentials: true}*/
         );
-        console.log(res)
-//        data = res.data
-//        success = data.success;
-//        if (success == false) {
-//            return false;
-//        }
-//        username = data.username;
-//        key = data.key;
-//        phone = data.phoneNumber;
-//        points = data.points;
-//        purchases = data.purchases;
-//        rank = data.rank;
-//
-//        userStore.set(username + "/" + key, key, passwordHash, phone, points, purchases, rank);
-//        console.log(res);
+        data = res.data;
+        success = data.success;
+        if (success == false) {
+            return false;
+        }
+        username = data.username;
+        key = data.key;
+        phone = data.phoneNumber;
+        points = data.points;
+        purchases = data.purchases;
+        rank = data.rank;
+
+        userStore.set(username + "/" + key, key, passwordHash, phone, points, purchases, rank);
+
+        //axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`
+
+        console.log(res);
         return true;        
     } catch (err) {
         console.log(err);
@@ -97,7 +100,7 @@ export const updateAccount = async(username, phoneNumber) => {
                     }
                 );
 
-                data = JSON.parse(res);
+                data = res.data;
                 return data.success;
             }
             return false;
@@ -121,16 +124,34 @@ export const updateAccount = async(username, phoneNumber) => {
 export const loginWithToken = async() => {
     try {
         const res = await axios.post(
-            PUBLIC_BACKEND_API + 'user/token-login/',
+            PUBLIC_BACKEND_API + 'user/login/',
             {
-                key: get(userStore).key
-            }
+                password: password,
+                username: username
+            }, 
+            {withCredentials: true}
         );
+        data = res.data;
+        success = data.success;
+        if (success == false) {
+            return false;
+        }
+        username = data.username;
+        key = data.key;
+        phone = data.phoneNumber;
+        points = data.points;
+        purchases = data.purchases;
+        rank = data.rank;
+
+        userStore.set(username + "/" + key, key, passwordHash, phone, points, purchases, rank);
+
+        axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`
+
         console.log(res);
-        return res.data.account || [];        
+        return true;        
     } catch (err) {
         console.log(err);
-        return [];
+        return false;
     }
 };
 
@@ -165,3 +186,19 @@ export const completePasswordReset = async() => {
         return [];
     }
 };
+
+export const deleteUser = async(userKey) => {
+    try {
+        const res = await axios.post(
+            PUBLIC_BACKEND_API + 'user/account/',
+            {
+                key: get(userStore).key
+            }
+        );
+        console.log(res);
+        return res.data.success;        
+    } catch (err) {
+        console.log(err);
+        return false;
+    }
+}

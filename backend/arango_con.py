@@ -111,6 +111,7 @@ def getUser(userKey, targetKey):
                 key: user._key,
                 rank: user.rank,
                 username: user.username,
+                phone: user.phone,
                 points: user.points,
                 purchases: user.purchases,
                 friendship: f

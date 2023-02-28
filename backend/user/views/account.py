@@ -1,5 +1,4 @@
 from django.http import JsonResponse
-from django_otp.oath import hotp
 from django.views.decorators.csrf import csrf_exempt
 import twilio_con
 import arango_con

@@ -6,7 +6,7 @@
   
     onMount(() => {
         if ($userStore) {
-            goto('/account');
+            goto('/game/lobby');
         } else {
             goto('/login')
         }
