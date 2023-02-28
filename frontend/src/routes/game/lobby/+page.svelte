@@ -1,5 +1,5 @@
 <script>
-    import { groupStore } from "../../../stores";
+    import { groupStore, userStore } from "../../../stores";
 </script>
 
 <div class="mb-5">

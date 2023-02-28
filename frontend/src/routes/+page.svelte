@@ -5,10 +5,6 @@
 	import { onMount } from 'svelte';
   
     onMount(() => {
-        if ($userStore) {
-            goto('/account');
-        } else {
             goto('/login')
-        }
     });
 </script>

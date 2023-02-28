@@ -5,7 +5,7 @@
 
     import { onMount } from 'svelte';
     import { PUBLIC_GOOGLE_MAPS_API_KEY } from '$env/static/public';
-	import { mapStore } from '../stores';
+	import { mapStore, userStore } from '../stores';
 
     let mounted = false;
     mapStore.set(false);
@@ -14,6 +14,10 @@
         // create a function for the GOOGLE API to call when done initializing
         window.initMap = () => mapStore.set(true);
         mounted = true;
+    })
+
+    userStore.subscribe((v) => {
+        console.log("NEW USER: ", v)
     })
 </script>
 

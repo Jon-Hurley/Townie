@@ -13,21 +13,21 @@ export const login = async(username, password) => {
                 username: username
             }
         );
-        console.log(res)
-//        data = res.data
-//        success = data.success;
-//        if (success == false) {
-//            return false;
-//        }
-//        username = data.username;
-//        key = data.key;
-//        phone = data.phoneNumber;
-//        points = data.points;
-//        purchases = data.purchases;
-//        rank = data.rank;
-//
-//        userStore.set(username + "/" + key, key, passwordHash, phone, points, purchases, rank);
-//        console.log(res);
+        console.log(res);
+        let data = res.data;
+        console.log(res.data)
+        let success = data.success;
+        if (success == false) {
+            return false;
+        }
+        let key = data.key;
+        let phone = data.phoneNumber;
+        let points = data.points;
+        let purchases = data.purchases;
+        let rank = data.rank;
+        console.log(res.data);
+        userStore.set(res.data);
+
         return true;        
     } catch (err) {
         console.log(err);
