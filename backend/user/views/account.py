@@ -37,8 +37,8 @@ def login(request):
     data = json.loads(request.body)
     username = data.get('username')
     password = data.get('password')
-    #passwordHash = hash(password, phoneNumber)
-    res = arango_con.login(username, password) #password used to be passwordHash
+    passwordHash = hash(password)
+    res = arango_con.login(username, passwordHash) #password used to be passwordHash
     data = res.batch()
     if len(data) == 0:
         return JsonResponse({'success': False})

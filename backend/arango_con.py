@@ -80,11 +80,7 @@ def deleteUser(userKey):
         """
         LET result = REMOVE @key IN User
 
-        IF result.deleted == 0
-            RETURN { success: false }
-        ELSE
-            RETURN { success: true }
-        END 
+        RETURN { success: (result != 0) }
         """,
         bind_vars={'key': userKey}
     )
