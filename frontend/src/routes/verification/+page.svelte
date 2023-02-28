@@ -30,7 +30,7 @@
             Verify it's you
         </h3>
         <h5 class="mt-1 text-center font-Courier New tracking-tight text-gray-900">
-            Please check your email for your verification code.
+            Please check your text messages for your verification code.
         </h5>
 
         <form class="mt-2 space-y-6" method="post">
