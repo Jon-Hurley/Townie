@@ -1,11 +1,14 @@
 from django.http import JsonResponse
-from django_otp.oath import hotp
 from django.views.decorators.csrf import csrf_exempt
 import twilio_con
 import arango_con
 import json
 import requests
 from hashlib import sha256
+import sys
+sys.path.insert(0, '../../core')
+from core import settings 
+
 
 def hash(password):
     h = sha256()
@@ -17,35 +20,37 @@ def hash(password):
 
 @csrf_exempt # note csrf is being wonky, add this to POST/PUT/DELETE reqs for now
 def signup(request):
-    data = json.loads(request.body)
-    username = data.get('username')
-    password = data.get('password')
-    phoneNumber = data.get('phoneNumber')
+    if (request == 'POST'): 
+        data = json.loads(request.body)
+        username = data.get('username')
+        password = data.get('password')
+        phoneNumber = data.get('phoneNumber')
 
-    passwordHash = hash(password)
+        passwordHash = hash(password)
 
-    try:
-        user = arango_con.createUser(username, passwordHash, phoneNumber)
-        return login(JsonResponse({'username': username, 'password': password, 'phoneNumber' : phoneNumber}))
-    except:
-        return JsonResponse({'success': False})
+        try:
+            user = arango_con.createUser(username, passwordHash, phoneNumber)
+            return login(JsonResponse({'username': username, 'password': password, 'phoneNumber' : phoneNumber}))
+        except:
+            return JsonResponse({'success': False})
     
 
 @csrf_exempt # note csrf is being wonky, add this to POST/PUT/DELETE reqs for now
 def login(request):
-    print(request.body)
-    data = json.loads(request.body)
-    username = data.get('username')
-    password = data.get('password')
-    #passwordHash = hash(password, phoneNumber)
-    res = arango_con.login(username, password) #password used to be passwordHash
-    data = res.batch()
-    if len(data) == 0:
-        return JsonResponse({'success': False})
-    doc = data[0]
-    print(doc)
-
-    return JsonResponse(doc)
+    if (request.method == 'POST'):
+        print(request.body)
+        data = json.loads(request.body)
+        username = data.get('username')
+        password = data.get('password')
+        #passwordHash = hash(password, phoneNumber)
+        res = arango_con.login(username, password) #password used to be passwordHash
+        data = res.batch()
+        if len(data) == 0:
+            return JsonResponse({'success': False})
+        doc = data[0]
+        print(doc)
+        #settings.patch_broken_pipe_error()
+        return JsonResponse(doc)
 
 
 def loginWithToken(request):

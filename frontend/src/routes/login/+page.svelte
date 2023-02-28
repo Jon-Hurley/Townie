@@ -1,12 +1,20 @@
 <script>
 	import { goto } from '$app/navigation';
 	import { login } from "../../requests/account";
+	import Loading from '../../components/loading.svelte'
+	import { onMount } from "svelte";
 
     let remember;
 	const form = {
 		username: '',
 		password: ''
 	};
+	let loading = true;
+	// let user = []
+	// onMount(async() => {
+	// 	user = await login("Arnav", "password");
+	// 	console.log(user);
+	// });
 
     const _login = async () => {
         console.log("HERE1")
@@ -25,7 +33,7 @@
             Log in to your account
         </h2>
 
-		<form class="mt-8 space-y-6" method="post">
+		<form class="mt-8 space-y-6" >
 			<input type="hidden" name="remember" value="true" />
 			<div class="-space-y-px rounded-md shadow-sm">
 				<div>
@@ -74,8 +82,8 @@
 			</div>
 
             <button
-                on:click={_login}
-                type="submit"
+				on:click={_login}
+                
                 class="group relative flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
             >
                 <span class="absolute inset-y-0 left-0 flex items-center pl-3">
