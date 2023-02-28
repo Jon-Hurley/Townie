@@ -87,11 +87,11 @@ def startGame(gameKey, settings):
         'trueCompletionTime': trueCompletionTime
     })
     
-def updateGameSettings(gameKey, field, value):
+def updateGameSettings(gameKey, settings):
     updates = {
-        '_key': gameKey
+        '_key': gameKey,
+        'settings': settings
     }
-    updates[field] = value
     return arango_con.gameCollection.update(updates)
 
 def updatePlayerLocation(playerKey, lon, lat):

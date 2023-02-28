@@ -60,6 +60,13 @@ def onDefault(request):
         gameKey = body['gameKey']
         data = queries.getGame(gameKey).batch()[0]
         return JsonResponse(data)
+    
+    if method == 'update-settings':
+        gameKey = body['gameKey']
+        settings = body['settings']
+        res = queries.updateGameSettings(gameKey, settings)
+        propogateAllUpdates(gameKey)
+        return JsonResponse({})
     # print(data)
     # propogateAllUpdates(
     #     conExcl={ connectionId },
@@ -75,7 +82,7 @@ def onDefault(request):
     #     return startGame(body)
     # if body['action'] == 'update-location':
     #     return updatePlayerLocation(body)
-    return JsonResponse({})
+    return JsonResponse()
 
 def updatePlayerLocation(body):
     playerKey = body['key']
@@ -88,6 +95,7 @@ def updateGameSettings(body):
     playerKey = body['key']
     field = body['field']
     value = body['value']
+
     res = queries.updatePlayerLocation(playerKey, field, value)
     return JsonResponse(res)
 

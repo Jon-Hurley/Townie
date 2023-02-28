@@ -106,12 +106,13 @@ export const updateLocation = async(lon, lat) => {
     }
 };
 
-export const updateSettings = async(field, value) => {
+export const updateSettings = async(form) => {
     try {
+        const gameKey = get(gameStore).game._key;
         const objStr = JSON.stringify({
             method: 'update-settings',
-            field,
-            value
+            gameKey: gameKey,
+            settings: form
         });
         ws.send(objStr);
     } catch (err) {
@@ -123,6 +124,7 @@ let interval;
 
 export const setDefaultEvents = () => {
     ws.onmessage = (m) => {
+        if (! m?.game?._key) return;
         console.log("REMOTE UPDATE: ", m.data)
         const gameData = JSON.parse(m.data);
         console.log("WS MESSAGE:", gameData);
@@ -130,6 +132,10 @@ export const setDefaultEvents = () => {
     };
     ws.onerror = (e) => {
         console.log("WS ERROR:", e);
+    }
+    ws.onclose = () => {
+        ws = null;
+        gameStore.set(null);
     }
 }
 

@@ -48,6 +48,8 @@ export const largeTitle = `
     text-gray-700
 `;
 
+export const hr = "bg-gray-100 h-[2px]";
+
 export const gridItem = `
     p-3 h-[51px] m-0
 
