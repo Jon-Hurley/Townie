@@ -1,6 +1,6 @@
 <script>
 	import { goto } from '$app/navigation';
-    import { signup } from "../../../requests/account";
+    import { signup } from "../../requests/account";
 
     let remember;
 	const form = {

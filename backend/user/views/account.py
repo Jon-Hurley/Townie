@@ -9,7 +9,8 @@ from hashlib import sha256
 
 def hash(password, phoneNumber):
     h = sha256()
-    password += phoneNumber + "Townie"
+    #password += phoneNumber + "Townie"
+    password = str(password) + str(phoneNumber) + "Townie"
     temp = password.encode('utf-8')
     h.update(temp)
     hash = h.hexdigest()
@@ -33,23 +34,20 @@ def signup(request):
 
 @csrf_exempt # note csrf is being wonky, add this to POST/PUT/DELETE reqs for now
 def login(request):
+    print(request.body)
     data = json.loads(request.body)
     username = data.get('username')
     password = data.get('password')
-    phoneNumber = data.get('phoneNumber')
-    passwordHash = hash(password, phoneNumber)
-    res = arango_con.login(request, username, passwordHash)
-    data = json.loads(res.body)
-    if not data.get('success'):
+    #passwordHash = hash(password, phoneNumber)
+    res = arango_con.login(username, password) #password used to be passwordHash
+    data = res.batch()
+    if len(data) == 0:
         return JsonResponse({'success': False})
-    key = data.get('key')
-    return JsonResponse({ 'success': True,
-                          'key': key, 
-                          'username' : username,
-                          'phoneNumber': data['phone'],
-                          'points': data['points'],
-                          'rank': data['ranks'],
-                          'purchases': data['purchases']})
+    doc = data[0]
+    print(doc)
+
+    return JsonResponse(doc)
+
 
 def loginWithToken(request):
     return JsonResponse({

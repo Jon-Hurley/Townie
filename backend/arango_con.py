@@ -27,24 +27,17 @@ def createUser(username, password, phoneNumber):
 def login(username, password):
     return db.aql.execute(
         """
-        LET temp = TRUE
         FOR user IN User
-            FILTER LOWER(user.username) == LOWER(@username)
-            LET y = LOWER(user.password) == LOWER(@password)
-            IF (y)
-                temp = FALSE
-                RETURN {
-                    success: true,
-                    key: user._key,
-                    username: user.username,
-                    phoneNumber: user.phone,
-                    points: user.points,
-                    rank: user.ranks,
-                    purchases: user.purchases
-                }
-            END
-        IF (temp == FALSE)
-            RETURN { success: false }
+            FILTER user.username == @username && user.passwordHash == @password
+            RETURN {
+                success: true,
+                key: user._key,
+                username: user.username,
+                phone: user.phone,
+                points: user.points,
+                rank: user.rank,
+                purchases: user.purchases
+            }
         """,
         bind_vars={
             'username': username,

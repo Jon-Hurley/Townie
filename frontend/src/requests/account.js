@@ -4,6 +4,7 @@ import { get } from 'svelte/store';
 import { userStore } from '../stores';
 
 export const login = async(username, password) => {
+    console.log("HERE")
     try {
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'user/login/',
@@ -12,20 +13,21 @@ export const login = async(username, password) => {
                 username: username
             }
         );
-        data = JSON.parse(res);
-        success = data.success;
-        if (success == false) {
-            return false;
-        }
-        username = data.username;
-        key = data.key;
-        phone = data.phoneNumber;
-        points = data.points;
-        purchases = data.purchases;
-        rank = data.rank;
-
-        userStore.set(username + "/" + key, key, passwordHash, phone, points, purchases, rank);
-        console.log(res);
+        console.log(res)
+//        data = res.data
+//        success = data.success;
+//        if (success == false) {
+//            return false;
+//        }
+//        username = data.username;
+//        key = data.key;
+//        phone = data.phoneNumber;
+//        points = data.points;
+//        purchases = data.purchases;
+//        rank = data.rank;
+//
+//        userStore.set(username + "/" + key, key, passwordHash, phone, points, purchases, rank);
+//        console.log(res);
         return true;        
     } catch (err) {
         console.log(err);

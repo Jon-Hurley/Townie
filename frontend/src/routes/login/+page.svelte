@@ -1,6 +1,6 @@
 <script>
 	import { goto } from '$app/navigation';
-	import { login } from "../../../requests/account";
+	import { login } from "../../requests/account";
 
     let remember;
 	const form = {
@@ -9,9 +9,10 @@
 	};
 
     const _login = async () => {
+        console.log("HERE1")
         const res = await login(form.username, form.password);
 		if (res) {
-			goto('/lobby');
+			goto('/game/lobby');
 		}
         console.log(res);
 	};
