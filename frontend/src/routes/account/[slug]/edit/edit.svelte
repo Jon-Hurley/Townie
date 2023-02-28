@@ -1,8 +1,7 @@
 <script>
     import { goto } from '$app/navigation';
-	//import Layout from '../../account/[slug]/edit/';
-	import { updateAccount, deleteUser } from "../../../requests/account";
-
+	//import Layout from '../../../+layout.svelte';
+	import { updateAccount, deleteUser } from "../../../../requests/account";
 
     
 
@@ -13,20 +12,30 @@
 
 	let newUsername = '', newPhone = '';
 
-    const _editAccount = async () => {
-        goto('/account/' + user.key + '/edit/')
-	};
-
     const _deleteUser = async () => {
         const res = await deleteUser(user.key);
 		if (res) {
-			goto('/login/');
+			goto('/login');
+		}
+        console.log(res);
+	};
+
+
+    const update = async () => {
+        if (newUsername == null) {
+            newUsername = user.username;
+        }
+        if (newPhone == null) {
+            newPhone = user.phone;
+        }
+        
+        const res = await updateAccount(newUsername, newPhone);
+		if (res) {
+			goto('/account/' + user.key);
 		}
         console.log(res);
 	};
 </script>
-
-
 
 <div class="my-5 w-full">
     <div class="text-gray-700 font-bold text-3xl text-center">
@@ -41,27 +50,12 @@
 <div class="max-[200px]: grid grid-cols-8 gap-0 flex items-end">
 <div class="col-span-2">
 <div class={title}>
-    Username
+    <div class="text-align-top">
+        Username
+    </div>
 </div>
 </div>
 
-<div class="col-span-1 relative items-left">
-<!-- Edit account button --> 
-<button
-    name=edit
-    on:click={_editAccount}
-    class="group relative w-12 peer/edit text-left items-left rounded-md border border-transparent py-2 px-4 text-sm font-medium text-indigo-600 hover:text-indigo-800 focus:outline-none">
-
-    <span class= "absolute bottom-0 left-0">
-        <!-- Heroicon name: pencil -->
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
-        </svg>
-      
-    </span>
-</button>
-
-</div>
 
 <div class="col-start-5 col-span-4">
 <!-- Delete User Function -->
@@ -82,18 +76,15 @@
 </div>
 
 
-
 <hr class={hr}>
 <div class="px-2 py-4">
     {user.username}
-    <div class= "hidden peer-checked/edit:block">
     <input
         bind:value={newUsername}
         type="text"					
-        class="relative block w-full appearance-none rounded-t-md rounded-b-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+        class="relative block w-full appearance-none rounded-t-md rounded-b-md mt-2 border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
         placeholder="New Username"
     />
-    </div>
 </div>
 
 <div class={title}>
@@ -102,24 +93,31 @@
 <hr class={hr}>
 <div class="px-2 py-4 uppercase">
     {user.phone}
-    <div class= "hidden peer-checked/edit:block">
     <input
         bind:value={newPhone}
         type="text"					
-        class="relative block w-full appearance-none rounded-t-md rounded-b-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+        class="relative block w-full appearance-none rounded-t-md rounded-b-md mt-2 border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
         placeholder="New Phone Number"
     />
+</div>
+
+
+<div class="mt-8 mr-2 ml-2 grid grid-cols-2 gap-4 flex items-end">
+    <div>
+        <button
+            on:click={update}
+            name=save
+            class="group relative w-full text-center items-end rounded-md border border-indigo-400 py-2 px-4 text-md font-medium text-indigo-600 hover:text-indigo-800 focus:outline-none">
+            Save Changes
+        </button>
+    </div>
+    <div> 
+        <button
+            on:click={goto('/account/' + user.key)}
+            name=cancel
+            class="group relative w-full text-center items-end rounded-md border border-red-600 py-2 px-4 text-md font-medium text-red-600 hover:text-red-800 focus:outline-red">
+            Cancel
+        </button> 
     </div>
 </div>
-
-
-<div class={title}>
-    Rank
-</div>
-<hr class={hr}>
-<div class="px-2 py-4 uppercase">
-    {user.rank}
-</div>
-
-
   
