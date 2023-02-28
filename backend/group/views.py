@@ -7,17 +7,29 @@ from ws_con import propogateUpdates, forceDisconnect
 # CONNECT: JOIN GAME
 @csrf_exempt
 def onConnect(request):
+    # load input
     body = json.loads(request.body)
     gameKey = body['gameKey']
     userKey = body['userKey']
     connectionId = body['connectionId']
     print(gameKey, userKey, connectionId)
+
+    # add user to game, canceling their previous connection if left open
     res = queries.addPlayer(gameKey, userKey, connectionId)
     oldDoc = res.batch()[0]['oldDoc']
     if oldDoc:
         forceDisconnect(oldDoc['connectionId'])
-    propogateAllUpdates(gameKey, { connectionId })
-    return JsonResponse({})
+    
+    # relay game all game data to all players (except the new one)
+    data = queries.getGame(gameKey).batch()[0]
+    print(data)
+    propogateAllUpdates(
+        conExcl={ connectionId },
+        data=data
+    )
+
+    # send game data to new player
+    return JsonResponse(data)
 
 # DISCONNECT: LEAVE GAME
 @csrf_exempt
@@ -38,9 +50,25 @@ def onDisconnect(request):
 #       3. Update Location
 @csrf_exempt
 def onDefault(request):
-    print(request)
-    body = json.loads(request.body)
-    print(body)
+    data = json.loads(request.body)
+    connectionId = data['connectionId']
+    body = data['body']
+    print(connectionId, body)
+    method = body['method']
+
+    if method == 'get-game':
+        gameKey = body['gameKey']
+        data = queries.getGame(gameKey).batch()[0]
+        return JsonResponse(data)
+    # print(data)
+    # propogateAllUpdates(
+    #     conExcl={ connectionId },
+    #     data=data
+    # )
+    
+    # body = json.loads(request.body)
+    # print(request.POST)
+    # print(request.GET)
     # if body['action'] == 'update-game-settings':
     #     return updateGameSettings(body)
     # if body['action'] == 'start-game':
@@ -66,24 +94,15 @@ def updateGameSettings(body):
 def startGame(body):
     gameKey = body['gameKey']
     settings = body['settings']
-
-    # TRIGGER WEB-SCRAPER
-    # result = getDestinations(settings)
-    # EXAMPLE RESULT
-    result = {
-        'destinations': [],
-        'trueCompletionTime': 0
-    }
-
     res = queries.startGame(gameKey, settings)
     propogateAllUpdates(gameKey)
     return JsonResponse(res)
 
-def propogateAllUpdates(gameKey, conExcl={}):
-    data = queries.getGame(gameKey).batch()[0]
-    users = data['users']
-    game = data['game']
-    propogateUpdates(users, str(game), conExcl)
+def propogateAllUpdates(gameKey=None, conExcl={}, data=None):
+    if data is None:
+        data = queries.getGame(gameKey).batch()[0]
+    users = data['players']
+    propogateUpdates(users, data, conExcl)
 
 # GET REQUEST: CREATE A LOBBY/GAME
 

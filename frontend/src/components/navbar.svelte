@@ -2,7 +2,6 @@
 	import '../app.css';
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
-	import { logout } from '../stores';
     import { pages, getHighlight } from './navbar';
 
     let currentPage;
@@ -47,7 +46,7 @@
 
                 on:click={() => {
                     if (page === '/login') {
-                        logout();
+                        // logout();
                     }
                     goto(page);
                 }}

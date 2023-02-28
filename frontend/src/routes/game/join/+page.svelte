@@ -1,14 +1,11 @@
 <script>
     import { buttonStyle, blueStyle, indigoStyle, inputStyle } from '../../../css';
-	import { gamePage, joinGame } from '../../../stores';
-    import { createGame } from '../../../requests/group';
+    import { createGame, joinGame } from '../../../requests/group';
 
     let lobbyInput;
 
     const _joinLobby = async() => {
         const res = await joinGame(lobbyInput);
-        if (!res) return;
-        gamePage.set('/game/lobby');
     };
 
     const _createLobby = async() => {
@@ -16,8 +13,6 @@
         if (!lobbyKey) return;
         console.log("lobby created w/ key: ", lobbyKey);
         const res = await joinGame(lobbyKey);
-        if (!res) return;
-        gamePage.set('/game/lobby');
     };
 </script>
 
@@ -30,7 +25,7 @@
     <div
         class="
             flex flex-col justify-center items-center
-            w-full h-full max-w-sm
+            w-full h-full
         "
     >
         <input
@@ -48,7 +43,7 @@
     </div>
 
     <button
-        class="{buttonStyle} {blueStyle} w-full mt-4 max-w-sm"
+        class="{buttonStyle} {blueStyle} w-full mt-4"
         on:click={_createLobby}
     >
         Create Lobby

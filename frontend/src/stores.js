@@ -1,5 +1,4 @@
 import { get, writable } from 'svelte/store';
-import { PUBLIC_BACKEND_WS } from '$env/static/public';
 
 export const userStore = writable({
     id: 'User/10942',
@@ -12,66 +11,7 @@ export const userStore = writable({
     username: 'ArnavSuccs'
 });
 
-export const logout = () => {
-
-}
-
-export const login = () => {
-
-}
-
-export const autoLogin = () => {
-
-}
-
-export const signin = () => {
-
-}
-
 export const gameStore = writable();
-
-export const joinGame = async(gameKey) => {
-    try {
-        const ws = new WebSocket(`${PUBLIC_BACKEND_WS}`);
-        await new Promise((res, rej) => { 
-            ws.onopen = (e) => {
-                gameStore.set({
-                    ws,
-                    gameKey
-                });
-                ws.onerror = (e) => {
-                    console.log(e);
-                    ws.close();
-                }
-                ws.onmessage = (m) => {
-                    console.log(m)
-                }
-                res();
-            }
-            ws.onerror = (e) => {
-                rej();
-            }
-        });
-        return true;
-    } catch (err) {
-        console.log(err);
-        return false;
-    }
-}
-
-export const leaveGame = async(gameKey) => {
-    try {
-        /** @type {WebSocket} */
-        const ws = get(gameStore).ws;
-        ws.close();
-        return true;
-    } catch (err) {
-        console.log(err);
-        return false;
-    }
-}
-
-
 
 export const locationStore = writable();
 

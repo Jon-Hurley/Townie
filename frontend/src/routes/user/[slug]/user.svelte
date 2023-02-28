@@ -59,7 +59,7 @@
             Message
         </button>
 
-        {#if !user.friendship.length}
+        {#if !user?.friendship?.length}
             <button
                 class="{blueStyle} {buttonStyle} m-1"
                 on:click={_sendFriendRequest}

@@ -1,14 +1,13 @@
 <script>
 	import '../app.css';
     import { goto } from '$app/navigation';
-    import { logout, userStore } from '../stores';
-	import { get } from 'svelte/store';
+    import { userStore } from '../stores';
     import { page } from '$app/stores';
 
     let currentPage;
     page.subscribe(v => currentPage = v.route.id);
 
-    const pages = [
+    $: pages = [
         {
             page: '/account',
             tooltip: 'Account',
@@ -51,7 +50,7 @@
                 
                 on:click={() => {
                     if (page === '/login') {
-                        logout();
+                        // logout();
                     }
                     goto(page);
                 }}

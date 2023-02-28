@@ -18,7 +18,7 @@ def getUser(userKey, targetKey):
 
         LET f = (
             FOR v, e IN 1..1 ANY userId Friends
-                SEARCH v._key == @targetKey
+                FILTER v._key == @targetKey
                 return {
                     status: e.status,
                     'inbound': e._to == userId,
@@ -27,7 +27,7 @@ def getUser(userKey, targetKey):
         )
 
         FOR user IN User
-            SEARCH user._key == @targetKey
+            FILTER user._key == @targetKey
             RETURN {
                 key: user._key,
                 rank: user.rank,

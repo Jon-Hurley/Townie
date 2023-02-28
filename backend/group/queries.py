@@ -22,13 +22,6 @@ def createGame():
     })
 
 def addPlayer(gameKey, userKey, connectionId):
-    # return arango_con.playerCollection.insert({
-    #     '_from': 'User/' + str(userKey),
-    #     '_to': 'Games/' + str(gameKey),
-    #     'connectionId': connectionId,
-    #     'lon': 0,
-    #     'lat': 0
-    # })
     return arango_con.db.aql.execute(
         """
             UPSERT {
@@ -38,6 +31,8 @@ def addPlayer(gameKey, userKey, connectionId):
                 _from: CONCAT("User/", @userKey),
                 _to: CONCAT("Games/", @gameKey),
                 connectionId: @connectionId,
+                destinationIndex: 0,
+                points: 0,
                 lon: 0,
                 lat: 0
             }
@@ -111,11 +106,11 @@ def updatePlayerLocation(playerKey, lon, lat):
 def getGame(gameKey):
     return arango_con.db.aql.execute(
         """
-            WITH User
+            WITH User, Destinations
 
-            LET users = (
-                FOR v, e IN 1..1 ANY CONCAT("Games/", @key) Players
-                    return {
+            LET players = (
+                FOR v, e IN 1..1 INBOUND CONCAT("Games/", @key) Players
+                    RETURN {
                         key: v._key,
                         username: v.username,
                         connectionId: e.connectionId,
@@ -124,11 +119,23 @@ def getGame(gameKey):
                     }
             )
 
+            LET destinations = (
+                FOR v, e IN 1..1 OUTBOUND CONCAT("Games/", @key) Itineraries
+                    RETURN {
+                        index: e.index,
+                        points: e.points,
+                        name: v.name,
+                        lon: v.longitude,
+                        lat: v.latitude
+                    }
+            )
+
             FOR game IN Games
                 FILTER game._key == @key
-                return {
-                    game: game,
-                    users: users
+                RETURN {
+                    game,
+                    players,
+                    destinations
                 }
         """,
         bind_vars={
