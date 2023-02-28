@@ -6,13 +6,14 @@ import { userStore } from '../stores';
 export const login = async(username, password) => {
     console.log("HERE")
     try {
+        console.log("here pt2");
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'user/login/',
             {
                 password: password,
                 username: username
-            }, 
-            /*{withCredentials: true}*/
+            },
+            {withCredentials: true}
         );
         console.log(res);
         let data = res.data;
@@ -21,16 +22,16 @@ export const login = async(username, password) => {
         if (success == false) {
             return false;
         }
-        let key = data.key;
-        let phone = data.phoneNumber;
-        let points = data.points;
-        let purchases = data.purchases;
-        let rank = data.rank;
+        //let key = data.key;
+        //let phone = data.phoneNumber;
+        //let points = data.points;
+        //let purchases = data.purchases;
+        //let rank = data.rank;
         console.log(res.data);
         userStore.set(res.data);
 
         //axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`
-        
+
         return true;        
     } catch (err) {
         console.log(err);

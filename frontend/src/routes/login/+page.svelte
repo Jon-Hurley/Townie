@@ -1,6 +1,6 @@
 <script>
 	import { login } from "../../requests/account";
-	import { push } from 'svelte-spa-router';
+	import { goto } from '$app/navigation';
 
     let remember;
 	const form = {
@@ -9,10 +9,9 @@
 	};
 
     const _login = async () => {
-        console.log("HERE1")
         const res = await login(form.username, form.password);
 		if (res) {
-			await push('/game/lobby');
+			goto('/game/lobby');
 		}
         console.log(res);
 	};
