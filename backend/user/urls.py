@@ -9,6 +9,7 @@ urlpatterns = [
     path('account/', account.updateInfo),
     path('initiate-password-reset/', account.initiatePasswordReset),
     path('complete-password-reset/', account.completePasswordReset),
+    path('delete/', account.deleteUser),
     
     path('search/', search.searchUsers),
     path('profile/<str:key>/', search.getUser),

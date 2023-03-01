@@ -9,6 +9,7 @@
 	};
 
     const _login = async () => {
+		console.log(form.username + ", " + form.password)
         const res = await login(form.username, form.password);
 		if (res) {
 			goto('/game/lobby');

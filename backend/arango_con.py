@@ -78,11 +78,11 @@ def updateInfo(userKey, newUser, newPhone):
 def deleteUser(userKey):
     return db.aql.execute(
         """
-        LET result = REMOVE @key IN User
-
-        RETURN { success: (result != 0) }
+        REMOVE @key IN User
+        
+        RETURN OLD
         """,
-        bind_vars={'key': userKey}
+        bind_vars={'key': str(userKey)}
     )
        
 

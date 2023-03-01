@@ -12,15 +12,6 @@ export const userStore = writable({
 //    rank: 'explorer',
 //    username: 'ArnavSuccs',
 //    token: '9248523'
-    id: '',
-    key: '',
-    passwordHash: '',
-    phone: '',
-    points:	0,
-    purchases: [],
-    rank: '',
-    username: '',
-    token: ''
 });
 
 export const logout = () => {

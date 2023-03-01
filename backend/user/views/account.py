@@ -37,7 +37,7 @@ def login(request):
     username = data.get('username')
     password = data.get('password')
     passwordHash = hash(password)
-    res = arango_con.login(username, passwordHash) #password used to be passwordHash
+    res = arango_con.login(username, passwordHash) 
     data = res.batch()
     if len(data) == 0:
         return JsonResponse({'success': False})
@@ -52,6 +52,7 @@ def loginWithToken(request):
         ":)": ":)"
     })
 
+@csrf_exempt # note csrf is being wonky, add this to POST/PUT/DELETE reqs for now
 def updateInfo(request):
     data = json.loads(request.body)
     username = data.get('username')
@@ -69,12 +70,18 @@ def updateInfo(request):
                           'rank': data['ranks'],
                           'purchases': data['purchases']})
 
+@csrf_exempt # note csrf is being wonky, add this to POST/PUT/DELETE reqs for now
 def deleteUser(request):
     data = json.loads(request.body)
     key = data.get('key')
-    res = arango_con.deleteUser(key)
-    data = json.loads(res.body)
-    if not data.get('success'):
+    try:
+        res = arango_con.deleteUser(key)
+    except:         
+        return JsonResponse({'success': False})
+    
+    data = res.batch()
+    print(len(data))
+    if len(data) != 1:
         return JsonResponse({'success': False})
     return JsonResponse({ 'success': True })
 
@@ -82,7 +89,7 @@ def verification(request):
     data = json.loads(request.body)
     phoneNumber = data['phoneNumber']
     res = twilio_con.verifyUser(phoneNumber)
-    return JsonResponse({ 'success': res})
+    return JsonResponse({ 'success': res })
 
 
 

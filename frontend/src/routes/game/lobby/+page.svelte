@@ -1,12 +1,6 @@
 <script>
-    import { onMount } from "svelte";
     import { groupStore, userStore } from "../../../stores";
-    onMount(async() => {
-        console.log(userStore.username == '')
-        if (userStore.username == '') {
-			goto('user/login')
-		}
-    });
+    
 </script>
 
 <div class="mb-5">

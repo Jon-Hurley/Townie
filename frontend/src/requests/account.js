@@ -12,8 +12,8 @@ export const login = async(username, password) => {
             {
                 password: password,
                 username: username
-            },
-            {withCredentials: true}
+            }//,
+            //{withCredentials: true}
         );
         console.log(res);
         let data = res.data;
