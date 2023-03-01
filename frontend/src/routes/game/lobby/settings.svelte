@@ -1,5 +1,6 @@
 <script>
-	import { blueStyle, buttonStyle, grayStyle, hr, largeTitle, inputStyle } from '../../../css';
+	import { each } from 'svelte/internal';
+import { blueStyle, buttonStyle, grayStyle, hr, largeTitle, inputStyle } from '../../../css';
 	import { updateSettings } from '../../../requests/group';
     const section = "font-semibold text-lg text-center mb-3"
 
@@ -19,20 +20,20 @@
 
     const checkboxes = [
         {
-            field: 'boatAllowed',
-            title: 'Boat'
+            field: 'walkingAllowed',
+            title: 'Walk'
         },
         {
-            field: 'busAllowed',
-            title: 'Bus'
-        },
-        {
-            field: 'carAllowed',
+            field: 'drivingAllowed',
             title: 'Car'
         },
         {
-            field: 'subwayAllowed',
-            title: 'Subway'
+            field: 'bicyclingAllowed',
+            title: 'Bike'
+        },
+        {
+            field: 'transitAllowed',
+            title: 'Public Transportation'
         }
     ]
 </script>
@@ -104,11 +105,19 @@
                         class="{buttonStyle} {form[checkbox.field] ? blueStyle : grayStyle}"
                         on:click={() => {
                             form[checkbox.field] = !form[checkbox.field];
+                            
+
+                            for (let i = 0; i < checkboxes.length; i++) {
+                                if (checkboxes[i] != checkbox) {
+                                    form[checkboxes[i].field] = true
+                                }
+                            }
                         }}
                     >
                         {checkbox.title}
                     </button>
                 {/each}
+                
             </div>
 
             <hr class="{hr} my-4">
