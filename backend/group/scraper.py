@@ -3,7 +3,7 @@ import googlemaps
 import json
 import os
 
-@csrf_exempt
+#may need csrf exempt
 def map(request):
     list = []
     gmaps = googlemaps.Client(key=os.environ.get('GOOGLE_API_KEY'))
