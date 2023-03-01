@@ -1,20 +1,21 @@
 <script>
     import { goto } from '$app/navigation';
 	//import Layout from '../../account/[slug]/edit/';
-	import { updateAccount, deleteUser } from "../../../requests/account";
+	import { deleteUser } from "../../../requests/account";
 
 
     
 
     export let user;
     let popupOpen = false;
+    let deleteUserPopup = document.getElementById("deleteUser-popup");
 
     const title = "text-gray-700 font-semibold text-lg mt-6";
     const hr = "my-2 bg-gray-100 h-[2px]";
 
     window.onclick = function(event) {
         if (event.target == deleteUserPopup) {
-            popupOpen = flase;
+            popupOpen = false;
         }
     }
 
@@ -113,7 +114,7 @@
 {#if popupOpen}
         <!--deleteUser popup-->
         <div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full" id="deleteUser-popup">
-            <div class="relative top-40 mx-auto p-5 border w-80 shadow-lg rounded-md bg-white">
+            <div class="relative top-60 mx-auto p-3 border w-80 shadow-lg rounded-md bg-white">
                 <div class="mt-3 text-center">
                     <div class="mx-auto flex items-center justify-center rounded-full">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12 text-red-600">
