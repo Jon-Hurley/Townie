@@ -50,7 +50,7 @@ export const signup = async(username, password, phoneNumber) => {
             }
         );
         
-        data = JSON.parse(res);
+        data = res.data;
         success = data.success;
         if (success == false) {
             return false;
@@ -62,11 +62,7 @@ export const signup = async(username, password, phoneNumber) => {
         if (success == false) {
             return false;
         }
-        let key = data.key;
-        let phone = data.phoneNumber;
-        let points = data.points;
-        let purchases = data.purchases;
-        let rank = data.rank;
+    
         console.log(res.data);
         userStore.set(res.data);
         return true;        
@@ -85,7 +81,7 @@ export const verification = async(verifCode) => {
             }
         );
 
-        data = JSON.parse(res);
+        data = res.data;
         return data.success;
     } catch (err) {
         console.log(err);
@@ -117,7 +113,7 @@ export const updateAccount = async(username, phoneNumber) => {
                 }
             );
 
-            data = JSON.parse(res);
+            data = res.data;
             return data.success;
         }
     } catch (err) {

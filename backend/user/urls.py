@@ -6,7 +6,7 @@ urlpatterns = [
     path('signup/', account.signup),
     path('verification/', account.verification),
     path('token-login/', account.loginWithToken),
-    path('account/', account.updateInfo),
+    path('account/<str:key>/edit', account.updateInfo),
     path('initiate-password-reset/', account.initiatePasswordReset),
     path('complete-password-reset/', account.completePasswordReset),
     path('delete/', account.deleteUser),
