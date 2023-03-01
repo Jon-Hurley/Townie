@@ -1,4 +1,4 @@
-from arango import ArangoClient
+from arango import ArangoClient, DocumentInsertError
 from dotenv import load_dotenv
 import os
 

@@ -1,15 +1,63 @@
 import arango_con
 import time
 
-def createUser(username, password, phoneNumber):
-    return arango_con.userCollection.insert({
-        'username': username,
-        'passwordHash': password,
-        'phone': phoneNumber,
-        'points': 0,
-        'rank': 'beginner',
-        'purchases': []
+def createUser(username, passwordHash, phoneNumber):
+    return arango_con.userCollection.insert(
+        {
+            'username': username,
+            'passwordHash': passwordHash,
+            'phone': phoneNumber,
+            'points': 0,
+            'rank': 'beginner',
+            'purchases': []
+        },
+        return_new=True
+    )
+
+def getUserByUsername(username):
+    return arango_con.userCollection.find({
+        'username': username
     })
+
+def updateInfo(userKey, passwordHash, newUsername, newPhone, newPasswordHash):
+    return arango_con.db.aql.execute(
+        """
+        FOR user IN User
+            FILTER user._key == @userKey
+                && user.passwordHash == @passwordHash
+            UPDATE {
+                _key: @userKey,
+                username: @newUsername,
+                phone: @newPhone,
+                passwordHash: @newPasswordHash
+            }
+            IN User
+            RETURN NEW
+        """,
+        bind_vars={
+            'passwordHash': passwordHash,
+            'userKey': userKey,
+            'newUsername': newUsername,
+            'newPhone': newPhone,
+            'newPasswordHash': newPasswordHash
+        }
+    )
+
+def deleteUser(userKey, passwordHash):
+    return arango_con.db.aql.execute(
+        """
+        FOR user IN User
+            FILTER user._key == @userKey
+                && user.passwordHash == @passwordHash
+            REMOVE user
+            IN User
+            RETURN OLD._key
+        """,
+        bind_vars={
+            'passwordHash': passwordHash,
+            'userKey': userKey
+        }
+    )
 
 def getUser(userKey, targetKey):
     return arango_con.db.aql.execute(
