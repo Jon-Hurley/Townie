@@ -62,11 +62,8 @@ def updateInfo(userKey, newUser, newPhone):
                     purchases: user.purchases
                 }
         )
-        IF LENGTH(result) == 0
-            RETURN { success: false }
-        ELSE
-            RETURN result
-        END
+        LET temp = LENGTH(result)
+        RETURN { success: (temp != 0) }
         """,
         bind_vars={
             'userKey': userKey,
