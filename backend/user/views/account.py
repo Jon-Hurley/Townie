@@ -20,13 +20,21 @@ def signup(request):
     username = data.get('username')
     password = data.get('password')
     phoneNumber = data.get('phoneNumber')
-
+    print(username + ", " + password + ", " + str(phoneNumber))
     passwordHash = hash(password)
 
     try:
-        user = arango_con.createUser(username, passwordHash, phoneNumber)
-        return login(JsonResponse({'username': username, 'password': password, 'phoneNumber' : phoneNumber}))
-    except:
+        arango_con.createUser(username, passwordHash, phoneNumber)
+        print("made it past create user")
+        res = arango_con.login(username, passwordHash) 
+        data = res.batch()
+        if len(data) == 0:
+            return JsonResponse({'success': False})
+        doc = data[0]
+        print(doc)
+        return JsonResponse(doc)
+    except Exception as e:
+        print(e)
         return JsonResponse({'success': False})
     
 
@@ -37,6 +45,7 @@ def login(request):
     username = data.get('username')
     password = data.get('password')
     passwordHash = hash(password)
+    print(username + ", " + passwordHash)
     res = arango_con.login(username, passwordHash) 
     data = res.batch()
     if len(data) == 0:

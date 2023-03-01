@@ -40,6 +40,7 @@ export const login = async(username, password) => {
 };
 
 export const signup = async(username, password, phoneNumber) => {
+    console.log(username + ', ' + password + ', ' + phoneNumber);
     try {
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'user/signup/',
@@ -49,12 +50,6 @@ export const signup = async(username, password, phoneNumber) => {
                 phoneNumber: phoneNumber
             }
         );
-        
-        data = res.data;
-        success = data.success;
-        if (success == false) {
-            return false;
-        }
 
         let data = res.data;
         console.log(res.data)
