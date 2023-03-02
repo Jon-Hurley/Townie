@@ -1,6 +1,5 @@
 <script>
-	import { each } from 'svelte/internal';
-import { blueStyle, buttonStyle, grayStyle, hr, largeTitle, inputStyle } from '../../../css';
+	import { blueStyle, buttonStyle, grayStyle, hr, largeTitle, inputStyle } from '../../../css';
 	import { updateSettings } from '../../../requests/group';
     const section = "font-semibold text-lg text-center mb-3"
 
@@ -19,20 +18,20 @@ import { blueStyle, buttonStyle, grayStyle, hr, largeTitle, inputStyle } from '.
 
     const checkboxes = [
         {
-            field: 'walkingAllowed',
-            title: 'Walk'
+            field: 'boatAllowed',
+            title: 'Boat'
         },
         {
-            field: 'drivingAllowed',
+            field: 'busAllowed',
+            title: 'Bus'
+        },
+        {
+            field: 'carAllowed',
             title: 'Car'
         },
         {
-            field: 'bicyclingAllowed',
-            title: 'Bike'
-        },
-        {
-            field: 'transitAllowed',
-            title: 'Public Transportation'
+            field: 'subwayAllowed',
+            title: 'Subway'
         }
     ]
 </script>
@@ -104,19 +103,11 @@ import { blueStyle, buttonStyle, grayStyle, hr, largeTitle, inputStyle } from '.
                         class="{buttonStyle} {form[checkbox.field] ? blueStyle : grayStyle}"
                         on:click={() => {
                             form[checkbox.field] = !form[checkbox.field];
-                            
-
-                            for (let i = 0; i < checkboxes.length; i++) {
-                                if (checkboxes[i] != checkbox) {
-                                    form[checkboxes[i].field] = true
-                                }
-                            }
                         }}
                     >
                         {checkbox.title}
                     </button>
                 {/each}
-                
             </div>
 
             <hr class="{hr} my-4">

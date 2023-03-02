@@ -10,10 +10,10 @@ def createGame():
         'trueCompletionTime': 0,
         'settings': {
             'radius': 5,
-            'walkingAllowed': True,
-            'drivingAllowed': True,
-            'bicyclingAllowed': True,
-            'transitAllowed': True,
+            'busAllowed': True,
+            'carAllowed': True,
+            'subwayAllowed': True,
+            'boatAllowed': True,
             'theme': "None",
             'desiredCompletionTime': 180,
             'lon': 0.0,
@@ -141,4 +141,60 @@ def getGame(gameKey):
         bind_vars={
             'key': str(gameKey),
         }
+    )
+def createDestination(lat, lng, name, theme):
+    try:
+        list = [lat, lng]
+        return arango_con.destinationCollection.insert({
+    'latitude': lat,
+    'longitude': lng,
+    'name': name,
+    'theme': theme
+    })
+    except:
+        pass
+
+def getNearbyDestinations(lat, lng, radius):
+    #technially deprecated
+    return arango_con.destinationCollection.find_in_radius(lat, lng, radius/0.000621371)
+
+def insertIntoItinerary(listDict, gameKey):
+    print(len(listDict))
+    for i in range(len(listDict['Destinations'])):
+        searcher = dict(name=listDict['Destinations'][i]['name'])
+        destination = arango_con.destinationCollection.find(searcher)
+        destination1 = [doc for doc in destination]
+        print(destination1)
+        print(i)
+        arango_con.db.aql.execute(
+    """
+    UPSERT {
+        _from: @gameKey,
+        _to: @DestKey,
+        index: @index,
+        points: @points
+    }
+    INSERT {
+        _from: @gameKey,
+        _to: @DestKey,
+        index: @index,
+        points: @points
+    }
+    UPDATE {
+        _from: @gameKey,
+        _to: @DestKey,
+        index: @index,
+        points: @points
+    }
+    IN Itineraries
+    RETURN {
+        oldDoc: OLD
+    }
+    """,
+    bind_vars={
+        'gameKey': "Games/" + str(gameKey),
+        'DestKey': destination1[0]['_id'],
+        'index': i,
+        'points': 11
+    }
     )
