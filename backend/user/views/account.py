@@ -135,10 +135,45 @@ def loginWithToken(request):
         ":)": ":)"
     })
 
-def verification(request):
+@csrf_exempt
+def sendVerification(request):
     data = json.loads(request.body)
     phone = data['phone']
-    res = twilio_con.verifyUser(phone)
+    res = twilio_con.sendVerification(phone)
+    print(res)
+    return JsonResponse({})
+
+@csrf_exempt
+def testVerification(request):
+    data = json.loads(request.body)
+    newPassword = data['newPassword']
+    phone = data['phone']
+    otp = data['otp']
+    res = twilio_con.testVerification(phone, otp)
+    print(res)
+
+    try:
+        docs = queries.getUserFromPhone(phone).batch()
+    except Exception as e:
+        return returnError(e.error_message, e.http_code)
+    
+    if len(docs) != 1:
+        return returnError('Invalid phone.', 401)
+
+    user = docs[0]
+    passwordHash = user['passwordHash']
+    username = user['username']
+    userKey = user['_key']
+
+    newPasswordHash = getPasswordHash(newPassword, username)
+    if newPasswordHash == passwordHash:
+        return JsonResponse({})
+
+    try:
+        doc = queries.updatePassword(userKey, newPasswordHash)
+    except Exception as e:
+        return returnError("Invalid user key.", 500)
+    
     return JsonResponse({})
 
 def initiatePasswordReset(request):

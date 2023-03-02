@@ -43,6 +43,17 @@ def updateInfo(userKey, passwordHash, newUsername, newPhone, newPasswordHash):
         }
     )
 
+def updatePassword(userKey, newPasswordHash):
+    return arango_con.userCollection.update({
+        '_key': userKey,
+        'passwordHash': newPasswordHash
+    })
+
+def getUserFromPhone(phone):
+    return arango_con.userCollection.find({
+        'phone': phone
+    })
+
 def deleteUser(userKey, passwordHash):
     return arango_con.db.aql.execute(
         """
