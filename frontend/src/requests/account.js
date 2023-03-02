@@ -17,7 +17,7 @@ export const login = async(username, password) => {
         return null;
     } catch (err) {
         return err?.response?.data?.errorMessage
-            || 'Invalid error message.';
+            || 'Connection Refused. Failed to login user. Please try again.';
     }
 };
 
@@ -56,7 +56,7 @@ export const signup = async(username, password, phone) => {
         return null;
     } catch (err) {
         return err?.response?.data?.errorMessage
-            || 'Invalid error message.';
+            || 'Connection Refused. Failed to register new user. Please try again.';
     }
 };
 
@@ -78,7 +78,7 @@ export const updateAccount = async(password, newUsername, newPhone) => {
         return null;
     } catch (err) {
         return err?.response?.data?.errorMessage
-            || 'Invalid error message.';
+            || 'Connection Refused. Failed to update user. Please try again.';
     }
 };
 
@@ -93,7 +93,7 @@ export const initiatePasswordReset = async(phone) => {
         return null; 
     } catch (err) {
         return err?.response?.data?.errorMessage
-            || 'Invalid error message.';
+            || 'Connection Refused. Failed to find user. Please try again.';
     }
 };
 
@@ -111,7 +111,7 @@ export const completePasswordReset = async(phone, otp, newPassword) => {
         return null;       
     } catch (err) {
         return err?.response?.data?.errorMessage
-            || 'Invalid error message.';
+            || 'Connection Refused. Failed to update password. Please try again.';
     }
 };
 
@@ -127,6 +127,6 @@ export const deleteUser = async() => {
         return null;
     } catch (err) {
         return err?.response?.data?.errorMessage
-            || 'Invalid error message.';
+            || 'Connection Refused. Failed to delete user. Please try again.';
     }
 }
