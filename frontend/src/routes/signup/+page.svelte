@@ -2,41 +2,37 @@
 	import { goto } from '$app/navigation';
     import { signup } from "../../requests/account";
 
-
 	let username = '';
 	let password = '';
     let phone = '';
 
     let successPopup = false;
-    let errorPopup = false;
-    let phoneError = false;
-    let noInputEror = false;
+    let errorMessage = false;
 
     const _signup = async () => {
         if (password == '' || username == '' || phone == '') {
-            noInputEror = true;
-        } else{
-            if (phone.toString().length != 10 || isNaN(phone)) {
-                phoneError = true;
-            } else {
-                phone = "+1" + phone;
-                const res = await signup(username, password, phone);
-                if (res) {
-                    successPopup = true;
-                } else {
-                    errorPopup = true;
-                }
-                console.log(res);
-            }
-            username = '';
-            password = '';
-            phone = '';
+            errorMessage = 'Missing inputs. Please try again.'
+            return;
         }
+
+        const formattedPhone = '+1' + phone.replace(/\D/g, '');
+        if (formattedPhone.toString().length !== 12) {
+            errorMessage = 'Invalid phone input.'
+            return;
+        }
+        
+        errorMessage = await signup(username, password, formattedPhone);
+        if (errorMessage) {
+            return;
+        }
+        
+        successPopup = true;
+        goto('/game/lobby');
 	};
 
 </script>
 
-<div class="flex min-h-full mx-auto items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+<div class="flex h-full w-full mx-auto items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
 	<div class="w-full max-w-md space-y-8">
         <!-- <img class="mx-auto h-12 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600" alt="Your Company"> -->
         <h2 class="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
@@ -96,8 +92,8 @@
 	</div>
 </div>
 
+<!--Success popup-->
 {#if successPopup}
-    <!--Success popup-->
     <div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full" id="success-popup">
         <div class="relative top-60 mx-auto p-3 border w-80 shadow-lg rounded-lg bg-white border-gray-700">
             <div class="mt-3 text-center">
@@ -126,8 +122,8 @@
     </div>
 {/if}
 
-{#if errorPopup}
-    <!--error popup-->
+<!--error popup-->
+{#if errorMessage}
     <div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full" id="error-popup">
         <div class="relative top-60 mx-auto p-3 border w-80 shadow-lg rounded-lg bg-white border-gray-700">
             <div class="mt-3 text-center">
@@ -136,77 +132,17 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
                     </svg>                 
                 </div>
-                <h3 class="text-lg leading-6 font-medium text-gray-900 mt-2">Error</h3>
+                <h3 class="text-lg leading-6 font-medium text-gray-900 mt-2">Duplicate Credentials</h3>
                 <div class="px-7">
                     <p class="text-sm text-gray-500">
-                        Your account has not been registered. Please try again.
+                        {errorMessage}
                     </p>
                 </div>
         
                 <div class="mr-2 ml-2 flex items-center px-4 py-3">
                     <button 
                         id="ok-btn" 
-                        on:click={() => {errorPopup = false;}}
-                        class="px-4 py-2 border border-red-600 text-red-600 text-base font-medium rounded-md w-full shadow-sm bg-red-100 hover:border-red-800 hover:bg-red-400 focus:outline-none focus:ring-2 focus:ring-red-400">
-                        OK
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-{/if}
-
-{#if phoneError}
-    <!--phone error popup-->
-    <div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full" id="error-popup">
-        <div class="relative top-60 mx-auto p-3 border w-80 shadow-lg rounded-lg bg-white border-gray-700">
-            <div class="mt-3 text-center">
-                <div class="mx-auto flex items-center justify-center h-10 w-10 rounded-full bg-red-100">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-14 h-14 text-red-600">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
-                    </svg>                 
-                </div>
-                <h3 class="text-lg leading-6 font-medium text-gray-900 mt-2">Error</h3>
-                <div class="px-7">
-                    <p class="text-sm text-gray-500">
-                        The phone number you input is not the correct length or incorrectly formatted. Numbers should not include any special characters in phone number.
-                    </p>
-                </div>
-        
-                <div class="mr-2 ml-2 flex items-center px-4 py-3">
-                    <button 
-                        id="ok-btn" 
-                        on:click={() => {phoneError = false;}}
-                        class="px-4 py-2 border border-red-600 text-red-600 text-base font-medium rounded-md w-full shadow-sm bg-red-100 hover:border-red-800 hover:bg-red-400 focus:outline-none focus:ring-2 focus:ring-red-400">
-                        OK
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-{/if}
-
-{#if noInputEror}
-    <!--no input error popup-->
-    <div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full" id="error-popup">
-        <div class="relative top-60 mx-auto p-3 border w-80 shadow-lg rounded-lg bg-white border-gray-700">
-            <div class="mt-3 text-center">
-                <div class="mx-auto flex items-center justify-center h-10 w-10 rounded-full bg-red-100">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-14 h-14 text-red-600">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
-                    </svg>                 
-                </div>
-                <h3 class="text-lg leading-6 font-medium text-gray-900 mt-2">Error</h3>
-                <div class="px-7">
-                    <p class="text-sm text-gray-500">
-                        Missing inputs. Please try again.
-                    </p>
-                </div>
-        
-                <div class="mr-2 ml-2 flex items-center px-4 py-3">
-                    <button 
-                        id="ok-btn" 
-                        on:click={() => {noInputEror = false;}}
+                        on:click={() => errorMessage = null}
                         class="px-4 py-2 border border-red-600 text-red-600 text-base font-medium rounded-md w-full shadow-sm bg-red-100 hover:border-red-800 hover:bg-red-400 focus:outline-none focus:ring-2 focus:ring-red-400">
                         OK
                     </button>
