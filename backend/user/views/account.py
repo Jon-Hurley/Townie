@@ -143,6 +143,15 @@ def loginWithToken(request):
 def initiatePasswordReset(request):
     data = json.loads(request.body)
     phone = data['phone']
+
+    try:
+        docs = queries.getUserFromPhone(phone).batch()
+    except Exception as e:
+        return returnError(e.error_message, e.http_code)
+    
+    if len(docs) != 1:
+        return returnError('Invalid phone.', 401)
+
     res = twilio_con.sendVerification(phone)
     print(res)
     return JsonResponse({})
