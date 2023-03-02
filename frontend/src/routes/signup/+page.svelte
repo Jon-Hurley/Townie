@@ -5,13 +5,20 @@
 	let username = '';
 	let password = '';
     let phone = '';
+    let confirmPassword = '';
 
     let successPopup = false;
     let errorMessage = false;
+    let confirmationPopup = false;
 
-    const _signup = async () => {
+    const confirm = async () => {
         if (password == '' || username == '' || phone == '') {
             errorMessage = 'Missing inputs. Please try again.'
+            return;
+        }
+
+        if (password !== confirmPassword) {
+            errorMessage = 'Your password inputs do not match.'
             return;
         }
 
@@ -20,6 +27,14 @@
             errorMessage = 'Invalid phone input.'
             return;
         }
+
+        confirmationPopup = true;
+    }
+
+    const _signup = async () => {
+        confirmationPopup = false;
+
+        const formattedPhone = '+1' + phone.replace(/\D/g, '');
         
         errorMessage = await signup(username, password, formattedPhone);
         if (errorMessage) {
@@ -32,7 +47,7 @@
 
 </script>
 
-<div class="flex h-full w-full mx-auto items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+<div class="flex h-full w-full mx-auto items-center justify-center px-4 sm:px-6 lg:px-8">
 	<div class="w-full max-w-md space-y-8">
         <!-- <img class="mx-auto h-12 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600" alt="Your Company"> -->
         <h2 class="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
@@ -65,6 +80,17 @@
 					/>
 				</div>
                 <div>
+					<label for="password" class="sr-only">
+                        Confirm Password
+                    </label>
+					<input
+						bind:value={confirmPassword}
+						type="password"
+						class="relative block w-full appearance-none rounded-none rounded-none border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+						placeholder="Confirm Password"
+					/>
+				</div>
+                <div>
 					<label for="phone-number" class="sr-only">
                         Phone Number
                     </label>
@@ -77,7 +103,7 @@
 			</div>
 
                 <button
-                    on:click={_signup}
+                    on:click={confirm}
                     class="group relative flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                 >
                     Sign Up
@@ -91,6 +117,52 @@
 		</form>
 	</div>
 </div>
+
+
+<!--confirmation popup-->
+{#if confirmationPopup}
+    <div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full" id="success-popup">
+        <div class="relative top-60 mx-auto p-3 border w-80 shadow-lg rounded-lg bg-white border-gray-700">
+            <div class="mt-3 text-center">
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12 text-indigo-600">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                      </svg>
+                                          
+                </div>
+                <h3 class="text-lg leading-6 font-medium text-gray-900 mt-2">Please Confirm Inputs</h3>
+                <div class="my-2 px-4 text-left space-y-2">
+                    <p class="text-sm text-gray-500">
+                        Username: {username}
+                    </p>
+                    <p class="text-sm text-gray-500">
+                        Phone Number: {phone}
+                    </p>
+                </div>
+        
+                <div class="mr-2 ml-2 grid grid-cols-2 gap-4 flex items-center px-4 py-3">
+                    <div>
+                        <button 
+                            id="cancel-btn" 
+                            on:click={() => {confirmationPopup = false;}}
+                            class="px-4 py-2 border border-indigo-600 text-indigo-600 text-base font-medium rounded-md w-full shadow-sm hover:border-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                            CANCEL
+                        </button>
+                    </div>
+                    <div>
+                        <button 
+                            id="confirm-btn" 
+                            on:click={_signup}
+                            class="px-4 py-2 bg-indigo-600 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                            CONFIRM
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{/if}
+
 
 <!--Success popup-->
 {#if successPopup}
@@ -132,7 +204,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
                     </svg>                 
                 </div>
-                <h3 class="text-lg leading-6 font-medium text-gray-900 mt-2">Duplicate Credentials</h3>
+                <h3 class="text-lg leading-6 font-medium text-gray-900 mt-2">Error</h3>
                 <div class="px-7">
                     <p class="text-sm text-gray-500">
                         {errorMessage}
