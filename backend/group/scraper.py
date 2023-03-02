@@ -7,10 +7,32 @@ from . import queries
 
 @csrf_exempt
 def map(request):
-    try:
+    #Allows inputs for the settings:
+    # input['gameKey']
+    # input['settings']['theme']
+    # input['settings']['radius']
+    # input['settings']['lat']
+    # input['settings']['lng']
+    # input['settings']['length']
+    # !!! ONLY ONE OF THESE WILL BE TRUE !!!
+    # input['settings']['walkingAllowed']
+    # input['settings']['drivingAllowed']
+    # input['settings']['bicyclingAllowed']
+    # input['settings']['transitAllowed']
+
+    #try:
         list = []
         gmaps = googlemaps.Client(key=os.environ.get('GOOGLE_API_KEY'))
         input = json.loads(request.body)
+        mode = ""
+        if input['settings']['drivingAllowed']:
+            mode = "driving"
+        elif input['settings']['walkingAllowed']:
+            mode = "walking"
+        elif input['settings']['bicyclingAllowed']:
+            mode = "bicycling"
+        elif input['settings']['transitAllowed']:
+            mode = "transit"
         place_info = json.dumps(gmaps.places(input['settings']['theme'], (input['settings']['lat'], input['settings']['lng']), input['settings']['radius']))
         place3 = json.loads(place_info)
         for i in range(len(place3['results'])): #used to be len(place3['results'])
@@ -46,7 +68,7 @@ def map(request):
             min_time = 100000000
             listDurations = []
             index = 0
-            distances = gmaps.distance_matrix(origin, locationList, input['settings']['mode'], None, None, "imperial", None, None, None, None, None)
+            distances = gmaps.distance_matrix(origin, locationList, mode, None, None, "imperial", None, None, None, None, None)
             for j in range(len(distances['rows'][0]['elements'])):
                 listDuration = int(distances['rows'][0]['elements'][j]['duration']['text'][0])
                 listDurations.append(listDuration)
@@ -73,5 +95,5 @@ def map(request):
         listDict = dict(Destinations=orderedList, trueCompletionTime=time_spent)
         queries.insertIntoItinerary(listDict, input['gameKey'])
         return JsonResponse({"success": True, "timeToCompletion": time_spent})
-    except:
-        return JsonResponse({"success": False})
+    #except:
+        #return JsonResponse({"success": False})
