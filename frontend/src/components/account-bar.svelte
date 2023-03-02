@@ -16,6 +16,15 @@
         }
     });
 
+    const _logout = async () => {
+		let res = await logout();
+		goto('/login');
+        return;
+	};
+    
+
+    
+
     $: pages = [
         {
             page: '/account/',
@@ -58,7 +67,7 @@
             
             on:click={() => {
                 if (page === '/login') {
-                    logout();
+                    _logout();
                     return;
                 }
                 goto(page);
