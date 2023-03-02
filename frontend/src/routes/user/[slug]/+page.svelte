@@ -4,12 +4,11 @@
 	import { getUser } from '../../../requests/search';
     import Loading from '../../../components/loading.svelte';
 	import User from './user.svelte';
-	import { userStore } from '../../../stores';
 
-    let user = $userStore;
+    let user;
 
     onMount(async() => {
-        user = $userStore;
+        user = await getUser($page.params.slug);
         user.purchases = [
             {
                 name: "Music",
@@ -29,7 +28,7 @@
         class="h-full flex flex-col"
     >
         <User
-            user={$userStore}
+            user={user}
         />
     </div>
 {:else}
