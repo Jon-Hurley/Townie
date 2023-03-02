@@ -169,7 +169,7 @@
                 <h3 class="text-lg leading-6 font-medium text-gray-900 mt-2">Error</h3>
                 <div class="px-7">
                     <p class="text-sm text-gray-500">
-                        The phone number you input is not the correct length or incorrectly formatted. Numbers should not include any special characters in phone number.
+                        The phone number you input is not the correct length or incorrectly formatted. Please do not include any special characters in phone number.
                     </p>
                 </div>
         

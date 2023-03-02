@@ -1,6 +1,5 @@
 <script>
     import { goto } from '$app/navigation';
-	//import Layout from '../../../+layout.svelte';
 	import { updateAccount, deleteUser } from "../../../requests/account";
     import { userStore } from '../../../stores';
 
@@ -13,12 +12,19 @@
 
 	let newUsername = '', newPhone = '';
     let errorPopup = false;
+    let phoneError = false;
+    let deletePopup = false;
+    let failedDelete = false;
 
     const _deleteUser = async () => {
-        const res = await deleteUser($userStore.key);
+        deletePopup = false;
+        //console.log(user.key);
+        const res = await deleteUser(user.key);
 		if (res) {
-			goto('/login');
-		}
+			goto('/login/');
+		} else {
+            failedDelete = true;
+        }
         console.log(res);
 	};
 
@@ -30,12 +36,15 @@
         if (newPhone == "") {
             newPhone = user.phone;
         }
-        
-        const res = await updateAccount(user.key, user.username, user.phone, newUsername, newPhone);
-		if (res) {
-			goto('/account/');
-		} else {
-            errorPopup = true;
+        if (newPhone.toString().length != 10 || isNaN(newPhone)) {
+                phoneError = true;
+        } else {
+            const res = await updateAccount(user.key, user.username, user.phone, newUsername, newPhone);
+            if (res) {
+                goto('/account/');
+            } else {
+                errorPopup = true;
+            }
         }
         console.log(res);
 	};
@@ -64,7 +73,7 @@
 <div class="col-start-5 col-span-4">
 <!-- Delete User Function -->
 <button
-    on:click={_deleteUser}
+    on:click={() => {deletePopup = true;}}
     name=deleteAccount
     class="group relative w-full text-center items-end rounded-md border border-transparent py-2 px-4 text-md font-medium text-indigo-600 hover:text-indigo-800 focus:outline-none">
 
@@ -137,10 +146,10 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
                     </svg>                 
                 </div>
-                <h3 class="text-lg leading-6 font-medium text-gray-900 mt-2">Error</h3>
+                <h3 class="text-lg leading-6 font-medium text-gray-900 mt-2">Duplicate Input</h3>
                 <div class="px-7">
                     <p class="text-sm text-gray-500">
-                        We could not update your account. Please try again.
+                        Your new username or password is taken. Please try a new username or phone number.
                     </p>
                 </div>
         
@@ -148,6 +157,106 @@
                     <button 
                         id="ok-btn" 
                         on:click={() => {errorPopup = false;}}
+                        class="px-4 py-2 border border-red-600 text-red-600 text-base font-medium rounded-md w-full shadow-sm bg-red-100 hover:border-red-800 hover:bg-green-400 focus:outline-none focus:ring-2 focus:ring-red-400">
+                        OK
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+{/if}
+
+{#if phoneError}
+    <!--phone error popup-->
+    <div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full" id="error-popup">
+        <div class="relative top-60 mx-auto p-3 border w-80 shadow-lg rounded-lg bg-white border-gray-700">
+            <div class="mt-3 text-center">
+                <div class="mx-auto flex items-center justify-center h-10 w-10 rounded-full bg-red-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-14 h-14 text-red-600">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                    </svg>                 
+                </div>
+                <h3 class="text-lg leading-6 font-medium text-gray-900 mt-2">Error</h3>
+                <div class="px-7">
+                    <p class="text-sm text-gray-500">
+                        The phone number you input is not the correct length or incorrectly formatted. Please do not include any special characters in phone number.
+                    </p>
+                </div>
+        
+                <div class="mr-2 ml-2 flex items-center px-4 py-3">
+                    <button 
+                        id="ok-btn" 
+                        on:click={() => {phoneError = false;}}
+                        class="px-4 py-2 border border-red-600 text-red-600 text-base font-medium rounded-md w-full shadow-sm bg-red-100 hover:border-red-800 hover:bg-red-400 focus:outline-none focus:ring-2 focus:ring-red-400">
+                        OK
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+{/if}
+
+{#if deletePopup}
+        <!--deleteUser popup-->
+        <div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full" id="deleteUser-popup">
+            <div class="relative top-60 mx-auto p-3 border w-80 shadow-lg rounded-md bg-white">
+                <div class="mt-3 text-center">
+                    <div class="mx-auto flex items-center justify-center rounded-full">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12 text-red-600">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-lg leading-6 font-medium text-gray-900">Are you sure?</h3>
+                    <div class="px-7 py-3">
+                        <p class="text-sm text-gray-500">
+                            Do you want to delete your account? This action cannot be undone.
+                        </p>
+                    </div>
+        
+                    <div class="mr-2 ml-2 grid grid-cols-2 gap-4 flex items-center px-4 py-3">
+                        <div>
+                            <button 
+                                id="cancel-btn" 
+                                on:click={() => {deletePopup = false;}}
+                                class="px-4 py-2 border border-red-600 text-red-600 text-base font-medium rounded-md w-full shadow-sm hover:border-red-800 focus:outline-none focus:ring-2 focus:ring-red-400">
+                                CANCEL
+                            </button>
+                        </div>
+                        <div>
+                            <button 
+                                id="delete-btn" 
+                                on:click={_deleteUser}
+                                class="px-4 py-2 bg-red-600 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-400">
+                                DELETE
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+{/if}
+
+{#if failedDelete}
+    <!--error popup-->
+    <div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full" id="error-popup">
+        <div class="relative top-60 mx-auto p-3 border w-80 shadow-lg rounded-lg bg-white border-gray-700">
+            <div class="mt-3 text-center">
+                <div class="mx-auto flex items-center justify-center h-10 w-10 rounded-full bg-red-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-14 h-14 text-red-600">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                    </svg>                 
+                </div>
+                <h3 class="text-lg leading-6 font-medium text-gray-900 mt-2">Error</h3>
+                <div class="px-7">
+                    <p class="text-sm text-gray-500">
+                        Your account has not been deleted. Please try again.
+                    </p>
+                </div>
+        
+                <div class="mr-2 ml-2 flex items-center px-4 py-3">
+                    <button 
+                        id="ok-btn" 
+                        on:click={() => {failedDelete = false;}}
                         class="px-4 py-2 border border-red-600 text-red-600 text-base font-medium rounded-md w-full shadow-sm bg-red-100 hover:border-red-800 hover:bg-green-400 focus:outline-none focus:ring-2 focus:ring-red-400">
                         OK
                     </button>
