@@ -8,6 +8,7 @@
     const hr = "my-2 bg-gray-100 h-[2px]";
 
 	let newUsername = '', newPhone = '';
+    let errorPopup = false;
 
     const _deleteUser = async () => {
         const res = await deleteUser($userStore.key);
@@ -29,7 +30,9 @@
         const res = await updateAccount(newUsername, newPhone);
 		if (res) {
 			goto('/account/');
-		}
+		} else {
+            errorPopup = true;
+        }
         console.log(res);
 	};
 </script>
@@ -119,3 +122,33 @@
     </div>
 </div>
   
+
+{#if errorPopup}
+    <!--error popup-->
+    <div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full" id="error-popup">
+        <div class="relative top-60 mx-auto p-3 border w-80 shadow-lg rounded-lg bg-white border-gray-700">
+            <div class="mt-3 text-center">
+                <div class="mx-auto flex items-center justify-center h-10 w-10 rounded-full bg-red-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-14 h-14 text-red-600">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                    </svg>                 
+                </div>
+                <h3 class="text-lg leading-6 font-medium text-gray-900 mt-2">Error</h3>
+                <div class="px-7">
+                    <p class="text-sm text-gray-500">
+                        We could not update your account. Please try again.
+                    </p>
+                </div>
+        
+                <div class="mr-2 ml-2 flex items-center px-4 py-3">
+                    <button 
+                        id="ok-btn" 
+                        on:click={() => {errorPopup = false;}}
+                        class="px-4 py-2 border border-red-600 text-red-600 text-base font-medium rounded-md w-full shadow-sm bg-red-100 hover:border-red-800 hover:bg-green-400 focus:outline-none focus:ring-2 focus:ring-red-400">
+                        OK
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+{/if}

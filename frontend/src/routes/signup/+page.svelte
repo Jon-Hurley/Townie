@@ -147,7 +147,7 @@
                     <button 
                         id="ok-btn" 
                         on:click={() => {errorPopup = false;}}
-                        class="px-4 py-2 border border-red-600 text-red-600 text-base font-medium rounded-md w-full shadow-sm bg-red-100 hover:border-red-800 hover:bg-green-400 focus:outline-none focus:ring-2 focus:ring-red-400">
+                        class="px-4 py-2 border border-red-600 text-red-600 text-base font-medium rounded-md w-full shadow-sm bg-red-100 hover:border-red-800 hover:bg-red-400 focus:outline-none focus:ring-2 focus:ring-red-400">
                         OK
                     </button>
                 </div>
@@ -177,7 +177,7 @@
                     <button 
                         id="ok-btn" 
                         on:click={() => {phoneError = false;}}
-                        class="px-4 py-2 border border-red-600 text-red-600 text-base font-medium rounded-md w-full shadow-sm bg-red-100 hover:border-red-800 hover:bg-green-400 focus:outline-none focus:ring-2 focus:ring-red-400">
+                        class="px-4 py-2 border border-red-600 text-red-600 text-base font-medium rounded-md w-full shadow-sm bg-red-100 hover:border-red-800 hover:bg-red-400 focus:outline-none focus:ring-2 focus:ring-red-400">
                         OK
                     </button>
                 </div>
@@ -207,7 +207,7 @@
                     <button 
                         id="ok-btn" 
                         on:click={() => {noInputEror = false;}}
-                        class="px-4 py-2 border border-red-600 text-red-600 text-base font-medium rounded-md w-full shadow-sm bg-red-100 hover:border-red-800 hover:bg-green-400 focus:outline-none focus:ring-2 focus:ring-red-400">
+                        class="px-4 py-2 border border-red-600 text-red-600 text-base font-medium rounded-md w-full shadow-sm bg-red-100 hover:border-red-800 hover:bg-red-400 focus:outline-none focus:ring-2 focus:ring-red-400">
                         OK
                     </button>
                 </div>
