@@ -2,7 +2,7 @@
     import { goto } from '$app/navigation';
 	import { get } from 'svelte/store';
 	//import Layout from '../../account/[slug]/edit/';
-	import { deleteUser } from '../../requests/account';
+	import { deleteUser, logout } from '../../requests/account';
     import { userStore } from '../../stores';
 
 
@@ -22,7 +22,10 @@
         //console.log(user.key);
         const res = await deleteUser(user.key);
 		if (res) {
-			goto('/login/');
+            logout();
+            
+			goto('/login');
+            return;
 		} else {
             failedDelete = true;
         }

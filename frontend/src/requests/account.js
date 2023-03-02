@@ -38,7 +38,7 @@ export const autoLogin = async() => {
 
 export const logout = () => {
     console.log("logging out")
-    userStore.set(null);
+    userStore.set({"username": "Signed Out", "key" : 0});
 };
 
 export const signup = async(username, password, phone) => {
@@ -125,6 +125,10 @@ export const deleteUser = async() => {
                 passwordHash: get(userStore).passwordHash
             }
         );
+        let data = res.data;
+        if (data.success == true) {
+            return 10;
+        }
         return null;
     } catch (err) {
         return err?.response?.data?.errorMessage
