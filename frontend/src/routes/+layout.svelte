@@ -47,7 +47,7 @@
 </svelte:head>
 
 <div class="flex flex-col justify-between items-center h-screen w-screen">
-    {#if $userStore}
+    {#if $userStore && $userStore.username != "Signed Out"}
         <AccountBar/>
         <div class="m-0 w-full p-4 h-full">
             <slot/>
