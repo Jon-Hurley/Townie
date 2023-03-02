@@ -5,7 +5,6 @@ import { blueStyle, buttonStyle, grayStyle, hr, largeTitle, inputStyle } from '.
     const section = "font-semibold text-lg text-center mb-3"
 
 	export let settings;
-    console.log({ settings });
     const form = { ...settings };
     let locationInput = "";
 	let isOpen = true;
