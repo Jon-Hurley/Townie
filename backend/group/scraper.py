@@ -1,4 +1,3 @@
-
 from django.http import JsonResponse
 import googlemaps
 import json
@@ -22,9 +21,9 @@ def map(request):
             destination = dict(name=name_dest, location=[latitude, longitude]) #used to have an address as well
             list.append(destination)
         radius = float(input['settings']['radius'])
-        list2 = queries.getNearbyDestinations(latitude, longitude, radius)
+        list2 = queries.getNearbyDestinations(input['settings']['lat'], input['settings']['lng'], radius)
         dblist = [doc for doc in list2]
-        for i in range(0): #used to be len(dblist)
+        for i in range(len(dblist)): #used to be len(dblist)
             thing = dblist[i]
             name = thing['name']
             lat = float(thing['latitude'])

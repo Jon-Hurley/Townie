@@ -5,7 +5,8 @@ import { blueStyle, buttonStyle, grayStyle, hr, largeTitle, inputStyle } from '.
     const section = "font-semibold text-lg text-center mb-3"
 
 	export let settings;
-    const form = { ...settings };
+    let form = { ...settings };
+    let otherCompletionTime = false;
     let locationInput = "";
 	let isOpen = true;
 
@@ -135,9 +136,9 @@ import { blueStyle, buttonStyle, grayStyle, hr, largeTitle, inputStyle } from '.
                     class="w-32"
                 >
                     <option value="None">None</option>
-                    <option value="Food">Food</option>
-                    <option value="Choppa">Choppa</option>
-                    <option value="Vroom">Vroom</option>
+                    <option value="restaurant">Food</option>
+                    <option value="park">Park</option>
+                    <option value="museum">Museum</option>
                 </select>
             </div>
             <div
@@ -151,7 +152,14 @@ import { blueStyle, buttonStyle, grayStyle, hr, largeTitle, inputStyle } from '.
                     Length
                 </div>
                 <select
-                    bind:value={form.desiredCompletionTime}
+                    on:change={e => {
+                        const v = e.target.value;
+                        otherCompletionTime = v === "Other";
+                        if (!otherCompletionTime) {
+                            form.desiredCompletionTime = parseInt(v);
+                            form = form;
+                        }
+                    }}
                     class="w-32"
                 >
                     <option value={30}>30 minutes</option>
@@ -159,7 +167,23 @@ import { blueStyle, buttonStyle, grayStyle, hr, largeTitle, inputStyle } from '.
                     <option value={90}>90 minutes</option>
                     <option value={120}>120 minutes</option>
                     <option value={180}>180 minutes</option>
+                    <option value="Other">Other</option>
                 </select>
+                {#if otherCompletionTime}
+                    
+                    <input
+                        class="{inputStyle} w-40"
+                        placeholder="Other"
+                        type="number"
+                        min="1"
+                        value={form.desiredCompletionTime}
+                        on:input={e => {
+                            console.log(e.target.value)
+                            if (e.target.value < 0) return;
+                            form.desiredCompletionTime = e.target.value;
+                        }}
+                    />
+                {/if}
             </div>
             <div
                 class="

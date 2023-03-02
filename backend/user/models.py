@@ -40,7 +40,7 @@ class Friendship(models.Model):
 
 
 #This class contains a Purchase - it holds an ID, name, and cost
-class Purchase(models.Model):
+class Purchase():
     purchaseID = models.PositiveIntegerField()
     name = models.CharField(max_length=100)
     cost = models.PositiveIntegerField()
