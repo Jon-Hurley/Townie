@@ -7,8 +7,9 @@ export const userStore = writable({
     phone: '+13176909263',
     points:	50,
     purchases: [],
-    rank: 'explorer',   
-    username: 'ArnavSuccs'
+    rank: 'explorer',
+    username: 'ArnavSuccs',
+    token: '9248523'
 });
 
 export const gameStore = writable();
