@@ -3,10 +3,27 @@
     import { goto } from '$app/navigation';
     import { userStore } from '../stores';
     import { page } from '$app/stores';
-	import User from '../routes/user/[slug]/user.svelte';
+	import { logout } from '../requests/account';
+    import { onMount } from 'svelte';
 
     let currentPage;
     page.subscribe(v => currentPage = v.route.id);
+    
+    onMount(async() => {
+        console.log(currentPage);
+        if (currentPage === "/delete") {
+            logout();
+        }
+    });
+
+    const _logout = async () => {
+		let res = await logout();
+		goto('/login');
+        return;
+	};
+    
+
+    
 
     $: pages = [
         {
@@ -25,57 +42,56 @@
     ]
 </script>
 
-{#if currentPage && !['/login', '/signup'].includes(currentPage)}
-    <nav
-        class="
-            w-full p-6 h-16
-            flex items-center justify-between
-            overflow-hidden
-            border-b-2 border-gray-100 
-        "
-    >
-        {#each pages as { page, tooltip, svg, text, styles }}
-            <button
-                type="button"
-                class="
-                    rounded-full
-                    hover:text-indigo-500
-                    transition-colors duration-500
-                    transition duration-150 ease-in-out
-                    flex items-center
-                    {styles}
-                "
-                data-bs-toggle="tooltip" 
-                data-bs-placement="top"
-                title={tooltip}
-                
-                on:click={() => {
-                    if (page === '/login') {
-                        // logout();
-                    }
-                    goto(page);
-                }}
+<nav
+    class="
+        w-full p-6 h-16
+        flex items-center justify-between
+        overflow-hidden
+        border-b-2 border-gray-100 
+    "
+>
+    {#each pages as { page, tooltip, svg, text, styles }}
+        <button
+            type="button"
+            class="
+                rounded-full
+                hover:text-indigo-500
+                transition-colors duration-500
+                transition duration-150 ease-in-out
+                flex items-center
+                {styles}
+            "
+            data-bs-toggle="tooltip" 
+            data-bs-placement="top"
+            title={tooltip}
+            
+            on:click={() => {
+                if (page === '/login') {
+                    _logout();
+                    return;
+                }
+                goto(page);
+            }}
+        >
+            <svg
+                class="h-8 w-8"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                transform="scale(-1,1)"
             >
-                <svg
-                    class="h-8 w-8"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.5"
-                    stroke="currentColor"
-                    transform="scale(-1,1)"
-                >
-                    <path d={svg}/>
-                </svg>
+                <path d={svg}/>
+            </svg>
 
-                {#if text}
-                    <div
-                        class="ml-4 text-xl font"
-                    >
-                        {text}
-                    </div>
-                {/if}
-            </button>
-        {/each}
-    </nav>
-{/if}
+            {#if text}
+                <div
+                    class="ml-4 text-xl font"
+                >
+                    {text}
+                </div>
+            {/if}
+        </button>
+    {/each}
+</nav>

@@ -88,7 +88,11 @@ def updateInfo(request):
     username = data['username']
     password = data['password']
     passwordHash = data['passwordHash']
-    
+
+    expectedInputHash = getPasswordHash(password, username)
+    if expectedInputHash != passwordHash:
+        return returnError('Incorrect password entered.', 400)
+
     newUsername = data['newUsername']
     newPhone = data['newPhone']
 
@@ -126,7 +130,7 @@ def deleteUser(request):
     if len(docs) == 0:
         return returnError('Unauthorized.', 401) # invalid passwordHash or key
 
-    return JsonResponse({})
+    return JsonResponse({'success': True})
 
 # TO-DO:
 
@@ -136,7 +140,7 @@ def loginWithToken(request):
     })
 
 @csrf_exempt
-def sendVerification(request):
+def initiatePasswordReset(request):
     data = json.loads(request.body)
     phone = data['phone']
     res = twilio_con.sendVerification(phone)
@@ -144,7 +148,7 @@ def sendVerification(request):
     return JsonResponse({})
 
 @csrf_exempt
-def testVerification(request):
+def completePasswordReset(request):
     data = json.loads(request.body)
     newPassword = data['newPassword']
     phone = data['phone']
@@ -175,13 +179,3 @@ def testVerification(request):
         return returnError("Invalid user key.", 500)
     
     return JsonResponse({})
-
-def initiatePasswordReset(request):
-    return JsonResponse({
-        ":)": ":)"
-    })
-
-def completePasswordReset(request):
-    return JsonResponse({
-        ":)": ":)"
-    })

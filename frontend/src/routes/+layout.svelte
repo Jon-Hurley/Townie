@@ -1,24 +1,39 @@
 <script>
 	import '../app.css';
+    import { PUBLIC_GOOGLE_MAPS_API_KEY } from '$env/static/public';
+    import { onMount, onDestroy } from 'svelte';
+    import { goto } from '$app/navigation';
+    
+	import { gameStore, mapStore, userStore } from '../stores';
+    import { autoLogin } from '../requests/account';
     import Navbar from '../components/navbar.svelte';
     import AccountBar from '../components/account-bar.svelte';
-
-    import { onMount } from 'svelte';
-    import { PUBLIC_GOOGLE_MAPS_API_KEY } from '$env/static/public';
-	import { mapStore, userStore } from '../stores';
 
     let mounted = false;
     mapStore.set(false);
 
-    onMount(() => {
+    onMount(async() => {
         // create a function for the GOOGLE API to call when done initializing
         window.initMap = () => mapStore.set(true);
         mounted = true;
-    })
+        
+        if ($userStore) {
+            goto('/game/join');
+            return;
+        }
 
-    userStore.subscribe((v) => {
-        console.log("NEW USER: ", v)
-    })
+        const res = await autoLogin();
+        goto(res ? '/game/join' : '/login');
+    });
+
+    // IF user goes valid to invalid, GOTO login.
+    let lastState = false;
+    $: {
+        console.log("NEW USER: ", $userStore);
+        if (lastState && !$userStore)
+            goto('/login')
+        lastState = !!$userStore;
+    }
 </script>
 
 <!-- Once mounted, bring in the GOOGLE API -->
@@ -31,12 +46,14 @@
     {/if}
 </svelte:head>
 
-
-<AccountBar/>
-<div
-    class="m-0 w-full p-4"
-    style="height: calc(100vh - 120px);"
->
-    <slot/>
+<div class="flex flex-col justify-between items-center h-screen w-screen">
+    {#if $userStore && $userStore.username != "Signed Out"}
+        <AccountBar/>
+        <div class="m-0 w-full p-4 h-full">
+            <slot/>
+        </div>
+        <Navbar/>
+    {:else}
+        <slot/>
+    {/if}
 </div>
-<Navbar/>
