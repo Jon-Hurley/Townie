@@ -12,42 +12,42 @@
         darkMode: false
     };
 
-    get(locationStore).index = 0;
+    // get(locationStore).index = 0;
 
-    const randomizeLocation = (LatLng, radius) => {
-        var x0 = LatLng.lng;
-        var y0 = LatLng.lat;
+    const randomizeLocation = (lat, lng, radius) => {
+        var x0 = lng;
+        var y0 = lat;
         var newRadius = radius / 100000;
 
         var randint = Math.random();
         var randint2 = Math.random();
-        var scale = radius * Math.sqrt(randint);
+        var scale = newRadius * Math.sqrt(randint);
         var scale2 = 2 * Math.PI * randint2;
 
         var xAdd = scale * Math.cos(scale2);
         var yAdd = scale * Math.sin(scale2);
 
         return {
-            lat: xAdd + x0,
-            lng: yAdd + y0
+            lat: yAdd + y0,
+            lng: xAdd + x0
         }
     }
 
     const regenerateMap = (mapState) => {
-        let destinations = $gameStore.game.destinations;
-        let index = get(locationStore).index;
-        let currentDestination = currentDestination[0];
-        if (index != -1) {
-            currentDestination = destinations[index];
-        } else {
-            currentDestination = undefined;
-        }
+        // let destinations = $gameStore.game.destinations;
+        // let index = get(locationStore).index;
+        // let currentDestination = currentDestination[0];
+        // if (index != -1) {
+        //     currentDestination = destinations[index];
+        // } else {
+        //     currentDestination = undefined;
+        // }
         
-        if (index == destinations.length - 1) {
-            get(locationStore).index = -1;
-        } else {
-            get(locationStore).index = index + 1;
-        }
+        // if (index == destinations.length - 1) {
+        //     get(locationStore).index = -1;
+        // } else {
+        //     get(locationStore).index = index + 1;
+        // }
         
 
 
@@ -70,7 +70,7 @@
             fillOpacity: 0.35,
             map: mapState.map,
             //center: randomizeLocation({ lat: currentDestination.lat, lng: currentDestination.lng }),
-            center: randomizeLocation({ lat: 40.423538, lat: -86.921738}),
+            center: randomizeLocation(40.423538, -86.921738, 20),
             radius: 20,
         })
 
