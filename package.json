@@ -8,5 +8,7 @@
 		"backend": "python ./backend/manage.py runserver"
 	},
 	"type": "module",
-	"dependencies": {}
+	"dependencies": {
+		"dotenv": "^16.0.3"
+	}
 }

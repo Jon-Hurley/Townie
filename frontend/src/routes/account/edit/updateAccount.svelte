@@ -2,13 +2,13 @@
     import { goto } from '$app/navigation';
 	import { get } from 'svelte/store';
 	//import Layout from '../../account/[slug]/edit/';
-	import { deleteUser } from '../../requests/account';
-    import { userStore } from '../../stores';
+	import { deleteUser } from '../../../../requests/account';
+    import { userStore } from '../../../stores';
 
 
     
 
-    export let user = userStore;
+    export let user = $userStore;
     let popupOpen = false;
     let deleteUserPopup = document.getElementById("deleteUser-popup");
     console.log(get(userStore))

@@ -3,7 +3,7 @@
 	import { userStore } from "../../../stores";
     import { buttonStyle, redStyle, greenStyle, blueStyle, indigoStyle } from '../../../css'
 
-    export let user;
+    export let user = $userStore;
 
     const title = "text-gray-700 font-semibold text-lg mt-6";
     const hr = "my-2 bg-gray-100 h-[2px]";
