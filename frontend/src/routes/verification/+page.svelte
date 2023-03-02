@@ -1,6 +1,6 @@
 <script>
 	import { goto } from '$app/navigation';
-	import { verification } from '../../../requests/account';
+	import { verification } from "../../../requests/account";
 
     let remember;
 	const form = {

@@ -10,6 +10,9 @@ urlpatterns = [
     path('update/', account.updateInfo),
     path('delete/', account.deleteUser),
 
+    path('send-verification/', account.sendVerification),
+    path('update-password/', account.testVerification),
+
     path('search/', search.searchUsers),
     path('profile/<str:key>/', search.getUser),
 

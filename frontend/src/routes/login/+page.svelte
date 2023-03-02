@@ -2,37 +2,32 @@
 	import { login } from "../../requests/account";
 	import { goto } from '$app/navigation';
 
+    let remember;
 	const form = {
 		username: '',
 		password: ''
 	};
-	let remember;
-
-	let errorMessage = null;
+	let popupOpen = false;
 
     const _login = async () => {
-		if (!form?.username?.length || !form?.password?.length) {
-			errorMessage = 'Missing inputs. Please try again.';
-			return;
+		if ((form.username) != '' && form.password != '') {
+        const res = await login(form.username, form.password);
+		if (res) {
+			goto('/game/lobby');
+		} else {
+			popupOpen = true;
 		}
-
-        errorMessage = await login(form.username, form.password);
-		if (errorMessage) {
-			return;
+        console.log(res);
 		}
-
-		if (remember) {
-			localStorage.setItem('username', form.username);
-			localStorage.setItem('password', form.password);
-		}
-		goto('/game/lobby');
+		form.username = '';
+		form.password = '';
 	};
 </script>
 
-<div class="flex h-full w-full items-center justify-center p-4">
+<div class="flex min-h-full mx-auto items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
 	<div class="w-full max-w-md space-y-8">
         <h2 class="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
-            Log in to Account
+            Log in to your account
         </h2>
 
 		<form class="mt-8 space-y-6" >
@@ -77,7 +72,7 @@
 				</div>
 
 				<div class="text-sm">
-					<a href="/account/password-reset" class="font-medium text-indigo-600 hover:text-indigo-400">
+					<a href="/forgot-password" class="font-medium text-indigo-600 hover:text-indigo-400">
 						Forgot your password?
 					</a>
 				</div>
@@ -116,33 +111,32 @@
 	</div>
 </div>
 
-<!--failed login popup-->
-{#if errorMessage}	
-	<div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full" id="loginFailed-popup">
-		<div class="relative top-60 mx-auto p-3 border w-80 shadow-lg rounded-lg bg-white border-gray-700">
-			<div class="mt-3 text-center">
-				<div class="mx-auto flex items-center justify-center rounded-full">
-					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12 text-red-600">
-						<path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
-						</svg>						  
-				</div>
-				<h3 class="text-lg leading-6 font-medium text-gray-900">Login Failed</h3>
-				<div class="px-7">
-					<p class="text-sm text-gray-500">
-						{errorMessage}
-					</p>
-				</div>
-	
-				<div class="mr-2 ml-2 flex items-center px-4 py-3">
-					<button 
-						id="ok-btn" 
-						on:click={() => errorMessage = false}
-						class="px-4 py-2 border border-red-600 text-red-600 text-base font-medium rounded-md w-full shadow-sm bg-red-100 hover:border-red-800 focus:outline-none focus:ring-2 focus:ring-red-400"
-					>
-						OK
-					</button>
-				</div>
-			</div>
-		</div>
-	</div>
+{#if popupOpen}
+        <!--failed login popup-->
+        <div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full" id="loginFailed-popup">
+            <div class="relative top-60 mx-auto p-3 border w-80 shadow-lg rounded-lg bg-white border-gray-700">
+                <div class="mt-3 text-center">
+                    <div class="mx-auto flex items-center justify-center rounded-full">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12 text-red-600">
+							<path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+						  </svg>						  
+                    </div>
+                    <h3 class="text-lg leading-6 font-medium text-gray-900">Login Failed</h3>
+                    <div class="px-7">
+                        <p class="text-sm text-gray-500">
+                            The username and password you entered does not match our records. Please try again.
+                        </p>
+                    </div>
+        
+                    <div class="mr-2 ml-2 flex items-center px-4 py-3">
+                        <button 
+                            id="ok-btn" 
+                            on:click={() => {popupOpen = false;}}
+                            class="px-4 py-2 border border-red-600 text-red-600 text-base font-medium rounded-md w-full shadow-sm bg-red-100 hover:border-red-800 focus:outline-none focus:ring-2 focus:ring-red-400">
+                            OK
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
 {/if}

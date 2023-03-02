@@ -1,6 +1,16 @@
 import { get, writable } from 'svelte/store';
 
-export const userStore = writable();
+export const userStore = writable({
+    id: 'User/10942',
+    key: '10942',
+    passwordHash: 'password',
+    phone: '+13176909263',
+    points:	50,
+    purchases: [],
+    rank: 'explorer',
+    username: 'ArnavSuccs',
+    token: '9248523'
+});
 
 export const gameStore = writable();
 

@@ -3,130 +3,207 @@ import { PUBLIC_BACKEND_API } from '$env/static/public';
 import { get } from 'svelte/store';
 import { userStore } from './../stores'
 
+
 export const login = async(username, password) => {
+    console.log("HERE")
     try {
-        console.log(username, password);
+        console.log(username + ", " + password);
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'user/login/',
             {
                 password: password,
                 username: username
-            }
+            }//,
+            //{withCredentials: true}
         );
+        console.log(res);
+        let data = res.data;
+        console.log(res.data)
+        let success = data.success;
+        if (success == false) {
+            return false;
+        }
+        //let key = data.key;
+        //let phone = data.phoneNumber;
+        //let points = data.points;
+        //let purchases = data.purchases;
+        //let rank = data.rank;
         userStore.set(res.data);
-        return null;
+        console.log(get(userStore));
+
+        //axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`
+
+        return true;        
     } catch (err) {
-        return err?.response?.data?.errorMessage
-            || 'Invalid error message.';
-    }
-};
-
-export const autoLogin = async() => {
-    const username = localStorage.getItem('username');
-    const password = localStorage.getItem('password');
-    if (!username || !password) {
+        console.log(err);
         return false;
     }
-    const errorMessage = await login(username, password);
-    if (errorMessage) {
-        localStorage.removeItem('username');
-        localStorage.removeItem('password');
-        return false;
-    }
-    return true;
 };
 
-export const logout = () => {
-    console.log("logging out")
-    userStore.set(null);
-};
-
-export const signup = async(username, password, phone) => {
+export const signup = async(username, password, phoneNumber) => {
+    console.log(username + ', ' + password + ', ' + phoneNumber);
     try {
-        console.log(username, password, phone);
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'user/signup/',
             {
-                username,
-                password,
-                phone
+                username: username,
+                password: password,
+                phoneNumber: phoneNumber
             }
         );
+
+        let data = res.data;
+        console.log(res.data)
+        let success = data.success;
+        if (success == false) {
+            return false;
+        }
+    
+        console.log(res.data);
         userStore.set(res.data);
-        return null;
+        return true;        
     } catch (err) {
-        return err?.response?.data?.errorMessage
-            || 'Invalid error message.';
+        console.log(err);
+        return false;
     }
 };
 
-export const updateAccount = async(password, newUsername, newPhone) => {
+export const verification = async(verifCode) => {
     try {
-        const user = get(userStore);
         const res = await axios.post(
-            PUBLIC_BACKEND_API + 'user/update/',
+            PUBLIC_BACKEND_API + 'user/verification/',
             {
-                key: user.key,
-                username: user.username,
-                passwordHash: user.passwordHash,
-
-                password,
-                newUsername,
-                newPhone
+                code: verifCode
             }
         );
-        return null;
+
+        data = res.data;
+        return data.success;
     } catch (err) {
-        return err?.response?.data?.errorMessage
-            || 'Invalid error message.';
+        console.log(err);
+        return false;
     }
 };
 
-export const initiatePasswordReset = async(phone) => {
+export const updateAccount = async(key, username, phoneNumber, newUsername, newPhoneNumber) => {
     try {
-        const res = await axios.post(
-            PUBLIC_BACKEND_API + 'user/initiate-password-reset/',
-            {
-                phone
+        if (phoneNumber != newPhoneNumber) {
+            if (true/*verification*/) {
+                const res = await axios.post(
+                    PUBLIC_BACKEND_API + 'user/account/edit',
+                    {
+                        username: newUsername,
+                        phoneNumber: newPhoneNumber,
+                        key: key
+                    }
+                );
+
+                data = res.data;
+                return data.success;
             }
-        );
-        return null; 
+            return false;
+        } else {
+            const res = await axios.post(
+                PUBLIC_BACKEND_API + 'user/account/edit',
+                {
+                    username: username,
+                    phoneNumber: phoneNumber,
+                    key: key
+                }
+            );
+
+            let data = res.data;
+            return data.success;
+        }
     } catch (err) {
-        return err?.response?.data?.errorMessage
-            || 'Invalid error message.';
+        console.log(err);
+        return false;
     }
 };
 
-export const completePasswordReset = async(phone, otp, newPassword) => {
+export const loginWithToken = async() => {
     try {
         const res = await axios.post(
-            PUBLIC_BACKEND_API + 'user/complete-password-reset/',
+            PUBLIC_BACKEND_API + 'user/login/',
             {
-                phone,
-                otp,
-                newPassword
+                password: password,
+                username: username
+            }, 
+            {withCredentials: true}
+        );
+        data = res.data;
+        success = data.success;
+        if (success == false) {
+            return false;
+        }
+        username = data.username;
+        key = data.key;
+        phone = data.phoneNumber;
+        points = data.points;
+        purchases = data.purchases;
+        rank = data.rank;
+
+        userStore.set(username + "/" + key, key, passwordHash, phone, points, purchases, rank);
+
+        axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`
+
+        console.log(res);
+        return true;        
+    } catch (err) {
+        console.log(err);
+        return false;
+    }
+};
+
+export const initiatePasswordReset = async(phoneNumber) => {
+    try {
+        const res = await axios.post(
+            PUBLIC_BACKEND_API + 'user/account/',
+            {
+                phoneNumber: phoneNumber
             }
         );
         console.log(res);
-        return null;       
+        if (res.data.success) {
+            userStore.set(res.data);
+            return res.data.success;
+        } else {
+            return false;
+        }    
     } catch (err) {
-        return err?.response?.data?.errorMessage
-            || 'Invalid error message.';
+        console.log(err);
+        return false;
     }
 };
 
-export const deleteUser = async() => {
+export const completePasswordReset = async() => {
+    try {
+        const res = await axios.post(
+            PUBLIC_BACKEND_API + 'user/account/',
+            {
+                key: get(userStore).key
+            }
+        );
+        console.log(res);
+        return res.data.success;        
+    } catch (err) {
+        console.log(err);
+        return false;
+    }
+};
+
+export const deleteUser = async(userKey) => {
     try {
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'user/delete/',
             {
-                key: get(userStore).key,
-                passwordHash: get(userStore).passwordHash
+                key: userKey
             }
         );
-        return null;
+        console.log(res);
+        return res.data.success;        
     } catch (err) {
-        return err?.response?.data?.errorMessage
-            || 'Invalid error message.';
+        console.log(err);
+        return false;
     }
 }
