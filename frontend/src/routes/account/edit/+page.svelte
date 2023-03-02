@@ -1,18 +1,12 @@
 <script>
     import { goto } from '$app/navigation';
-<<<<<<< HEAD:frontend/src/routes/account/[slug]/edit/edit.svelte
 	//import Layout from '../../../+layout.svelte';
-	import { updateAccount, deleteUser } from "../../../../requests/account";
-    import { userStore } from '../../../../stores';
+	import { updateAccount, deleteUser } from "../../../requests/account";
+    import { userStore } from '../../../stores';
 
     
 
     export let user = $userStore;
-=======
-	import { updateAccount, deleteUser } from "../../../requests/account";
-    import { userStore } from "../../../stores";
-   
->>>>>>> c4fcd653349bb3555223c6455cbbf702daa30673:frontend/src/routes/account/edit/+page.svelte
 
     const title = "text-gray-700 font-semibold text-lg mt-6";
     const hr = "my-2 bg-gray-100 h-[2px]";
@@ -29,19 +23,11 @@
 
 
     const update = async () => {
-<<<<<<< HEAD:frontend/src/routes/account/[slug]/edit/edit.svelte
         if (newUsername == "") {
             newUsername = user.username;
         }
         if (newPhone == "") {
             newPhone = user.phone;
-=======
-        if (newUsername == '') {
-            newUsername = $userStore.username;
-        }
-        if (newPhone == '') {
-            newPhone = $userStore.phone;
->>>>>>> c4fcd653349bb3555223c6455cbbf702daa30673:frontend/src/routes/account/edit/+page.svelte
         }
         
         const res = await updateAccount(user.key, user.username, user.phone, newUsername, newPhone);

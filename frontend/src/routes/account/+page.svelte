@@ -1,10 +1,9 @@
 <script>
     import { goto } from '$app/navigation';
-<<<<<<< HEAD:frontend/src/routes/account/edit/updateAccount.svelte
 	import { get } from 'svelte/store';
 	//import Layout from '../../account/[slug]/edit/';
-	import { deleteUser } from '../../../../requests/account';
-    import { userStore } from '../../../../stores';
+	import { deleteUser } from '../../requests/account';
+    import { userStore } from '../../stores';
 
 
     
@@ -13,12 +12,6 @@
     let popupOpen = false;
     let deleteUserPopup = document.getElementById("deleteUser-popup");
     console.log(get(userStore))
-=======
-	import { deleteUser } from "../../requests/account";
-    import { userStore } from "../../stores/";
-
-    let popupOpen = false;
->>>>>>> c4fcd653349bb3555223c6455cbbf702daa30673:frontend/src/routes/account/+page.svelte
 
     const title = "text-gray-700 font-semibold text-lg mt-6";
     const hr = "my-2 bg-gray-100 h-[2px]";
@@ -26,12 +19,8 @@
 
     const _deleteUser = async () => {
         popupOpen = false;
-<<<<<<< HEAD:frontend/src/routes/account/edit/updateAccount.svelte
         console.log(user.key);
         const res = await deleteUser(user.key);
-=======
-        const res = await deleteUser($userStore.key);
->>>>>>> c4fcd653349bb3555223c6455cbbf702daa30673:frontend/src/routes/account/+page.svelte
 		if (res) {
 			goto('/login/');
 		}

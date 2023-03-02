@@ -7,7 +7,7 @@ import { userStore } from './../stores'
 export const login = async(username, password) => {
     console.log("HERE")
     try {
-        console.log("here pt2");
+        console.log(username + ", " + password);
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'user/login/',
             {
