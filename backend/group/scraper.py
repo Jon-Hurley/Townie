@@ -2,47 +2,76 @@ from django.http import JsonResponse
 import googlemaps
 import json
 import os
+from django.views.decorators.csrf import csrf_exempt
+from . import queries
 
+@csrf_exempt
 def map(request):
-    list = []
-    #print(request)
-    gmaps = googlemaps.Client(key=os.environ.get('GOOGLE_API_KEY'))
-    places = json.dumps(gmaps.find_place(str("Purdue University"),str("textquery")))
-    places2 = json.loads(places)
-
-    #print(places2)
-    result = json.dumps(gmaps.geocode(str('900 John R Wooden Dr, West Lafayette, IN 47907')))
-    #print(result)
-    result2 = json.loads(result)
-
-    addressComponents = result2[0]['formatted_address']
-    #print(addressComponents)
-    latitude = result2[0]['geometry']['location']['lat']
-    longitude = result2[0]['geometry']['location']['lng']
-    place_info = json.dumps(gmaps.places("art museum", (latitude,longitude)))
-    place3 = json.loads(place_info)
-    #print(place3)
-    #print(place3['results'][0])
-    place4 = json.dumps(gmaps.place(place3['results'][0]['place_id']))
-    place5 = json.loads(place4)
-    #print(len(place_info))
-    print(place3)
-    for i in range(len(place3['results'])):
-        name_dest = place3['results'][i]['name']
-        print(name_dest)
-        address = place3['results'][i]['formatted_address']
-        latitude = place3['results'][i]['geometry']['location']['lat']
-        longitude = place3['results'][i]['geometry']['location']['lng']
-
-        points = 1000
-        destination = dict(name=name_dest, addr=address, location=[latitude, longitude], pts=points)
-        list.append(destination)
-        #print(destination)
-    #location = Location
-    #location.latitude = latitude
-    #location.longitude = longitude
-    #print(latitude)
-
-
-
-    return JsonResponse(list,safe=False)
+    #try:
+        list = []
+        gmaps = googlemaps.Client(key=os.environ.get('GOOGLE_API_KEY'))
+        input = json.loads(request.body)
+        place_info = json.dumps(gmaps.places(input['settings']['theme'], (input['settings']['lat'], input['settings']['lng']), input['settings']['radius']))
+        place3 = json.loads(place_info)
+        for i in range(len(place3['results'])): #used to be len(place3['results'])
+            name_dest = place3['results'][i]['name']
+            latitude = place3['results'][i]['geometry']['location']['lat']
+            longitude = place3['results'][i]['geometry']['location']['lng']
+            queries.createDestination(latitude, longitude, name_dest, input['settings']['theme'])
+            destination = dict(name=name_dest, location=[latitude, longitude]) #used to have an address as well
+            list.append(destination)
+        radius = float(input['settings']['radius'])
+        list2 = queries.getNearbyDestinations(input['settings']['lat'], input['settings']['lng'], radius)
+        dblist = [doc for doc in list2]
+        for i in range(len(dblist)): #used to be len(dblist)
+            thing = dblist[i]
+            name = thing['name']
+            lat = float(thing['latitude'])
+            lng = float(thing['longitude'])
+            new_loc = dict(name=name, location=[lat, lng])
+            if new_loc not in list:
+                list.append(new_loc)
+        locationList = []
+        for i in range(len(list)):
+            locationList.append(list[i]['location'])
+        max_time = input['settings']['length']
+        time_spent = 0
+        origin = dict(lat=input['settings']['lat'], lng=input['settings']['lng'])
+        orderedList = []
+        lengthToUse = len(list)
+        if lengthToUse > 25:
+            lengthToUse = 25
+        min_times = []
+        for i in range(lengthToUse):
+            min_time = 100000000
+            listDurations = []
+            index = 0
+            distances = gmaps.distance_matrix(origin, locationList, input['settings']['mode'], None, None, "imperial", None, None, None, None, None)
+            for j in range(len(distances['rows'][0]['elements'])):
+                listDuration = int(distances['rows'][0]['elements'][j]['duration']['text'][0])
+                listDurations.append(listDuration)
+            for j in range(len(listDurations)):
+                if listDurations[j] < min_time:
+                    min_time = listDurations[j]
+                    index = j
+            min_times.append(min_time)
+            orderedList.append(list[index])
+            list.pop(index)
+            origin = dict(lat=locationList[index][0], lng=locationList[index][1])
+            locationList.pop(index)
+            time_spent += min_time
+        while time_spent > max_time:
+            min_in_max = 0
+            index = 0
+            for i in range(len(min_times)):
+                if min_in_max < min_times[i]:
+                    min_in_max = min_times[i]
+                    index = i
+            orderedList.pop(index)
+            min_times.pop(index)
+            time_spent -= min_in_max
+        listDict = dict(Destinations=orderedList, trueCompletionTime=time_spent)
+        queries.insertIntoItinerary(listDict, input['gameKey'])
+        return JsonResponse({"success": True, "timeToCompletion": time_spent})
+    #except:
+        #return JsonResponse({"success": False})
