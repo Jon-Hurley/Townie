@@ -4,9 +4,17 @@
     import { userStore } from '../stores';
     import { page } from '$app/stores';
 	import { logout } from '../requests/account';
+    import { onMount } from 'svelte';
 
     let currentPage;
     page.subscribe(v => currentPage = v.route.id);
+    
+    onMount(async() => {
+        console.log(currentPage);
+        if (currentPage === "/delete") {
+            logout();
+        }
+    });
 
     $: pages = [
         {

@@ -14,10 +14,15 @@
 
 	const _deleteUser = async () => {
 		errorMessage = await deleteUser();
+        if (errorMessage == 10) {
+            goto('/login')
+            return;
+        }
 		if (errorMessage) {
+            console.log("inside error")
 			return;
 		}
-
+        console.log("past error")
 		goto('/login');
 	};
 

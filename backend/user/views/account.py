@@ -130,7 +130,7 @@ def deleteUser(request):
     if len(docs) == 0:
         return returnError('Unauthorized.', 401) # invalid passwordHash or key
 
-    return JsonResponse({})
+    return JsonResponse({'success': True})
 
 # TO-DO:
 
