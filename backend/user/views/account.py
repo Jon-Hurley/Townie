@@ -164,6 +164,8 @@ def completePasswordReset(request):
     otp = data['otp']
     newPassword = data['newPassword']
     res = twilio_con.testVerification(phone, otp)
+    if res is not "approved":
+        return returnError('Invalid OTP.', 401)
     try:
         docs = queries.getUserFromPhone(phone).batch()
     except Exception as e:
