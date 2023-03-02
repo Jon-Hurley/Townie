@@ -25,13 +25,13 @@ def updateInfo(userKey, passwordHash, newUsername, newPhone, newPasswordHash):
         FOR user IN User
             FILTER user._key == @userKey
                 && user.passwordHash == @passwordHash
-            UPDATE {
+            UPDATE user WITH {
                 _key: @userKey,
                 username: @newUsername,
                 phone: @newPhone,
                 passwordHash: @newPasswordHash
-            }
-            IN User
+            } IN User
+            
             RETURN NEW
         """,
         bind_vars={
