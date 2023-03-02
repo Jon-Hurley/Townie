@@ -148,14 +148,18 @@ def initiatePasswordReset(request):
     return JsonResponse({})
 
 @csrf_exempt
-def completePasswordReset(request):
+def verifyOTP(request):
     data = json.loads(request.body)
-    newPassword = data['newPassword']
     phone = data['phone']
     otp = data['otp']
     res = twilio_con.testVerification(phone, otp)
-    print(res)
 
+
+@csrf_exempt
+def completePasswordReset(request):
+    data = json.loads(request.body)
+    phone = data['phone']
+    newPassword = data['newPassword']
     try:
         docs = queries.getUserFromPhone(phone).batch()
     except Exception as e:
