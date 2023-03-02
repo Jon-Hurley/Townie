@@ -111,13 +111,14 @@ export const verifyOTP = async(otp) => {
     }
 }
 
-export const completePasswordReset = async(phone, newPassword) => {
+export const completePasswordReset = async(phone, otp, newPassword) => {
     try {
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'user/complete-password-reset/',
             {
-                phone,
-                newPassword
+                "phone" : phone,
+                "otp" : otp,
+                "newPassword" : newPassword
             }
         );
         console.log(res);
