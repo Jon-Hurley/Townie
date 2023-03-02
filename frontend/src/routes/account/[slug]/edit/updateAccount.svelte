@@ -1,14 +1,17 @@
 <script>
     import { goto } from '$app/navigation';
+	import { get } from 'svelte/store';
 	//import Layout from '../../account/[slug]/edit/';
-	import { deleteUser } from "../../../requests/account";
+	import { deleteUser } from '../../../../requests/account';
+    import { userStore } from '../../../../stores';
 
 
     
 
-    export let user;
+    export let user = userStore;
     let popupOpen = false;
     let deleteUserPopup = document.getElementById("deleteUser-popup");
+    console.log(get(userStore))
 
     const title = "text-gray-700 font-semibold text-lg mt-6";
     const hr = "my-2 bg-gray-100 h-[2px]";
@@ -25,6 +28,7 @@
 
     const _deleteUser = async () => {
         popupOpen = false;
+        console.log(user.key);
         const res = await deleteUser(user.key);
 		if (res) {
 			goto('/login/');
@@ -35,10 +39,10 @@
 
         <div class="my-5 w-full">
             <div class="text-gray-700 font-bold text-3xl text-center">
-                {user.username}
+                {$userStore.username}
             </div>
             <div class="text-gray-700 text-md text-center">
-                #{user.key}
+                #{$userStore.key}
             </div>
         </div>
         

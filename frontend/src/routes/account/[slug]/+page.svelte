@@ -3,14 +3,14 @@
     import { page } from '$app/stores';
 	import { getUser } from '../../../requests/search';
     import Loading from '../../../components/loading.svelte';
-	import User from './updateAccount.svelte/';
+	import User from './edit/updateAccount.svelte';
+	import { userStore } from '../../../stores';
 
 
-    let user;
+    let user = $userStore;
 
     onMount(async() => {
-        user = await getUser($page.params.slug);
-        user = user;
+        user = userStore
     })    
 </script>
 
@@ -19,7 +19,7 @@
         class="h-full flex flex-col"
     >
         <User
-            user={user}
+            user={$userStore}
         />
     </div>
 {:else}

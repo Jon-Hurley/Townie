@@ -2,10 +2,11 @@
     import { goto } from '$app/navigation';
 	//import Layout from '../../../+layout.svelte';
 	import { updateAccount, deleteUser } from "../../../../requests/account";
+    import { userStore } from '../../../../stores';
 
     
 
-    export let user;
+    export let user = $userStore;
 
     const title = "text-gray-700 font-semibold text-lg mt-6";
     const hr = "my-2 bg-gray-100 h-[2px]";
@@ -22,14 +23,14 @@
 
 
     const update = async () => {
-        if (newUsername == null) {
+        if (newUsername == "") {
             newUsername = user.username;
         }
-        if (newPhone == null) {
+        if (newPhone == "") {
             newPhone = user.phone;
         }
         
-        const res = await updateAccount(newUsername, newPhone);
+        const res = await updateAccount(user.key, user.username, user.phone, newUsername, newPhone);
 		if (res) {
 			goto('/account/' + user.key);
 		}
@@ -39,10 +40,10 @@
 
 <div class="my-5 w-full">
     <div class="text-gray-700 font-bold text-3xl text-center">
-        {user.username}
+        {$userStore.username}
     </div>
     <div class="text-gray-700 text-md text-center">
-        #{user.key}
+        #{$userStore.key}
     </div>
 </div>
 

@@ -48,20 +48,21 @@ def login(username, password):
 def updateInfo(userKey, newUser, newPhone):
     return db.aql.execute(
         """
-        LET result = (
-            FOR user IN User
-                FILTER user._key == (@userKey)
-                UPDATE user WITH MERGE(user, { username: (@newUser), phone: (@newPhone) }) IN User
-                RETURN {
-                    success: true,
-                    key: user._key,
-                    username: user.username,
-                    phoneNumber: user.phone,
-                    points: user.points,
-                    rank: user.ranks,
-                    purchases: user.purchases
-                }
-        )
+        LET temp = True
+        FOR user IN User
+            FILTER user._key == (@userKey)
+            UPDATE user WITH MERGE(user, { username: (@newUser), phone: (@newPhone) }) IN User
+            temp = False
+            RETURN {
+                success: true,
+                key: user._key,
+                username: user.username,
+                phoneNumber: user.phone,
+                points: user.points,
+                rank: user.ranks,
+                purchases: user.purchases
+            }
+        
         LET temp = LENGTH(result)
         RETURN { success: (temp != 0) }
         """,
@@ -107,7 +108,7 @@ def getUser(userKey, targetKey):
                 phone: user.phone,
                 points: user.points,
                 rank: user.rank,
-                purchases: user.purchases
+                purchases: user.purchases,
                 friendship: f
             }
         """,
@@ -132,6 +133,7 @@ def getUsersBySubstring(substr):
         """,
         bind_vars={'substr': substr}
     )
+
 
 def getFriendsList(key):
     return db.aql.execute(

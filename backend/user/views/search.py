@@ -12,5 +12,8 @@ def searchUsers(request):
 @csrf_exempt
 def getUser(request, key):
     userKey = json.loads(request.body)['key']
+    print(key)
+    print(userKey)
     res = arango_con.getUser(userKey, targetKey=key).batch()[0]
+    print(res)
     return JsonResponse(res)
