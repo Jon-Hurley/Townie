@@ -7,7 +7,7 @@ from . import queries
 
 @csrf_exempt
 def map(request):
-    #try:
+    try:
         list = []
         gmaps = googlemaps.Client(key=os.environ.get('GOOGLE_API_KEY'))
         input = json.loads(request.body)
@@ -73,5 +73,5 @@ def map(request):
         listDict = dict(Destinations=orderedList, trueCompletionTime=time_spent)
         queries.insertIntoItinerary(listDict, input['gameKey'])
         return JsonResponse({"success": True, "timeToCompletion": time_spent})
-    #except:
-        #return JsonResponse({"success": False})
+    except:
+        return JsonResponse({"success": False})
