@@ -7,6 +7,7 @@
 	export let settings;
     let form = { ...settings };
     let otherCompletionTime = false;
+    let otherRadius = false;
     let locationInput = "";
 	let isOpen = true;
 
@@ -116,7 +117,7 @@
             </div>
             <select
                 bind:value={form.theme}
-                class="w-32"
+                class="w-40"
             >
                 <option value="None">None</option>
                 <option value="restaurant">Food</option>
@@ -143,7 +144,7 @@
                         form = form;
                     }
                 }}
-                class="w-32"
+                class="w-40"
             >
                 <option value={30}>30 minutes</option>
                 <option value={60}>60 minutes</option>
@@ -155,7 +156,7 @@
             {#if otherCompletionTime}
                 
                 <input
-                    class="{inputStyle} w-40"
+                    class="w-40"
                     placeholder="Other"
                     type="number"
                     min="1"
@@ -183,15 +184,50 @@
                 Game Radius
             </div>
             <select
+                on:change={e => {
+                    const v = e.target.value;
+                    otherRadius = v === "Other";
+                    console.log("OtherRadius " + otherRadius)
+                    if (!otherRadius) {
+                        form.radius = parseInt(v);
+                        form = form;
+                    }
+                }}
                 bind:value={form.radius}
-                class="w-32"
+                class="w-40"
             >
-                <option value={1}>1 mile</option>
+                <option value={1}>Min: 1 mile</option>
                 <option value={2}>2 miles</option>
                 <option value={5}>5 miles</option>
                 <option value={10}>10 miles</option>
                 <option value={20}>20 miles</option>
-            </select>
+                <option value={50}>50 miles</option>
+                <option value={100}>Max: 100 miles</option>
+                <option value="Other">Other</option>
+            </select
+>
+            {#if otherRadius}
+                <input
+                    class="w-40"
+                    placeholder="Other"
+                    type="number"
+                    min="1"
+                    value={form.radius}
+                    on:input={e => {
+                        let v;
+                        try {
+                            v = parseInt(e.target.value)
+                        } catch (err) {
+                            v = 0;
+                        }
+                        form.radius = Math.abs(v);
+                        if (form.radius > 100) {
+                            form.radius = 100;
+                        }
+                    }}
+                />
+                <text>Nonnegative please :)</text>
+            {/if}
         </div>
         
 
