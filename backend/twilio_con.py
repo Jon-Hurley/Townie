@@ -8,19 +8,18 @@ t = Client(
     username=os.environ.get('TWILIO_SID'),
     password=os.environ.get('TWILIO_AUTH_TOKEN')
 )
+verify_sid = os.environ.get('TWILIO_VERIFY_SID')
 
-def verifyUser(verified_number):
-    verify_sid = os.environ.get('TWILIO_VERIFY_SID')
+def sendVerification(phone):
     verification = t.verify.v2.services(verify_sid) \
         .verifications \
-        .create(to=verified_number, channel="sms")
-    print(verification.status)
+        .create(to=phone, channel="sms")
+    return verification.status
 
-    otp_code = input("Please enter the OTP:")
-
+def testVerification(phone, otp):
     verification_check = t.verify.v2.services(verify_sid) \
         .verification_checks \
-        .create(to=verified_number, code=otp_code)
+        .create(to=phone, code=otp)
     return verification_check.status
 
 # res = verifyUser("+13176909263")

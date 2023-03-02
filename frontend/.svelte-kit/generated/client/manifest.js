@@ -13,22 +13,32 @@ export const nodes = [() => import('./nodes/0'),
 	() => import('./nodes/10'),
 	() => import('./nodes/11'),
 	() => import('./nodes/12'),
-	() => import('./nodes/13')];
+	() => import('./nodes/13'),
+	() => import('./nodes/14'),
+	() => import('./nodes/15'),
+	() => import('./nodes/16'),
+	() => import('./nodes/17'),
+	() => import('./nodes/18')];
 
 export const server_loads = [];
 
 export const dictionary = {
 	"/": [3],
 	"/account": [4],
-	"/game": [5,[2]],
-	"/game/join": [6,[2]],
-	"/game/lobby": [7,[2]],
-	"/game/map": [8,[2]],
-	"/login": [9],
-	"/notifs": [10],
-	"/social": [11],
-	"/store": [12],
-	"/user/[slug]": [13]
+	"/account/edit": [5],
+	"/forgot-password": [6],
+	"/game": [7,[2]],
+	"/game/join": [8,[2]],
+	"/game/lobby": [9,[2]],
+	"/game/map": [10,[2]],
+	"/login": [11],
+	"/notifs": [12],
+	"/password-reset": [13],
+	"/signup": [14],
+	"/social": [15],
+	"/store": [16],
+	"/user/[slug]": [17],
+	"/verification": [18]
 };
 
 export const hooks = {

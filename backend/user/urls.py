@@ -4,13 +4,15 @@ from .views import friend, account, search
 urlpatterns = [
     path('login/', account.login),
     path('signup/', account.signup),
-    path('verification/', account.verification),
     path('token-login/', account.loginWithToken),
-    path('account/edit', account.updateInfo),
     path('initiate-password-reset/', account.initiatePasswordReset),
     path('complete-password-reset/', account.completePasswordReset),
+    path('update/', account.updateInfo),
     path('delete/', account.deleteUser),
-    
+
+    path('send-verification/', account.sendVerification),
+    path('update-password/', account.testVerification),
+
     path('search/', search.searchUsers),
     path('profile/<str:key>/', search.getUser),
 
