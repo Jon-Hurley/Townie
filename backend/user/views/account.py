@@ -55,7 +55,7 @@ def signup(request):
     except Exception as e:
         em = e.error_message
         if em.find('unique constraint violated') != -1:
-            return returnError('This username is already taken.', e.http_code)
+            return returnError('This username or phone number is already taken.', e.http_code)
         return returnError(em, e.http_code)
 
     return returnUserPrivate(doc['new'])
@@ -108,7 +108,7 @@ def updateInfo(request):
     except Exception as e:
         em = e.error_message
         if em.find('unique constraint violated') != -1:
-            return returnError('This username is already taken.', e.http_code)
+            return returnError('This username or phone number is already taken.', e.http_code)
         return returnError(em, e.http_code)
     
     if len(docs) == 0:
@@ -164,6 +164,8 @@ def completePasswordReset(request):
     otp = data['otp']
     newPassword = data['newPassword']
     res = twilio_con.testVerification(phone, otp)
+    if res is not "approved":
+        return returnError('Invalid OTP.', 401)
     try:
         docs = queries.getUserFromPhone(phone).batch()
     except Exception as e:
