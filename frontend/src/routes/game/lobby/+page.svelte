@@ -2,6 +2,7 @@
 	import { buttonStyle, gridItem, indigoStyle, largeTitle } from "../../../css";
 	import { startGame } from "../../../requests/group";
     import { gameStore } from "../../../stores";
+    import { goto } from "$app/navigation"
 	import Settings from "./settings.svelte";
 
     const title = "text-gray-700 font-semibold text-lg mt-2";
@@ -53,7 +54,7 @@
             />
             <button
                 class="{buttonStyle} {indigoStyle} w-24 ml-2"
-                on:click={() => startGame()}
+                on:click={() => goto("/game/map")}
             >
                 Start
             </button>

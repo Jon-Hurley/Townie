@@ -140,6 +140,7 @@ export const setDefaultEvents = () => {
 }
 
 export const resumePolling = () => {
+    const gameKey = get(gameStore).game._key;
     setDefaultEvents();
     stopPolling();
     const objStr = JSON.stringify({
