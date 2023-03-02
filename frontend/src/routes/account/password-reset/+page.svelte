@@ -17,6 +17,7 @@
 
     const _initiatePasswordReset = async () => {
         const formattedPhone = '+1' + form.phone.replace(/\D/g, '');
+        console.log(formattedPhone)
         if (formattedPhone.toString().length !== 12) {
             errorMessage = 'The phone number you input is not the correct length or incorrectly formatted. Please try again.';
             return;
