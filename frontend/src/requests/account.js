@@ -1,12 +1,13 @@
 import axios from 'axios';
 import { PUBLIC_BACKEND_API } from '$env/static/public';
 import { get } from 'svelte/store';
-import { userStore } from '../stores';
+import { userStore } from './../stores'
+
 
 export const login = async(username, password) => {
     console.log("HERE")
     try {
-        console.log("here pt2");
+        console.log(username + ", " + password);
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'user/login/',
             {
@@ -84,15 +85,16 @@ export const verification = async(verifCode) => {
     }
 };
 
-export const updateAccount = async(username, phoneNumber) => {
+export const updateAccount = async(key, username, phoneNumber, newUsername, newPhoneNumber) => {
     try {
-        if (phoneNumber != userStore.phoneNumber) {
-            if (verification) {
+        if (phoneNumber != newPhoneNumber) {
+            if (true/*verification*/) {
                 const res = await axios.post(
-                    PUBLIC_BACKEND_API + 'user/account/',
+                    PUBLIC_BACKEND_API + 'user/account/edit',
                     {
-                        username: username,
-                        phoneNumber: phoneNumber
+                        username: newUsername,
+                        phoneNumber: newPhoneNumber,
+                        key: key
                     }
                 );
 
@@ -102,13 +104,15 @@ export const updateAccount = async(username, phoneNumber) => {
             return false;
         } else {
             const res = await axios.post(
-                PUBLIC_BACKEND_API + 'user/account/',
+                PUBLIC_BACKEND_API + 'user/account/edit',
                 {
-                    username: username
+                    username: username,
+                    phoneNumber: phoneNumber,
+                    key: key
                 }
             );
 
-            data = res.data;
+            let data = res.data;
             return data.success;
         }
     } catch (err) {
@@ -191,9 +195,9 @@ export const completePasswordReset = async() => {
 export const deleteUser = async(userKey) => {
     try {
         const res = await axios.post(
-            PUBLIC_BACKEND_API + 'user/account/',
+            PUBLIC_BACKEND_API + 'user/delete/',
             {
-                key: get(userStore).key
+                key: userKey
             }
         );
         console.log(res);

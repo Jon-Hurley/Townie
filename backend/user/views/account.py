@@ -62,10 +62,11 @@ def loginWithToken(request):
     })
 
 @csrf_exempt # note csrf is being wonky, add this to POST/PUT/DELETE reqs for now
-def updateInfo(request, key):
+def updateInfo(request):
     data = json.loads(request.body)
     username = data.get('username')
     phoneNumber = data.get('phoneNumber')
+    key = data.get('key')
     res = arango_con.updateInfo(key, username, phoneNumber)
     data = res.batch()
     if len(data) == 0:

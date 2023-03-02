@@ -1,8 +1,12 @@
 <script>
     import { goto } from '$app/navigation';
+	//import Layout from '../../../+layout.svelte';
 	import { updateAccount, deleteUser } from "../../../requests/account";
-    import { userStore } from "../../../stores";
-   
+    import { userStore } from '../../../stores';
+
+    
+
+    export let user = $userStore;
 
     const title = "text-gray-700 font-semibold text-lg mt-6";
     const hr = "my-2 bg-gray-100 h-[2px]";
@@ -20,14 +24,14 @@
 
 
     const update = async () => {
-        if (newUsername == '') {
-            newUsername = $userStore.username;
+        if (newUsername == "") {
+            newUsername = user.username;
         }
-        if (newPhone == '') {
-            newPhone = $userStore.phone;
+        if (newPhone == "") {
+            newPhone = user.phone;
         }
         
-        const res = await updateAccount(newUsername, newPhone);
+        const res = await updateAccount(user.key, user.username, user.phone, newUsername, newPhone);
 		if (res) {
 			goto('/account/');
 		} else {
