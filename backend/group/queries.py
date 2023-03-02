@@ -11,9 +11,9 @@ def createGame():
         'settings': {
             'radius': 5,
             'walkingAllowed': True,
-            'drivingAllowed': True,
-            'bicyclingAllowed': True,
-            'transitAllowed': True,
+            'drivingAllowed': False,
+            'bicyclingAllowed': False,
+            'transitAllowed': False,
             'theme': "None",
             'desiredCompletionTime': 180,
             'lon': 0.0,

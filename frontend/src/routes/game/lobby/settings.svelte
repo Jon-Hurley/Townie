@@ -1,6 +1,6 @@
 <script>
 	import { each } from 'svelte/internal';
-import { blueStyle, buttonStyle, grayStyle, hr, largeTitle, inputStyle } from '../../../css';
+    import { blueStyle, buttonStyle, grayStyle, hr, largeTitle, inputStyle } from '../../../css';
 	import { updateSettings } from '../../../requests/group';
     const section = "font-semibold text-lg text-center mb-3"
 
@@ -42,192 +42,178 @@ import { blueStyle, buttonStyle, grayStyle, hr, largeTitle, inputStyle } from '.
 	Settings
 </button>
 
-<!--
-    Background backdrop, show/hide based on modal state.
+<div
+    class="
+        fixed inset-0 bg-gray-200 mb-16
+        pointer-events-none
+        transition-all duration-200
+        {isOpen ? 'bg-opacity-75' : 'bg-opacity-0'}
+    "
+/>
 
-    Entering: "ease-out duration-300"
-    From: "opacity-0"
-    To: "opacity-100"
-    Leaving: "ease-in duration-200"
-    From: "opacity-100"
-    To: "opacity-0"
--->
-
-<!--
-    Modal panel, show/hide based on modal state.
-
-    Entering: "ease-out duration-300"
-        From: "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-        To: "opacity-100 translate-y-0 sm:scale-100"
-    Leaving: "ease-in duration-200"
-        From: "opacity-100 translate-y-0 sm:scale-100"
-        To: "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
--->
-
-{#if isOpen}
-	<div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
-	<div
-		class="
-            fixed bottom-14 left-0
-            w-screen text-center
+<div
+    class="
+        fixed left-0 bottom-16
+        w-screen text-center
+        transition-all duration-200
+        {isOpen ? 'translate-y-0' : 'translate-y-full pointer-events-none'}
+    "
+>
+    <div
+        class="
+            bg-gray-50 p-4 rounded-t-lg
+            w-full
         "
-	>
-		<div
+    >
+        <div class="{largeTitle}">
+            Settings
+        </div>
+        <hr class="{hr} my-4">
+
+        <div class="{section}">
+            Starting Location
+        </div>
+        <input
+            class="{inputStyle}"
+            placeholder="Starting Location"
+            bind:value={locationInput}
+        />
+        <hr class="{hr} my-4">
+        
+        <div class="{section}">
+            Allowed Transport
+        </div>
+        <div
+            class="flex justify-center gap-2"
+            style="max-height: 100%"
+        >
+            {#each checkboxes as checkbox}
+                <button
+                    class="{buttonStyle} {form[checkbox.field] ? blueStyle : (grayStyle + ' opacity-25')}"
+                    on:click={() => {
+                        for (const { field } of checkboxes) {
+                            form[field] = false;
+                        }
+                        form[checkbox.field] = true;
+                    }}
+                >
+                    {checkbox.title}
+                </button>
+            {/each}
+            
+        </div>
+
+        <hr class="{hr} my-4">
+        <div
             class="
-                bg-gray-50 p-4 rounded-t-lg
-                w-full
+                flex justify-between items-center
+                bg-white p-3 mb-2
+                border-2 border-gray-200 rounded
             "
         >
-            <div class="{largeTitle}">
-                Settings
+            <div class="font-semibold">
+                Theme
             </div>
-            <hr class="{hr} my-4">
-
-            <div class="{section}">
-                Starting Location
-            </div>
-			<input
-                class="{inputStyle}"
-                placeholder="Starting Location"
-                bind:value={locationInput}
-            />
-            <hr class="{hr} my-4">
-            
-            <div class="{section}">
-                Allowed Transport
-            </div>
-            <div
-                class="flex justify-center gap-2"
-                style="max-height: 100%"
+            <select
+                bind:value={form.theme}
+                class="w-32"
             >
-                {#each checkboxes as checkbox}
-                    <button
-                        class="{buttonStyle} {form[checkbox.field] ? blueStyle : grayStyle}"
-                        on:click={() => {
-                            form[checkbox.field] = !form[checkbox.field];
-                            
-
-                            for (let i = 0; i < checkboxes.length; i++) {
-                                if (checkboxes[i] != checkbox) {
-                                    form[checkboxes[i].field] = true
-                                }
-                            }
-                        }}
-                    >
-                        {checkbox.title}
-                    </button>
-                {/each}
+                <option value="None">None</option>
+                <option value="restaurant">Food</option>
+                <option value="park">Park</option>
+                <option value="museum">Museum</option>
+            </select>
+        </div>
+        <div
+            class="
+                flex justify-between items-center
+                bg-white p-3 mb-2
+                border-2 border-gray-200 rounded
+            "
+        >
+            <div class="font-semibold">
+                Length
+            </div>
+            <select
+                on:change={e => {
+                    const v = e.target.value;
+                    otherCompletionTime = v === "Other";
+                    if (!otherCompletionTime) {
+                        form.desiredCompletionTime = parseInt(v);
+                        form = form;
+                    }
+                }}
+                class="w-32"
+            >
+                <option value={30}>30 minutes</option>
+                <option value={60}>60 minutes</option>
+                <option value={90}>90 minutes</option>
+                <option value={120}>120 minutes</option>
+                <option value={180}>180 minutes</option>
+                <option value="Other">Other</option>
+            </select>
+            {#if otherCompletionTime}
                 
-            </div>
-
-            <hr class="{hr} my-4">
-            <div
-                class="
-                    flex justify-between items-center
-                    bg-white p-3 mb-2
-                    border-2 border-gray-500 rounded
-                "
-            >
-                <div class="font-semibold">
-                    Theme
-                </div>
-                <select
-                    bind:value={form.theme}
-                    class="w-32"
-                >
-                    <option value="None">None</option>
-                    <option value="restaurant">Food</option>
-                    <option value="park">Park</option>
-                    <option value="museum">Museum</option>
-                </select>
-            </div>
-            <div
-                class="
-                    flex justify-between items-center
-                    bg-white p-3 mb-2
-                    border-2 border-gray-500 rounded
-                "
-            >
-                <div class="font-semibold">
-                    Length
-                </div>
-                <select
-                    on:change={e => {
-                        const v = e.target.value;
-                        otherCompletionTime = v === "Other";
-                        if (!otherCompletionTime) {
-                            form.desiredCompletionTime = parseInt(v);
-                            form = form;
+                <input
+                    class="{inputStyle} w-40"
+                    placeholder="Other"
+                    type="number"
+                    min="1"
+                    value={form.desiredCompletionTime}
+                    on:input={e => {
+                        let v;
+                        try {
+                            v = parseInt(e.target.value)
+                        } catch (err) {
+                            v = 0;
                         }
+                        form.desiredCompletionTime = Math.abs(v);
                     }}
-                    class="w-32"
-                >
-                    <option value={30}>30 minutes</option>
-                    <option value={60}>60 minutes</option>
-                    <option value={90}>90 minutes</option>
-                    <option value={120}>120 minutes</option>
-                    <option value={180}>180 minutes</option>
-                    <option value="Other">Other</option>
-                </select>
-                {#if otherCompletionTime}
-                    
-                    <input
-                        class="{inputStyle} w-40"
-                        placeholder="Other"
-                        type="number"
-                        min="1"
-                        value={form.desiredCompletionTime}
-                        on:input={e => {
-                            console.log(e.target.value)
-                            if (e.target.value < 0) return;
-                            form.desiredCompletionTime = e.target.value;
-                        }}
-                    />
-                {/if}
+                />
+            {/if}
+        </div>
+        <div
+            class="
+                flex justify-between items-center
+                bg-white p-3
+                border-2 border-gray-200 rounded
+            "
+        >
+            <div class="font-semibold">
+                Game Radius
             </div>
-            <div
-                class="
-                    flex justify-between items-center
-                    bg-white p-3
-                    border-2 border-gray-500 rounded
-                "
+            <select
+                bind:value={form.radius}
+                class="w-32"
             >
-                <div class="font-semibold">
-                    Game Radius
-                </div>
-                <select
-                    bind:value={form.radius}
-                    class="w-32"
-                >
-                    <option value={1}>1 mile</option>
-                    <option value={2}>2 miles</option>
-                    <option value={5}>5 miles</option>
-                    <option value={10}>10 miles</option>
-                    <option value={20}>20 miles</option>
-                </select>
-            </div>
-            
+                <option value={1}>1 mile</option>
+                <option value={2}>2 miles</option>
+                <option value={5}>5 miles</option>
+                <option value={10}>10 miles</option>
+                <option value={20}>20 miles</option>
+            </select>
+        </div>
+        
 
-            <hr class="{hr} my-4">
-			<div class="flex ">
-				<button
-					class="{buttonStyle} {blueStyle} w-full mr-2"
-					on:click={() => {
-						isOpen = false;
-                        _updateSettings()
-					}}
-				>
-					Save
-				</button>
-				<button
-					class="{buttonStyle} {grayStyle} w-full"
-					on:click={() => {
-						isOpen = false;
-					}}
-				>
-					Cancel
-				</button>
-			</div>
-		</div>
-	</div>
-{/if}
+        <hr class="{hr} my-4">
+        <div class="flex ">
+            <button
+                class="{buttonStyle} {blueStyle} w-full mr-2"
+                on:click={() => {
+                    isOpen = false;
+                    _updateSettings()
+                }}
+            >
+                Save
+            </button>
+            <button
+                class="{buttonStyle} {grayStyle} w-full"
+                on:click={() => {
+                    isOpen = false;
+                }}
+            >
+                Cancel
+            </button>
+        </div>
+    </div>
+</div>
