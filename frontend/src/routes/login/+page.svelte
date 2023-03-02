@@ -10,7 +10,7 @@
 	let popupOpen = false;
 
     const _login = async () => {
-		if (form.username != '' && form.password != '') {
+		if ((form.username) != '' && form.password != '') {
         const res = await login(form.username, form.password);
 		if (res) {
 			goto('/game/lobby');
@@ -19,6 +19,8 @@
 		}
         console.log(res);
 		}
+		form.username = '';
+		form.password = '';
 	};
 </script>
 
@@ -110,9 +112,9 @@
 </div>
 
 {#if popupOpen}
-        <!--deleteUser popup-->
+        <!--failed login popup-->
         <div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full" id="loginFailed-popup">
-            <div class="relative top-60 mx-auto p-3 border w-80 shadow-lg rounded-lg bg-white border-red-400">
+            <div class="relative top-60 mx-auto p-3 border w-80 shadow-lg rounded-lg bg-white border-gray-700">
                 <div class="mt-3 text-center">
                     <div class="mx-auto flex items-center justify-center rounded-full">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12 text-red-600">
@@ -130,7 +132,7 @@
                         <button 
                             id="ok-btn" 
                             on:click={() => {popupOpen = false;}}
-                            class="px-4 py-2 border border-red-600 text-red-600 text-base font-medium rounded-md w-full shadow-sm hover:border-red-800 focus:outline-none focus:ring-2 focus:ring-red-400">
+                            class="px-4 py-2 border border-red-600 text-red-600 text-base font-medium rounded-md w-full shadow-sm bg-red-100 hover:border-red-800 focus:outline-none focus:ring-2 focus:ring-red-400">
                             OK
                         </button>
                     </div>

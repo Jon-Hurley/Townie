@@ -1,5 +1,6 @@
 <script>
     import { goto } from '$app/navigation';
+<<<<<<< HEAD:frontend/src/routes/account/[slug]/edit/edit.svelte
 	//import Layout from '../../../+layout.svelte';
 	import { updateAccount, deleteUser } from "../../../../requests/account";
     import { userStore } from '../../../../stores';
@@ -7,6 +8,11 @@
     
 
     export let user = $userStore;
+=======
+	import { updateAccount, deleteUser } from "../../../requests/account";
+    import { userStore } from "../../../stores";
+   
+>>>>>>> c4fcd653349bb3555223c6455cbbf702daa30673:frontend/src/routes/account/edit/+page.svelte
 
     const title = "text-gray-700 font-semibold text-lg mt-6";
     const hr = "my-2 bg-gray-100 h-[2px]";
@@ -14,7 +20,7 @@
 	let newUsername = '', newPhone = '';
 
     const _deleteUser = async () => {
-        const res = await deleteUser(user.key);
+        const res = await deleteUser($userStore.key);
 		if (res) {
 			goto('/login');
 		}
@@ -23,16 +29,24 @@
 
 
     const update = async () => {
+<<<<<<< HEAD:frontend/src/routes/account/[slug]/edit/edit.svelte
         if (newUsername == "") {
             newUsername = user.username;
         }
         if (newPhone == "") {
             newPhone = user.phone;
+=======
+        if (newUsername == '') {
+            newUsername = $userStore.username;
+        }
+        if (newPhone == '') {
+            newPhone = $userStore.phone;
+>>>>>>> c4fcd653349bb3555223c6455cbbf702daa30673:frontend/src/routes/account/edit/+page.svelte
         }
         
         const res = await updateAccount(user.key, user.username, user.phone, newUsername, newPhone);
 		if (res) {
-			goto('/account/' + user.key);
+			goto('/account/');
 		}
         console.log(res);
 	};
@@ -79,7 +93,7 @@
 
 <hr class={hr}>
 <div class="px-2 py-4">
-    {user.username}
+    {$userStore.username}
     <input
         bind:value={newUsername}
         type="text"					
@@ -93,7 +107,7 @@
 </div>
 <hr class={hr}>
 <div class="px-2 py-4 uppercase">
-    {user.phone}
+    {$userStore.phone}
     <input
         bind:value={newPhone}
         type="text"					
@@ -113,12 +127,13 @@
         </button>
     </div>
     <div> 
-        <button
-            on:click={goto('/account/' + user.key)}
-            name=cancel
-            class="group relative w-full text-center items-end rounded-md border border-red-600 py-2 px-4 text-md font-medium text-red-600 hover:text-red-800 focus:outline-red">
-            Cancel
-        </button> 
+        <a href="/account">
+            <button
+                name=cancel
+                class="group relative w-full text-center items-end rounded-md border border-red-600 py-2 px-4 text-md font-medium text-red-600 hover:text-red-800 focus:outline-red">
+                Cancel
+            </button> 
+        </a>
     </div>
 </div>
   

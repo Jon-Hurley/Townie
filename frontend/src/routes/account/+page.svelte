@@ -1,5 +1,6 @@
 <script>
     import { goto } from '$app/navigation';
+<<<<<<< HEAD:frontend/src/routes/account/edit/updateAccount.svelte
 	import { get } from 'svelte/store';
 	//import Layout from '../../account/[slug]/edit/';
 	import { deleteUser } from '../../../../requests/account';
@@ -12,24 +13,25 @@
     let popupOpen = false;
     let deleteUserPopup = document.getElementById("deleteUser-popup");
     console.log(get(userStore))
+=======
+	import { deleteUser } from "../../requests/account";
+    import { userStore } from "../../stores/";
+
+    let popupOpen = false;
+>>>>>>> c4fcd653349bb3555223c6455cbbf702daa30673:frontend/src/routes/account/+page.svelte
 
     const title = "text-gray-700 font-semibold text-lg mt-6";
     const hr = "my-2 bg-gray-100 h-[2px]";
 
-    window.onclick = function(event) {
-        if (event.target == deleteUserPopup) {
-            popupOpen = false;
-        }
-    }
-
-    const _editAccount = async () => {
-        goto('/account/' + user.key + '/edit/')
-	};
 
     const _deleteUser = async () => {
         popupOpen = false;
+<<<<<<< HEAD:frontend/src/routes/account/edit/updateAccount.svelte
         console.log(user.key);
         const res = await deleteUser(user.key);
+=======
+        const res = await deleteUser($userStore.key);
+>>>>>>> c4fcd653349bb3555223c6455cbbf702daa30673:frontend/src/routes/account/+page.svelte
 		if (res) {
 			goto('/login/');
 		}
@@ -56,19 +58,20 @@
         
         <div class="col-span-1 relative items-left">
         <!-- Edit account button --> 
-        <button
-            name=edit
-            on:click={_editAccount}
-            class="group relative w-12 peer/edit text-left items-left rounded-md border border-transparent py-2 px-4 text-sm font-medium text-indigo-600 hover:text-indigo-800 focus:outline-none">
-        
-            <span class= "absolute bottom-0 left-0">
-                <!-- Heroicon name: pencil -->
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
-                </svg>
-              
-            </span>
-        </button>
+        <a href="/account/edit">
+            <button
+                name=edit
+                class="group relative w-12 peer/edit text-left items-left rounded-md border border-transparent py-2 px-4 text-sm font-medium text-indigo-600 hover:text-indigo-800 focus:outline-none">
+            
+                <span class= "absolute bottom-0 left-0">
+                    <!-- Heroicon name: pencil -->
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                    </svg>
+                
+                </span>
+            </button>
+        </a>
         
         </div>
         
@@ -95,7 +98,7 @@
         
         <hr class={hr}>
         <div class="px-2 py-4">
-            {user.username}
+            {$userStore.username}
         </div>
         
         <div class={title}>
@@ -103,7 +106,7 @@
         </div>
         <hr class={hr}>
         <div class="px-2 py-4 uppercase">
-            {user.phone}
+            {$userStore.phone}
         </div>
         
         
@@ -112,7 +115,7 @@
         </div>
         <hr class={hr}>
         <div class="px-2 py-4 uppercase">
-            {user.rank}
+            {$userStore.rank}
         </div>
         
 {#if popupOpen}
