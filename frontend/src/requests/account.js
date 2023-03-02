@@ -27,8 +27,8 @@ export const login = async(username, password) => {
         //let points = data.points;
         //let purchases = data.purchases;
         //let rank = data.rank;
-        console.log(res.data);
         userStore.set(res.data);
+        console.log(get(userStore));
 
         //axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`
 
