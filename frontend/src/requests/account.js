@@ -151,19 +151,24 @@ export const loginWithToken = async() => {
     }
 };
 
-export const initiatePasswordReset = async() => {
+export const initiatePasswordReset = async(phoneNumber) => {
     try {
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'user/account/',
             {
-                key: get(userStore).key
+                phoneNumber: phoneNumber
             }
         );
         console.log(res);
-        return res.data.account || [];        
+        if (res.data.success) {
+            userStore.set(res.data);
+            return res.data.success;
+        } else {
+            return false;
+        }    
     } catch (err) {
         console.log(err);
-        return [];
+        return false;
     }
 };
 
@@ -176,10 +181,10 @@ export const completePasswordReset = async() => {
             }
         );
         console.log(res);
-        return res.data.account || [];        
+        return res.data.success;        
     } catch (err) {
         console.log(err);
-        return [];
+        return false;
     }
 };
 

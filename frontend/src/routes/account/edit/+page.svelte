@@ -1,11 +1,8 @@
 <script>
     import { goto } from '$app/navigation';
-	//import Layout from '../../../+layout.svelte';
-	import { updateAccount, deleteUser } from "../../../../requests/account";
-
-    
-
-    export let user;
+	import { updateAccount, deleteUser } from "../../../requests/account";
+    import { userStore } from "../../../stores";
+   
 
     const title = "text-gray-700 font-semibold text-lg mt-6";
     const hr = "my-2 bg-gray-100 h-[2px]";
@@ -13,7 +10,7 @@
 	let newUsername = '', newPhone = '';
 
     const _deleteUser = async () => {
-        const res = await deleteUser(user.key);
+        const res = await deleteUser($userStore.key);
 		if (res) {
 			goto('/login');
 		}
@@ -22,16 +19,16 @@
 
 
     const update = async () => {
-        if (newUsername == null) {
-            newUsername = user.username;
+        if (newUsername == '') {
+            newUsername = $userStore.username;
         }
-        if (newPhone == null) {
-            newPhone = user.phone;
+        if (newPhone == '') {
+            newPhone = $userStore.phone;
         }
         
         const res = await updateAccount(newUsername, newPhone);
 		if (res) {
-			goto('/account/' + user.key);
+			goto('/account/');
 		}
         console.log(res);
 	};
@@ -39,10 +36,10 @@
 
 <div class="my-5 w-full">
     <div class="text-gray-700 font-bold text-3xl text-center">
-        {user.username}
+        {$userStore.username}
     </div>
     <div class="text-gray-700 text-md text-center">
-        #{user.key}
+        #{$userStore.key}
     </div>
 </div>
 
@@ -78,7 +75,7 @@
 
 <hr class={hr}>
 <div class="px-2 py-4">
-    {user.username}
+    {$userStore.username}
     <input
         bind:value={newUsername}
         type="text"					
@@ -92,7 +89,7 @@
 </div>
 <hr class={hr}>
 <div class="px-2 py-4 uppercase">
-    {user.phone}
+    {$userStore.phone}
     <input
         bind:value={newPhone}
         type="text"					
@@ -112,12 +109,13 @@
         </button>
     </div>
     <div> 
-        <button
-            on:click={goto('/account/' + user.key)}
-            name=cancel
-            class="group relative w-full text-center items-end rounded-md border border-red-600 py-2 px-4 text-md font-medium text-red-600 hover:text-red-800 focus:outline-red">
-            Cancel
-        </button> 
+        <a href="/account">
+            <button
+                name=cancel
+                class="group relative w-full text-center items-end rounded-md border border-red-600 py-2 px-4 text-md font-medium text-red-600 hover:text-red-800 focus:outline-red">
+                Cancel
+            </button> 
+        </a>
     </div>
 </div>
   
