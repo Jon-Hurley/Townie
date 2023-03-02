@@ -75,6 +75,7 @@ export const updateAccount = async(password, newUsername, newPhone) => {
                 newPhone
             }
         );
+        userStore.set(res.data)
         return null;
     } catch (err) {
         return err?.response?.data?.errorMessage
