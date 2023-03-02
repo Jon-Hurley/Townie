@@ -78,7 +78,7 @@
             <button
             on:click={resendVerification()} 
             class="font-medium text-indigo-600 mt-2 hover:text-indigo-400">
-                Resend Email
+                Resend text.
             </button>
         </div>
     </div>

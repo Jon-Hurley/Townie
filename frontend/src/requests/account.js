@@ -98,13 +98,25 @@ export const initiatePasswordReset = async(phone) => {
     }
 };
 
-export const completePasswordReset = async(phone, otp, newPassword) => {
+export const verifyOTP = async(otp) => {
+    try {
+    const res = await axios.post(
+        PUBLIC_BACKEND_API + 'user/initiate-password-reset/',
+        {
+            otp
+        }
+    );
+    } catch {
+        
+    }
+}
+
+export const completePasswordReset = async(phone, newPassword) => {
     try {
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'user/complete-password-reset/',
             {
                 phone,
-                otp,
                 newPassword
             }
         );
