@@ -8,7 +8,7 @@
 
     
 
-    export let user = $userStore;
+    export let user = userStore;
     let popupOpen = false;
     let deleteUserPopup = document.getElementById("deleteUser-popup");
     console.log(get(userStore))
