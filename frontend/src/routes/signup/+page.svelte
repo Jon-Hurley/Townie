@@ -136,10 +136,10 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
                     </svg>                 
                 </div>
-                <h3 class="text-lg leading-6 font-medium text-gray-900 mt-2">Error</h3>
+                <h3 class="text-lg leading-6 font-medium text-gray-900 mt-2">Duplicate Credentials</h3>
                 <div class="px-7">
                     <p class="text-sm text-gray-500">
-                        Your account has not been registered. Please try again.
+                        Your account has not been registered. Please try a different username or phone number.
                     </p>
                 </div>
         
