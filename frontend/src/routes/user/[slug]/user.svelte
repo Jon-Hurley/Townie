@@ -2,6 +2,9 @@
 	import { acceptFriend, rejectFriend, sendFriendRequest } from "../../../requests/friend";
 	import { userStore } from "../../../stores";
     import { buttonStyle, redStyle, greenStyle, blueStyle, indigoStyle } from '../../../css'
+    import Modal from "../../../components/modal.svelte";
+
+    let messageObject;
 
     export let user;
 
@@ -9,18 +12,25 @@
     const hr = "my-2 bg-gray-100 h-[2px]";
 
     const _acceptFriend = async() => {
+        console.log(":(")
         const res = await acceptFriend(user.friendship[0].key);
+        console.log({res});
         if (res) {
             user.friendship[0].status = true;
             user = user;
+        } else {
+            messageObject = {status: 'error', message: "Uh oh! Something went wrong. Please try again."};
         }
     };
 
     const _rejectFriend = async() => {
         const res = await rejectFriend(user.friendship[0].key);
+        console.log(res);
         if (res) {
             user.friendship = [];
             user = user;
+        } else {
+            messageObject = {status: 'error', message: "Uh oh! Something went wrong. Please try again."};
         }
     };
 
@@ -35,6 +45,9 @@
                 }
             ];
             user = user;
+            messageObject = {status: 'success', message: "You have sent " + user.username + " a friend request."};
+        } else {
+            messageObject = {status: 'error', message: "Uh oh! Something went wrong. Please try again."};
         }
     };
 </script>
@@ -152,3 +165,5 @@
         {/each}
     </div>
 </div>
+
+<Modal {...messageObject} />

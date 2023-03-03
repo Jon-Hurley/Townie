@@ -4,7 +4,9 @@
 	import { onMount } from 'svelte';
 	import Loading from '../../components/loading.svelte';
 	import { largeTitle, listItem } from '../../css';
+    import Modal from '../../components/modal.svelte';
 
+    let messageObject;
     let notifs = [];
     let loading = true;
 
@@ -14,6 +16,8 @@
         if (res) {
             notifs.splice(i, 1);
             notifs = notifs;
+        } else {
+            messageObject = {status: 'error', message: "Uh oh! Something went wrong. Please try again."};
         }
     }
 
@@ -23,6 +27,8 @@
         if (res) {
             notifs.splice(i, 1);
             notifs = notifs;
+        } else {
+            messageObject = {status: 'error', message: "Uh oh! Something went wrong. Please try again."};
         }
     }
 
@@ -62,3 +68,5 @@
         </ul>
     </div>
 {/if}
+
+<Modal {...messageObject}/>

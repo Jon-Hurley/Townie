@@ -34,6 +34,7 @@ export const sendFriendRequest = async(toKey, toPhone) => {
             }
         );
         return res.data.key;
+        //return false;
     } catch (err) {
         console.log(err);
         return false;
@@ -51,7 +52,7 @@ export const acceptFriend = async(friendshipKey) => {
         );
         return true;
     } catch (err) {
-        console.log(err);
+        console.log({err});
         return false;
     }
 };
