@@ -20,12 +20,15 @@ export const getFriends = async() => {
 };
 
 export const sendFriendRequest = async(toKey) => {
+    let user = get(userStore);
+    console.log(user);
     try {
+        console.log(user.username);
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'user/request-friend/',
             {
                 fromKey: get(userStore).key,
-                toKey
+                toKey: toKey
             }
         );
         return res.data.key;

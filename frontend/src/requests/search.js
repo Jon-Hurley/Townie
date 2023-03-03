@@ -23,10 +23,13 @@ export const getUsers = async(substr) => {
 
 export const getUser = async(targetKey) => {
     try {
+        console.log(get(userStore))
+        console.log()
         const res = await axios.post(
-            PUBLIC_BACKEND_API + 'user/profile/' + targetKey + '/',
+            PUBLIC_BACKEND_API + 'user/' + targetKey + '/',
             {
-                key: get(userStore).key
+                key: get(userStore).key,
+                targetKey: targetKey
             }
         );
         console.log(res);

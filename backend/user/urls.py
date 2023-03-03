@@ -11,7 +11,7 @@ urlpatterns = [
     path('delete/', account.deleteUser),
 
     path('search/', search.searchUsers),
-    path('profile/<str:key>/', search.getUser),
+    path('<str:key>/', search.getUser),
 
     path('friends/', friend.getFriends),
     path('pending-friends/', friend.getPendingFriends),
