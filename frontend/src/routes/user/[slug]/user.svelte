@@ -25,7 +25,7 @@
     };
 
     const _sendFriendRequest = async() => {
-        const newFriendshipKey = await sendFriendRequest(user.key);
+        const newFriendshipKey = await sendFriendRequest(user.key, user.phone);
         if (newFriendshipKey) {
             user.friendship = [
                 {

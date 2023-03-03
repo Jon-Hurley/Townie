@@ -19,7 +19,7 @@ export const getFriends = async() => {
     }
 };
 
-export const sendFriendRequest = async(toKey) => {
+export const sendFriendRequest = async(toKey, toPhone) => {
     let user = get(userStore);
     console.log(user);
     try {
@@ -27,6 +27,8 @@ export const sendFriendRequest = async(toKey) => {
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'user/request-friend/',
             {
+                username: get(userStore).username,
+                toPhone: toPhone,
                 fromKey: get(userStore).key,
                 toKey: toKey
             }
@@ -43,6 +45,7 @@ export const acceptFriend = async(friendshipKey) => {
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'user/accept-friend/',
             {
+                username: get(userStore).username,
                 key: friendshipKey
             }
         );
