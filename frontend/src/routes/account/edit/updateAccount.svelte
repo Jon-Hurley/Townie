@@ -11,11 +11,11 @@
 	const _deleteUser = async () => {
 		popupOpen = false;
 		console.log(user.key);
-		const res = await deleteUser(user.key);
-		if (res) {
-			goto('/login/');
+		const err = await deleteUser(user.key);
+		if (err) {
+            console.log({err})
+			return;
 		}
-		console.log(res);
 	};
 </script>
 

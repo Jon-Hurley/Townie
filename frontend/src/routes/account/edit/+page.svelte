@@ -14,16 +14,9 @@
 
 	const _deleteUser = async () => {
 		errorMessage = await deleteUser();
-        if (errorMessage == 10) {
-            goto('/login')
-            return;
-        }
-		if (errorMessage) {
-            console.log("inside error")
-			return;
-		}
-        console.log("past error")
-		goto('/login');
+        // if (errorMessage) {
+        //     return;
+        // }
 	};
 
 	const _updateUser = async () => {
@@ -39,7 +32,7 @@
 			return;
 		}
 
-		goto('/account/');
+		goto('/account');
 	};
 </script>
 

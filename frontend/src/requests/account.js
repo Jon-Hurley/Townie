@@ -45,11 +45,11 @@ export const signup = async(phone) => {
     try {
         console.log(phone);
         const res = await axios.post(
-            PUBLIC_BACKEND_API + 'user/signup/',
-            {
-                phone
-            }
-        );
+                PUBLIC_BACKEND_API + 'user/signup/',
+                {
+                    phone
+                }
+                );
         return null;
     } catch (err) {
         return err?.response?.data?.errorMessage
@@ -60,14 +60,14 @@ export const signup = async(phone) => {
 export const verifySignup = async(username, password, phone, otp) => {
     try {
         const res = await axios.post(
-            PUBLIC_BACKEND_API + 'user/verify-signup/',
-            {
-                phone,
-                username,
-                password,
-                otp
-            }
-        );
+                PUBLIC_BACKEND_API + 'user/verify-signup/',
+                {
+                    phone,
+                    username,
+                    password,
+                    otp
+                }
+                );
         userStore.set(res.data);
         return null;
     } catch (err) {
@@ -80,17 +80,17 @@ export const updateAccount = async(password, newUsername, newPhone) => {
     try {
         const user = get(userStore);
         const res = await axios.post(
-            PUBLIC_BACKEND_API + 'user/update/',
-            {
-                key: user.key,
-                username: user.username,
-                passwordHash: user.passwordHash,
+                PUBLIC_BACKEND_API + 'user/update/',
+                {
+                    key: user.key,
+                    username: user.username,
+                    passwordHash: user.passwordHash,
 
-                password,
-                newUsername,
-                newPhone
-            }
-        );
+                    password,
+                    newUsername,
+                    newPhone
+                }
+                );
         userStore.set(res.data)
         return null;
     } catch (err) {
@@ -102,11 +102,11 @@ export const updateAccount = async(password, newUsername, newPhone) => {
 export const initiatePasswordReset = async(phone) => {
     try {
         const res = await axios.post(
-            PUBLIC_BACKEND_API + 'user/initiate-password-reset/',
-            {
-                phone
-            }
-        );
+                PUBLIC_BACKEND_API + 'user/initiate-password-reset/',
+                {
+                    phone
+                }
+                );
         return null; 
     } catch (err) {
         return err?.response?.data?.errorMessage
@@ -117,13 +117,13 @@ export const initiatePasswordReset = async(phone) => {
 export const completePasswordReset = async(phone, otp, newPassword) => {
     try {
         const res = await axios.post(
-            PUBLIC_BACKEND_API + 'user/complete-password-reset/',
-            {
-                "phone" : phone,
-                "otp" : otp,
-                "newPassword" : newPassword
-            }
-        );
+                PUBLIC_BACKEND_API + 'user/complete-password-reset/',
+                {
+                    "phone" : phone,
+                    "otp" : otp,
+                    "newPassword" : newPassword
+                }
+                );
         console.log(res);
         return null;       
     } catch (err) {
@@ -134,30 +134,29 @@ export const completePasswordReset = async(phone, otp, newPassword) => {
 
 export const verifyOTP = async(otp) => {
     try {
-    const res = await axios.post(
-        PUBLIC_BACKEND_API + 'user/initiate-password-reset/',
-        {
-            otp
-        }
-    );
+        const res = await axios.post(
+                PUBLIC_BACKEND_API + 'user/initiate-password-reset/',
+                {
+                    otp
+                }
+                );
     } catch {
-        
+
     }
 }
 
 export const deleteUser = async() => {
     try {
+        const body = {
+            key: get(userStore).key,
+            passwordHash: get(userStore).passwordHash
+        };
+        console.log({body})
         const res = await axios.post(
-            PUBLIC_BACKEND_API + 'user/delete/',
-            {
-                key: get(userStore).key,
-                passwordHash: get(userStore).passwordHash
-            }
-        );
-        let data = res.data;
-        if (data.success == true) {
-            return 10;
-        }
+                PUBLIC_BACKEND_API + 'user/delete/',
+                body
+                );
+        userStore.set(null);
         return null;
     } catch (err) {
         return err?.response?.data?.errorMessage

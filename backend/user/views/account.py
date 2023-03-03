@@ -8,11 +8,11 @@ from arango import DocumentInsertError
 
 def returnError(errorMessage, errCode):
     return JsonResponse(
-        {
-            'errorMessage': errorMessage
-        },
-        status=errCode
-    )
+{
+'errorMessage': errorMessage
+},
+status=errCode
+)
 
 def returnUserPrivate(user):
     del user['_id']
@@ -47,7 +47,7 @@ def signup(request):
         docs = queries.getUserFromPhone(phone).batch()
     except Exception as e:
         return returnError(e.error_message, e.http_code)
-    
+
     if len(docs) != 0:
         return returnError('There already exists an account with this phone number.', 401)
 
@@ -65,15 +65,15 @@ def verifySignup(request):
 
     if password.find(':') != -1:
         return returnError("Passwords must not contain colons.", 400)
-    
+
     res = twilio_con.testVerification(phone, otp)
     if not res:
         return returnError('Invalid OTP.', 401)
-    
+
     # ADD ANY OTHER PASSWORD RESTRICTIONS
 
     passwordHash = getPasswordHash(password, username)
-    
+
     try:
         doc = queries.createUser(username, passwordHash, phone)
     except Exception as e:
@@ -94,10 +94,10 @@ def login(request):
         docs = queries.getUserByUsername(username).batch()
     except Exception as e:
         return returnError(e.error_message, e.http_code)
-    
+
     if len(docs) == 0:
         return returnError('Invalid username.', 401)
-    
+
     user = docs[0]
     passwordHash = getPasswordHash(password, username)
     if user['passwordHash'] != passwordHash:
@@ -123,7 +123,7 @@ def updateInfo(request):
     newPasswordHash = passwordHash
     if newUsername != username:
         newPasswordHash = getPasswordHash(password, newUsername)
-    
+
     try:
         docs = queries.updateInfo(
             key, passwordHash,
@@ -134,7 +134,7 @@ def updateInfo(request):
         if em.find('unique constraint violated') != -1:
             return returnError('This username or phone number is already taken.', e.http_code)
         return returnError(em, e.http_code)
-    
+
     if len(docs) == 0:
         return returnError('Invalid password.', 401) # NOTE: could also be invalid key, but I trust not
 
@@ -145,6 +145,7 @@ def deleteUser(request):
     data = json.loads(request.body)
     key = data['key']
     passwordHash = data['passwordHash']
+    print(key, passwordHash)
 
     try:
         docs = queries.deleteUser(key, passwordHash).batch()
@@ -154,14 +155,14 @@ def deleteUser(request):
     if len(docs) == 0:
         return returnError('Unauthorized.', 401) # invalid passwordHash or key
 
-    return JsonResponse({'success': True})
+    return JsonResponse({})
 
 # TO-DO:
 
 def loginWithToken(request):
     return JsonResponse({
-        ":)": ":)"
-    })
+":)": ":)"
+})
 
 @csrf_exempt
 def initiatePasswordReset(request):
@@ -172,7 +173,7 @@ def initiatePasswordReset(request):
         docs = queries.getUserFromPhone(phone).batch()
     except Exception as e:
         return returnError(e.error_message, e.http_code)
-    
+
     if len(docs) != 1:
         return returnError('Invalid phone.', 401)
 
@@ -196,7 +197,7 @@ def completePasswordReset(request):
         docs = queries.getUserFromPhone(phone).batch()
     except Exception as e:
         return returnError(e.error_message, e.http_code)
-    
+
     if len(docs) != 1:
         return returnError('Invalid phone.', 401)
 
@@ -213,5 +214,5 @@ def completePasswordReset(request):
         doc = queries.updatePassword(userKey, newPasswordHash)
     except Exception as e:
         return returnError("Invalid user key.", 500)
-    
+
     return JsonResponse({})
