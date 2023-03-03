@@ -4,7 +4,7 @@
 	import { getUser } from '../../../requests/search';
     import Loading from '../../../components/loading.svelte';
 	import User from './user.svelte';
-	import { profileStore, tempStore, userStore } from '../../../stores';
+	import { profileStore, userStore } from '../../../stores';
 
     onMount(() => {
         profileStore.set({
