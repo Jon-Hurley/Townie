@@ -1,76 +1,122 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-import redis_con
-import googlemaps
 import json
-import os
+import group.queries as queries
+from ws_con import propogateUpdates, forceDisconnect
 
-# CONNECT:
-def connect(request):
-    print(request)
-    return JsonResponse({})
-
-def createGroup():
-    return JsonResponse({})
-
-def joinGroup():
-    return JsonResponse({})
-
-# DISCONNECT:
-
-def disconnect(request):
-    print(request)
-    return leaveGroup(request)
-
-def leaveGroup(request):
-    return JsonResponse({})
-
-# DEFAULT
-
-def default(request):
-    return JsonResponse({})
-
+# CONNECT: JOIN GAME
 @csrf_exempt
-def map(request):
-    list = []
-    #print(request)
-    gmaps = googlemaps.Client(key=os.environ.get('GOOGLE_API_KEY'))
-    places = json.dumps(gmaps.find_place(str("Purdue University"),str("textquery")))
-    places2 = json.loads(places)
+def onConnect(request):
+    # load input
+    body = json.loads(request.body)
+    gameKey = body['gameKey']
+    userKey = body['userKey']
+    connectionId = body['connectionId']
+    print(gameKey, userKey, connectionId)
 
-    #print(places2)
-    result = json.dumps(gmaps.geocode(str('900 John R Wooden Dr, West Lafayette, IN 47907')))
-    #print(result)
-    result2 = json.loads(result)
+    # add user to game, canceling their previous connection if left open
+    res = queries.addPlayer(gameKey, userKey, connectionId)
+    oldDoc = res.batch()[0]['oldDoc']
+    if oldDoc:
+        forceDisconnect(oldDoc['connectionId'])
+    
+    # relay game all game data to all players (except the new one)
+    data = queries.getGame(gameKey).batch()[0]
+    print(data)
+    propogateAllUpdates(
+        conExcl={ connectionId },
+        data=data
+    )
 
-    addressComponents = result2[0]['formatted_address']
-    #print(addressComponents)
-    latitude = result2[0]['geometry']['location']['lat']
-    longitude = result2[0]['geometry']['location']['lng']
-    place_info = json.dumps(gmaps.places("art museum", (latitude,longitude)))
-    place3 = json.loads(place_info)
-    #print(place3)
-    #print(place3['results'][0])
-    place4 = json.dumps(gmaps.place(place3['results'][0]['place_id']))
-    place5 = json.loads(place4)
-    #print(len(place_info))
-    print(place3)
-    for i in range(len(place3['results'])):
-        name_dest = place3['results'][i]['name']
-        print(name_dest)
-        address = place3['results'][i]['formatted_address']
-        latitude = place3['results'][i]['geometry']['location']['lat']
-        longitude = place3['results'][i]['geometry']['location']['lng']
+    # send game data to new player
+    return JsonResponse(data)
 
-        points = 1000
-        destination = dict(name=name_dest, addr=address, location=[latitude, longitude], pts=points)
-        list.append(destination)
-        #print(destination)
-    #location = Location
-    #location.latitude = latitude
-    #location.longitude = longitude
-    #print(latitude)
+# DISCONNECT: LEAVE GAME
+@csrf_exempt
+def onDisconnect(request):
+    body = json.loads(request.body)
+    connectionId = body['connectionId']
+    print(connectionId)
+    res = queries.leaveGame(connectionId).batch()
+    if len(res): # a player was removed from DB.
+        gameKey = res[0]['gameKey'][6:] # [6:] = id -> key
+        propogateAllUpdates(gameKey, { connectionId })
+    # else: connection was already updated, and no longer exists anyways.
+    return JsonResponse({})
 
+# DEFAULT: (right now will be done in http requests lol)
+#       1. Update Game Settings
+#       2. Start Game
+#       3. Update Location
+@csrf_exempt
+def onDefault(request):
+    data = json.loads(request.body)
+    connectionId = data['connectionId']
+    body = data['body']
+    print(connectionId, body)
+    method = body['method']
 
+    if method == 'get-game':
+        gameKey = body['gameKey']
+        data = queries.getGame(gameKey).batch()[0]
+        return JsonResponse(data)
+    
+    if method == 'update-settings':
+        gameKey = body['gameKey']
+        settings = body['settings']
+        print(gameKey, settings)
+        res = queries.updateGameSettings(gameKey, settings)
+        print(res)
+        propogateAllUpdates(gameKey)
+        return JsonResponse({})
+    # print(data)
+    # propogateAllUpdates(
+    #     conExcl={ connectionId },
+    #     data=data
+    # )
+    
+    # body = json.loads(request.body)
+    # print(request.POST)
+    # print(request.GET)
+    # if body['action'] == 'update-game-settings':
+    #     return updateGameSettings(body)
+    # if body['action'] == 'start-game':
+    #     return startGame(body)
+    # if body['action'] == 'update-location':
+    #     return updatePlayerLocation(body)
+    return JsonResponse()
 
-    return JsonResponse(list,safe=False)
+def updatePlayerLocation(body):
+    playerKey = body['key']
+    lon = body['lon']
+    lat = body['lat']
+    res = queries.updatePlayerLocation(playerKey, lon, lat)
+    return JsonResponse(res)
+
+def updateGameSettings(body):
+    playerKey = body['key']
+    field = body['field']
+    value = body['value']
+
+    res = queries.updatePlayerLocation(playerKey, field, value)
+    return JsonResponse(res)
+
+def startGame(body):
+    gameKey = body['gameKey']
+    settings = body['settings']
+    res = queries.startGame(gameKey, settings)
+    propogateAllUpdates(gameKey)
+    return JsonResponse(res)
+
+def propogateAllUpdates(gameKey=None, conExcl={}, data=None):
+    if data is None:
+        data = queries.getGame(gameKey).batch()[0]
+    users = data['players']
+    propogateUpdates(users, data, conExcl)
+
+# GET REQUEST: CREATE A LOBBY/GAME
+
+def createGame(request):
+    res = queries.createGame()
+    print(res)
+    return JsonResponse({'key': res['_key']})

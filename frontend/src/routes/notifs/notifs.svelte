@@ -3,26 +3,46 @@
 	import { acceptFriend, loadNotifications, rejectFriend } from '../../requests/friend';
 	import { onMount } from 'svelte';
 	import Loading from '../../components/loading.svelte';
+	import { largeTitle, listItem } from '../../css';
+	import Modal from '../../components/modal.svelte';
 
     let notifs = [];
     let loading = true;
 
+    let messageObj = {
+        status: 0,
+        message: null,
+        dest: null
+    };
+
     const _acceptFriend = async(i, friendshipKey) => {
         console.log({i, friendshipKey})
-        const res = await acceptFriend(friendshipKey);
-        if (res) {
-            notifs.splice(i, 1);
-            notifs = notifs;
+        const errorMessage = await acceptFriend(friendshipKey);
+        if (errorMessage) {
+            messageObj = {
+                status: 0,
+                message: errorMessage
+            };
+            return;
         }
+        
+        notifs.splice(i, 1);
+        notifs = notifs;
     }
 
     const _rejectFriend = async(i, friendshipKey) => {
         console.log({i, friendshipKey})
-        const res = await rejectFriend(friendshipKey);
-        if (res) {
-            notifs.splice(i, 1);
-            notifs = notifs;
+        const errorMessage = await rejectFriend(friendshipKey);
+        if (errorMessage) {
+            messageObj = {
+                status: 0,
+                message: errorMessage
+            };
+            return;
         }
+        
+        notifs.splice(i, 1);
+        notifs = notifs;
     }
 
     onMount(async() => {
@@ -31,7 +51,11 @@
     });
 </script>
 
-<div class="my-4 text-2xl text-center font-bold text-gray-700">
+<Modal
+    {...messageObj}
+/>
+
+<div class="{largeTitle}">
     Your Notifications
 </div>
 
@@ -54,21 +78,7 @@
                     />
                 {/each}
             {:else}
-                <li
-                    class="
-                        bg-white
-                        mb-2
-                        p-2
-                        rounded
-
-                        border-gray-200
-                        border-2
-
-                        w-full
-                        text-gray-900
-                        select-none
-                    "
-                >
+                <li class="{listItem}">
                     You have no notifications.
                 </li>
             {/if}

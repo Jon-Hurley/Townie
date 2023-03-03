@@ -1,42 +1,8 @@
 import { get, writable } from 'svelte/store';
-import { PUBLIC_BACKEND_WS } from '$env/static/public';
 
-export const groupStore = writable();
-export const userStore = writable({
-    id: 'User/10942',
-    key: '10942',
-    passwordHash: 'password',
-    phone: '+13176909263',
-    points:	50,
-    purchases: [],
-    rank: 'explorer',   
-    username: 'ArnavSuccs'
-});
+export const userStore = writable();
 
-export const logout = () => {
-
-}
-
-export const login = () => {
-
-}
-
-export const autoLogin = () => {
-
-}
-
-export const signin = () => {
-
-}
-
-let ws;
-
-export const joinLobby = () => {
-    ws = new WebSocket(PUBLIC_BACKEND_WS)
-    console.log(ws)
-}
-
-
+export const gameStore = writable();
 
 export const locationStore = writable();
 
@@ -88,3 +54,5 @@ export const unsubscribeToLocation = () => {
 }
 
 export const mapStore = writable();
+
+export const gamePage = writable('/game/join');

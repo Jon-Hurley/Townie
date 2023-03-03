@@ -1,16 +1,33 @@
 <script>
 	import '../app.css';
     import { goto } from '$app/navigation';
-    import { logout, userStore } from '../stores';
-	import { get } from 'svelte/store';
+    import { userStore } from '../stores';
     import { page } from '$app/stores';
+	import { logout } from '../requests/account';
+    import { onMount } from 'svelte';
 
     let currentPage;
     page.subscribe(v => currentPage = v.route.id);
+    
+    onMount(async() => {
+        console.log(currentPage);
+        if (currentPage === "/delete") {
+            logout();
+        }
+    });
 
-    const pages = [
+    const _logout = async () => {
+		let res = await logout();
+		goto('/login');
+        return;
+	};
+    
+
+    
+
+    $: pages = [
         {
-            page: '/account',
+            page: '/account/',
             tooltip: 'Account',
             styles: 'text-indigo-500',
             svg: "M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z",
@@ -25,62 +42,56 @@
     ]
 </script>
 
-{#if currentPage && !['/login', '/signup'].includes(currentPage)}
-    <nav
-        class="
-            w-full
-            p-6
-            h-16
-            flex
-            items-center
-            justify-between
-            overflow-hidden
-            border-b-2
-            border-gray-100 
-        "
-    >
-        {#each pages as { page, tooltip, svg, text, styles }}
-            <button
-                type="button"
-                class="
-                    rounded-full
-                    hover:text-indigo-500
-                    transition-colors duration-500
-                    transition duration-150 ease-in-out
-                    flex items-center
-                    {styles}
-                "
-                data-bs-toggle="tooltip" 
-                data-bs-placement="top"
-                title={tooltip}
-                
-                on:click={() => {
-                    if (page === '/login') {
-                        logout();
-                    }
-                    goto(page);
-                }}
+<nav
+    class="
+        w-full p-6 h-16
+        flex items-center justify-between
+        overflow-hidden
+        border-b-2 border-gray-100 
+    "
+>
+    {#each pages as { page, tooltip, svg, text, styles }}
+        <button
+            type="button"
+            class="
+                rounded-full
+                hover:text-indigo-500
+                transition-colors duration-500
+                transition duration-150 ease-in-out
+                flex items-center
+                {styles}
+            "
+            data-bs-toggle="tooltip" 
+            data-bs-placement="top"
+            title={tooltip}
+            
+            on:click={() => {
+                if (page === '/login') {
+                    _logout();
+                    return;
+                }
+                goto(page);
+            }}
+        >
+            <svg
+                class="h-8 w-8"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                transform="scale(-1,1)"
             >
-                <svg
-                    class="h-8 w-8"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.5"
-                    stroke="currentColor"
-                    transform="scale(-1,1)"
-                >
-                    <path d={svg}/>
-                </svg>
+                <path d={svg}/>
+            </svg>
 
-                {#if text}
-                    <div
-                        class="ml-4 text-xl font"
-                    >
-                        {text}
-                    </div>
-                {/if}
-            </button>
-        {/each}
-    </nav>
-{/if}
+            {#if text}
+                <div
+                    class="ml-4 text-xl font"
+                >
+                    {text}
+                </div>
+            {/if}
+        </button>
+    {/each}
+</nav>

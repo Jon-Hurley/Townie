@@ -1,19 +1,27 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-import arango_con
+import user.queries as queries
 import json
+import twilio_con
 
+def returnError(errorMessage, errCode):
+    return JsonResponse(
+        {
+            'errorMessage': errorMessage
+        },
+        status=errCode
+    )
 
 @csrf_exempt
 def getFriends(request):
-    res = arango_con.getFriendsList(
+    res = queries.getFriendsList(
         json.loads(request.body)['key']
     ).batch()
     return JsonResponse({ 'friends': list(res) })
 
 @csrf_exempt
 def getPendingFriends(request):
-    res = arango_con.getPendingFriendsList(
+    res = queries.getPendingFriendsList(
         json.loads(request.body)['key']
     ).batch()
     return JsonResponse({ 'pending': list(res) })
@@ -21,23 +29,50 @@ def getPendingFriends(request):
 
 @csrf_exempt
 def acceptFriend(request):
-    res = arango_con.acceptFriendRequest(
+    print(json.loads(request.body))
+    res = queries.acceptFriendRequest(
         json.loads(request.body)['key']
-    ).batch()
+    ).batch()[0]
+    
+    message = res['originUsername'] + ' accepted your friend request!'
+    twilio_con.sendNotification(
+        phone=res['targetPhone'],
+        message=message
+    )
     return JsonResponse({})
 
 @csrf_exempt
 def rejectFriend(request):
-    res = arango_con.rejectFriendRequest(
+    res = queries.rejectFriendRequest(
         json.loads(request.body)['key']
-    ).batch()
+    ).batch()[0]
+    
+    message = res['originUsername'] + ' has rescinded your friendship! No one likes you :(.'
+    twilio_con.sendNotification(
+        phone=res['targetPhone'],
+        message=message
+    )
     return JsonResponse({})
-
 
 @csrf_exempt
 def requestFriend(request):
-    res = arango_con.sendFriendRequest(
-        json.loads(request.body)['toKey'],
-        json.loads(request.body)['fromKey']
+    body = json.loads(request.body)
+    toKey = body['toKey']
+    fromKey = body['fromKey']
+
+    docs = queries.sendFriendRequest(
+        toKey,
+        fromKey
+    ).batch()
+
+    if len(docs) != 1:
+        return returnError("Invalid friend key.", 404)
+    
+    res = docs[0]
+    message = res['originUsername'] + ' has requested to be your friend!'
+    twilio_con.sendNotification(
+        phone=res['targetPhone'],
+        message=message
     )
-    return JsonResponse({'key': res['_key']})
+
+    return JsonResponse({ 'key': res['key'] })

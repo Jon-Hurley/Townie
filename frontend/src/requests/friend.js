@@ -19,20 +19,20 @@ export const getFriends = async() => {
     }
 };
 
-
 export const sendFriendRequest = async(toKey) => {
     try {
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'user/request-friend/',
             {
                 fromKey: get(userStore).key,
-                toKey
+                toKey: toKey
             }
         );
-        return res.data.key;
+        console.log("res: ", res.data)
+        return res.data;
     } catch (err) {
         console.log(err);
-        return false;
+        return {errorMessage: "Unable to send friend request. Please try again."};
     }
 };
 
@@ -44,10 +44,10 @@ export const acceptFriend = async(friendshipKey) => {
                 key: friendshipKey
             }
         );
-        return true;
+        return null;
     } catch (err) {
         console.log(err);
-        return false;
+        return "Unable to accept friend. Please try again.";
     }
 };
 
@@ -63,15 +63,14 @@ export const rejectFriend = async(friendshipKey) => {
                 key: friendshipKey
             }
         );
-        return true;
+        return null;
     } catch (err) {
         console.log(err);
-        return false;
+        return "Unable to remove or reject friend. Please try again.";
     }
 };
 
-const processPending = (pendingRes) => {
-    
+const processPending = (pendingRes) => {  
     const pendingList = pendingRes?.data?.pending || [];
     console.log({pendingList})
     pendingList.forEach(
