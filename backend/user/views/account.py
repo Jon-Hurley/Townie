@@ -145,6 +145,7 @@ def deleteUser(request):
     data = json.loads(request.body)
     key = data['key']
     passwordHash = data['passwordHash']
+    print(key, passwordHash)
 
     try:
         docs = queries.deleteUser(key, passwordHash).batch()
@@ -154,7 +155,7 @@ def deleteUser(request):
     if len(docs) == 0:
         return returnError('Unauthorized.', 401) # invalid passwordHash or key
 
-    return JsonResponse({'success': True})
+    return JsonResponse({})
 
 # TO-DO:
 

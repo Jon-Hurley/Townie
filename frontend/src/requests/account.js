@@ -147,17 +147,16 @@ export const verifyOTP = async(otp) => {
 
 export const deleteUser = async() => {
     try {
+        const body = {
+            key: get(userStore).key,
+            passwordHash: get(userStore).passwordHash
+        };
+        console.log({body})
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'user/delete/',
-            {
-                key: get(userStore).key,
-                passwordHash: get(userStore).passwordHash
-            }
+            body
         );
-        let data = res.data;
-        if (data.success == true) {
-            return 10;
-        }
+        userStore.set(null);
         return null;
     } catch (err) {
         return err?.response?.data?.errorMessage
