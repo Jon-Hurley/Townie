@@ -2,7 +2,8 @@
 	import { each } from 'svelte/internal';
     import { blueStyle, buttonStyle, grayStyle, hr, largeTitle, inputStyle } from '../../../css';
 	import { updateSettings } from '../../../requests/group';
-    const section = "font-semibold text-lg text-center mb-3"
+    import { locationStore } from '../../../stores.js';
+    const section = "font-semibold text-lg text-center mb-3";
 
 	export let settings;
     let form = { ...settings };
@@ -11,8 +12,34 @@
     let locationInput = "";
 	let isOpen = true;
 
+    const _onLocationUpdate = (loc) => {
+        const {
+            latitude: lat,
+            longitude: lng
+        } = loc.coords;
+        if ($locationStore) {
+            const oldLoc = $locationStore.location;
+        }
+
+        console.log("setting location store...")
+        locationStore.set({
+            location: { lat, lng }
+        });
+    }
+
+    console.log($locationStore)
+
+    if ($locationStore.location) {
+        locationInput = "Starting Location"
+        form.lat = $locationStore.location.lat;
+        form.lon = $locationStore.location.lng;
+    } else {
+        locationInput = "Starting Location"
+    }
+    console.log("logging location input")
+    console.log(locationInput);
+
     $: () => {
-        console.log(locationInput);
     };
     
     const _updateSettings = () => {
@@ -76,7 +103,7 @@
         </div>
         <input
             class="{inputStyle}"
-            placeholder="Starting Location"
+            placeholder={locationInput}
             bind:value={locationInput}
         />
         <hr class="{hr} my-4">

@@ -1,6 +1,7 @@
 <script>
     import { buttonStyle, blueStyle, indigoStyle, inputStyle } from '../../../css';
     import { createGame, joinGame } from '../../../requests/group';
+	import { subscribeLocationBeforeMap } from '../../../stores';
 
     let lobbyInput;
 
@@ -10,6 +11,7 @@
 
     const _createLobby = async() => {
         const lobbyKey = await createGame();
+        await subscribeLocationBeforeMap();
         if (!lobbyKey) return;
         console.log("lobby created w/ key: ", lobbyKey);
         const res = await joinGame(lobbyKey);
