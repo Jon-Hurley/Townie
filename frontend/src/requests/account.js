@@ -41,14 +41,12 @@ export const logout = () => {
     userStore.set({"username": "Signed Out", "key" : 0});
 };
 
-export const signup = async(username, password, phone) => {
+export const signup = async(phone) => {
     try {
-        console.log(username, password, phone);
+        console.log(phone);
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'user/signup/',
             {
-                username,
-                password,
                 phone
             }
         );
@@ -117,16 +115,20 @@ export const completePasswordReset = async(phone, otp, newPassword) => {
     }
 };
 
-export const verifyOTP = async(otp) => {
+export const verifySignup = async(username, password, phone, otp) => {
     try {
-    const res = await axios.post(
-        PUBLIC_BACKEND_API + 'user/initiate-password-reset/',
-        {
-            otp
-        }
-    );
+        const res = await axios.post(
+            PUBLIC_BACKEND_API + 'user/verify-signup/',
+            {
+                username,
+                password,
+                phone,
+                otp
+            }
+        );
+        return true;
     } catch {
-        
+        return "We were unable to register you as a new user at this time. Please try again.";
     }
 }
 

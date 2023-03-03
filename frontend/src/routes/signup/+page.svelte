@@ -41,7 +41,7 @@
 
         const formattedPhone = '+1' + (form.phone).replace(/\D/g, '');
         
-        message = await signup(formattedPhone);
+        let message = await signup(formattedPhone);
         if (message) {
             messageObject = {status: 'error', message: message};
             return;
