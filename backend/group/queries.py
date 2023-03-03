@@ -1,5 +1,6 @@
 import arango_con
 import time
+from . import scraper
 
 def createGame():
     return arango_con.gameCollection.insert({
@@ -75,18 +76,18 @@ def startGame(gameKey, settings):
     # settings = lobbyRes['settings']
 
     # TRIGGER WEB-SCRAPER: (get destinations & auto add to the DB)
-    # trueCompletionTime = WEB-SCRAPER(gameKey, settings)
-    trueCompletionTime = 100
+    trueCompletionTime = scraper.map(settings, gameKey)
+    #trueCompletionTime = 100
 
     t = time.time()
     return arango_con.gameCollection.update({
-        '_key': gameKey,
-        'page': 'map',
-        'startTime': t,
-        'maxTime': t + 24 * 60 * 60, # REPLACE W/ TTL index.
-        'trueCompletionTime': trueCompletionTime
-    })
-    
+'_key': gameKey,
+'page': 'map',
+'startTime': t,
+'maxTime': t + 24 * 60 * 60, # REPLACE W/ TTL index.
+'trueCompletionTime': trueCompletionTime
+})
+
 def updateGameSettings(gameKey, settings):
     updates = {
         '_key': gameKey,
@@ -105,43 +106,43 @@ def updatePlayerLocation(playerKey, lon, lat):
 
 def getGame(gameKey):
     return arango_con.db.aql.execute(
-        """
-            WITH User, Destinations
+"""
+WITH User, Destinations
 
             LET players = (
-                FOR v, e IN 1..1 INBOUND CONCAT("Games/", @key) Players
-                    RETURN {
-                        key: v._key,
-                        username: v.username,
-                        connectionId: e.connectionId,
-                        lon: e.lon,
-                        lat: e.lat
-                    }
-            )
+FOR v, e IN 1..1 INBOUND CONCAT("Games/", @key) Players
+RETURN {
+key: v._key,
+username: v.username,
+connectionId: e.connectionId,
+lon: e.lon,
+lat: e.lat
+}
+)
 
             LET destinations = (
-                FOR v, e IN 1..1 OUTBOUND CONCAT("Games/", @key) Itineraries
-                    RETURN {
-                        index: e.index,
-                        points: e.points,
-                        name: v.name,
-                        lon: v.longitude,
-                        lat: v.latitude
-                    }
-            )
+FOR v, e IN 1..1 OUTBOUND CONCAT("Games/", @key) Itineraries
+RETURN {
+index: e.index,
+points: e.points,
+name: v.name,
+lon: v.longitude,
+lat: v.latitude
+}
+)
 
             FOR game IN Games
-                FILTER game._key == @key
-                RETURN {
-                    game,
-                    players,
-                    destinations
-                }
-        """,
-        bind_vars={
-            'key': str(gameKey),
-        }
-    )
+FILTER game._key == @key
+RETURN {
+game,
+players,
+destinations
+}
+""",
+bind_vars={
+'key': str(gameKey),
+}
+)
 
 def createDestination(lat, lng, name, theme):
     try:
@@ -165,7 +166,7 @@ def insertIntoItinerary(listDict, gameKey):
         destination = arango_con.destinationCollection.find(searcher)
         destination1 = [doc for doc in destination]
         arango_con.db.aql.execute(
-        """
+            """
         UPSERT {
             _from: @gameKey,
             _to: @DestKey,

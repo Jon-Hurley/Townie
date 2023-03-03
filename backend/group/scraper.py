@@ -6,44 +6,42 @@ from django.views.decorators.csrf import csrf_exempt
 from . import queries
 
 @csrf_exempt
-def map(request):
-    #Allows inputs for the settings:
-    # input['gameKey']
-    # input['settings']['theme']
-    # input['settings']['radius']
-    # input['settings']['lat']
-    # input['settings']['lng']
-    # input['settings']['length']
+def map(settings, gameKey):
+    # Allows inputs for the settings:
+    # settings['theme']
+    # settings['radius']
+    # settings['lat']
+    # settings['lon']
+    # settings['length']
     # !!! ONLY ONE OF THESE WILL BE TRUE !!!
-    # input['settings']['walkingAllowed']
-    # input['settings']['drivingAllowed']
-    # input['settings']['bicyclingAllowed']
-    # input['settings']['transitAllowed']
-
-    #try:
+    # settings['walkingAllowed']
+    # settings['drivingAllowed']
+    # settings['bicyclingAllowed']
+    # settings['transitAllowed']
+        print("SETTINGS")
+        print(settings)
         list = []
         gmaps = googlemaps.Client(key=os.environ.get('GOOGLE_API_KEY'))
-        input = json.loads(request.body)
         mode = ""
-        if input['settings']['drivingAllowed']:
+        if settings['drivingAllowed']:
             mode = "driving"
-        elif input['settings']['walkingAllowed']:
+        elif settings['walkingAllowed']:
             mode = "walking"
-        elif input['settings']['bicyclingAllowed']:
+        elif settings['bicyclingAllowed']:
             mode = "bicycling"
-        elif input['settings']['transitAllowed']:
+        elif settings['transitAllowed']:
             mode = "transit"
-        place_info = json.dumps(gmaps.places(input['settings']['theme'], (input['settings']['lat'], input['settings']['lng']), input['settings']['radius']))
+        place_info = json.dumps(gmaps.places(settings['theme'], (settings['lat'], settings['lon']), settings['radius']))
         place3 = json.loads(place_info)
         for i in range(len(place3['results'])): #used to be len(place3['results'])
             name_dest = place3['results'][i]['name']
             latitude = place3['results'][i]['geometry']['location']['lat']
             longitude = place3['results'][i]['geometry']['location']['lng']
-            queries.createDestination(latitude, longitude, name_dest, input['settings']['theme'])
+            queries.createDestination(latitude, longitude, name_dest, settings['theme'])
             destination = dict(name=name_dest, location=[latitude, longitude]) #used to have an address as well
             list.append(destination)
-        radius = float(input['settings']['radius'])
-        list2 = queries.getNearbyDestinations(input['settings']['lat'], input['settings']['lng'], radius)
+        radius = float(settings['radius'])
+        list2 = queries.getNearbyDestinations(settings['lat'], settings['lon'], radius)
         dblist = [doc for doc in list2]
         for i in range(len(dblist)): #used to be len(dblist)
             thing = dblist[i]
@@ -56,9 +54,9 @@ def map(request):
         locationList = []
         for i in range(len(list)):
             locationList.append(list[i]['location'])
-        max_time = input['settings']['length']
+        max_time = settings['desiredCompletionTime']
         time_spent = 0
-        origin = dict(lat=input['settings']['lat'], lng=input['settings']['lng'])
+        origin = dict(lat=settings['lat'], lng=settings['lon'])
         orderedList = []
         lengthToUse = len(list)
         if lengthToUse > 25:
@@ -93,7 +91,5 @@ def map(request):
             min_times.pop(index)
             time_spent -= min_in_max
         listDict = dict(Destinations=orderedList, trueCompletionTime=time_spent)
-        queries.insertIntoItinerary(listDict, input['gameKey'])
-        return JsonResponse({"success": True, "timeToCompletion": time_spent})
-    #except:
-        #return JsonResponse({"success": False})
+        queries.insertIntoItinerary(listDict, gameKey)
+        return time_spent
