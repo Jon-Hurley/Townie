@@ -8,6 +8,7 @@
     import { autoLogin } from '../requests/account';
     import Navbar from '../components/navbar.svelte';
     import AccountBar from '../components/account-bar.svelte';
+    import Modal from '../components/modal.svelte';
 
     let mounted = false;
     mapStore.set(false);
@@ -47,6 +48,7 @@
 </svelte:head>
 
 <div class="flex flex-col justify-between items-center h-screen w-screen">
+    <!--<Modal/>-->
     {#if $userStore && $userStore.username != "Signed Out"}
         <AccountBar/>
         <div class="m-0 w-full p-4 h-full">

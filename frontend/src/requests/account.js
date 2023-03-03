@@ -111,6 +111,7 @@ export const completePasswordReset = async(phone, otp, newPassword) => {
         console.log(res);
         return null;       
     } catch (err) {
+        console.log(err)
         return err?.response?.data?.errorMessage
             || 'Connection Refused. Failed to update password. Please try again.';
     }
