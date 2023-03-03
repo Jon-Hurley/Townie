@@ -1,5 +1,6 @@
 import arango_con
 import time
+from . import scraper
 
 def createGame():
     return arango_con.gameCollection.insert({
@@ -75,8 +76,7 @@ def startGame(gameKey, settings):
     # settings = lobbyRes['settings']
 
     # TRIGGER WEB-SCRAPER: (get destinations & auto add to the DB)
-    # trueCompletionTime = WEB-SCRAPER(gameKey, settings)
-    trueCompletionTime = 100
+    trueCompletionTime = scraper.map(gameKey, settings)
 
     t = time.time()
     return arango_con.gameCollection.update({
