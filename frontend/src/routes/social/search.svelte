@@ -1,12 +1,27 @@
 <script>
+	import axios from 'axios';
 	import { inputStyle } from '../../css';
     import { getUsers } from '../../requests/search';
+    import { getUser } from '../../requests/search';
+	import { profileStore } from '../../stores';
+    import { goto } from '$app/navigation';
+
 
     let userSearch = '';
     let results = [];
 
     const updateResults = async() => {
         results = await getUsers(userSearch);
+    }
+
+    const _getUser = async (key) => {
+        let res = await getUser(key);
+        console.log(res);
+        profileStore.set(res);
+        console.log($profileStore);
+        let link = 'user/' + key;
+        goto(link);
+
     }
 
     let timeout = setTimeout(updateResults, 500);
@@ -83,10 +98,10 @@
                             justify-between
                         "
                     >
-                        <a href={"/user/" + r.key}>
+                        <button on:click={_getUser(r.key)} href={"/user/" + r.key}>
                             <!-- <img></img> -->
                             {r.username} #{r.key}
-                        </a>
+                        </button>
                     </li>
                 {/each}
             {/if}

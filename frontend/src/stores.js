@@ -2,6 +2,8 @@ import { get, writable } from 'svelte/store';
 
 export const userStore = writable();
 
+export const profileStore = writable();
+
 export const gameStore = writable();
 
 export const locationStore = writable();

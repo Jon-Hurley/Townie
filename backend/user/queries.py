@@ -102,6 +102,24 @@ def getUser(userKey, targetKey):
         }
     )
 
+def getUser(targetKey):
+    return arango_con.db.aql.execute(
+        """
+        FOR user IN User
+            FILTER user._key == @targetKey
+            RETURN {
+                key: user._key,
+                rank: user.rank,
+                username: user.username,
+                points: user.points,
+                purchases: user.purchases
+            }
+        """,
+        bind_vars={
+            'targetKey': targetKey
+        }
+    )
+
 def getUsersBySubstring(substr):
     return arango_con.db.aql.execute(
         """
