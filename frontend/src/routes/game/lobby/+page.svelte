@@ -4,10 +4,34 @@
     import { gameStore } from "../../../stores";
     import { goto } from "$app/navigation"
 	import Settings from "./settings.svelte";
+	import Modal from "../../../components/modal.svelte";
 
     const title = "text-gray-700 font-semibold text-lg mt-2";
     const hr = "bg-gray-100 h-[2px] mt-4"; 
+
+    let messageObj = {
+        status: 0,
+        message: null,
+        dest: null
+    };
+
+    const _startGame = async() => {
+        const err = await startGame();
+        if (err) {
+            messageObj = {
+                status: 0,
+                message: err
+            }
+            return;
+        }
+
+        goto("/game/map")
+    }
 </script>
+
+<Modal
+    messageObj={messageObj}
+/>
 
 {#if $gameStore}
     <div class="flex flex-col h-full">
@@ -52,7 +76,7 @@
             <Settings/>
             <button
                 class="{buttonStyle} {indigoStyle} w-24 ml-2"
-                on:click={() => goto("/game/map")}
+                on:click={_startGame}
             >
                 Start
             </button>

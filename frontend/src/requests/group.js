@@ -59,9 +59,11 @@ export const leaveGame = async() => {
 export const startGame = async() => {
     try {
         const gameKey = get(gameStore).game._key;
+        const settings = get(gameStore).game.settings;
         const objStr = JSON.stringify({
             method: 'start-game',
-            gameKey
+            gameKey,
+            settings
         });
         ws.send(objStr);
         resumePolling();
