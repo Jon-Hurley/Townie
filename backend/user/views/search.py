@@ -11,8 +11,6 @@ def searchUsers(request):
 
 @csrf_exempt
 def getUser(request, key):
-    if (request.method == 'POST'):
-        print(key)
-        res = queries.getUser(key).batch()[0]
-        print(res)
-        return JsonResponse(res)
+    userKey = json.loads(request.body)['key']
+    res = queries.getUserWithFriendship(userKey, targetKey=key).batch()[0]
+    return JsonResponse(res)

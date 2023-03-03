@@ -1,9 +1,9 @@
 <script>
 	import { acceptFriend, rejectFriend, sendFriendRequest } from "../../../requests/friend";
-	import { profileStore, userStore } from "../../../stores";
+	import { userStore } from "../../../stores";
     import { buttonStyle, redStyle, greenStyle, blueStyle, indigoStyle } from '../../../css'
 
-    export let user = $profileStore;
+    export let user;
 
     const title = "text-gray-700 font-semibold text-lg mt-6";
     const hr = "my-2 bg-gray-100 h-[2px]";
@@ -113,6 +113,11 @@
 <hr class={hr}>
 <div class="h-full overflow-auto">
     <div class="flex flex-wrap justify-center gap-2 px-2 py-4">
+        {#if !user.purchases.length}
+            <div>
+                No badges to display.
+            </div>
+        {/if}
         {#each user.purchases as p}
             <div
                 class="

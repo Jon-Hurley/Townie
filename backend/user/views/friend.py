@@ -38,7 +38,6 @@ def requestFriend(request):
     res = queries.sendFriendRequest(
         json.loads(request.body)['toKey'],
         json.loads(request.body)['fromKey']
-    ).batch()[0]
-    print(res)
+    )
 
     return JsonResponse({'key': res['_key']})

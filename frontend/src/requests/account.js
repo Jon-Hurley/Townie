@@ -98,19 +98,6 @@ export const initiatePasswordReset = async(phone) => {
     }
 };
 
-export const verifyOTP = async(otp) => {
-    try {
-    const res = await axios.post(
-        PUBLIC_BACKEND_API + 'user/initiate-password-reset/',
-        {
-            otp
-        }
-    );
-    } catch {
-        
-    }
-}
-
 export const completePasswordReset = async(phone, otp, newPassword) => {
     try {
         const res = await axios.post(
@@ -128,6 +115,19 @@ export const completePasswordReset = async(phone, otp, newPassword) => {
             || 'Connection Refused. Failed to update password. Please try again.';
     }
 };
+
+export const verifyOTP = async(otp) => {
+    try {
+    const res = await axios.post(
+        PUBLIC_BACKEND_API + 'user/initiate-password-reset/',
+        {
+            otp
+        }
+    );
+    } catch {
+        
+    }
+}
 
 export const deleteUser = async() => {
     try {
