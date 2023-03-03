@@ -39,13 +39,37 @@ def getPasswordHash(password, username):
 
 @csrf_exempt # note csrf is being wonky, add this to POST/PUT/DELETE reqs for now
 def signup(request):
+    print("Running")
+    data = json.loads(request.body)
+    phone = data['phone']
+
+    try:
+        docs = queries.getUserFromPhone(phone).batch()
+    except Exception as e:
+        return returnError(e.error_message, e.http_code)
+    
+    if len(docs) != 0:
+        return returnError('There already exists an account with this phone number.', 401)
+
+    res = twilio_con.sendVerification(phone)
+    print(res)
+    return JsonResponse({})
+
+@csrf_exempt
+def verifySignup(request):
     data = json.loads(request.body)
     username = data['username']
-    phone = data['phone']
     password = data['password']
+    phone = data['phone']
+    otp = data['otp']
 
     if password.find(':') != -1:
         return returnError("Passwords must not contain colons.", 400)
+    
+    res = twilio_con.testVerification(phone, otp)
+    if not res:
+        return returnError('Invalid OTP.', 401)
+    
     # ADD ANY OTHER PASSWORD RESTRICTIONS
 
     passwordHash = getPasswordHash(password, username)
@@ -163,9 +187,11 @@ def completePasswordReset(request):
     phone = data['phone']
     otp = data['otp']
     newPassword = data['newPassword']
+
     res = twilio_con.testVerification(phone, otp)
-    if res != "approved":
+    if not res:
         return returnError('Invalid OTP.', 401)
+
     try:
         docs = queries.getUserFromPhone(phone).batch()
     except Exception as e:
