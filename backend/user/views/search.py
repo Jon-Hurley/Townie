@@ -12,5 +12,5 @@ def searchUsers(request):
 @csrf_exempt
 def getUser(request, key):
     userKey = json.loads(request.body)['key']
-    res = queries.getUser(userKey, targetKey=key).batch()[0]
+    res = queries.getUserWithFriendship(userKey, targetKey=key).batch()[0]
     return JsonResponse(res)

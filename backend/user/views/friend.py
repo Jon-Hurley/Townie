@@ -39,4 +39,5 @@ def requestFriend(request):
         json.loads(request.body)['toKey'],
         json.loads(request.body)['fromKey']
     )
+
     return JsonResponse({'key': res['_key']})

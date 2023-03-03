@@ -1,5 +1,5 @@
 <script>
-	import { greenStyle, redStyle, buttonBaseStyle, gridItem } from "../../css";
+	import { greenStyle, redStyle, buttonBaseStyle, gridItem, listItem } from "../../css";
 
     export let n, acceptFriend, rejectFriend;
 
@@ -10,8 +10,8 @@
     `;
 </script>
 
-<li class="{gridItem}">
-    <div>
+<li class="{listItem}">
+    <div class="text-left">
         <div class="font-semibold mb-1">
             {n.title}
         </div>
