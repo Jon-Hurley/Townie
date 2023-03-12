@@ -6,6 +6,11 @@
 	import { get } from 'svelte/store';
 	import { each } from 'svelte/internal';
 
+    $: hours = `00${((totalTime/1000/60/60)%60)}`.slice(-2);
+    $: minutes = `00${((totalTime/1000/60)%60)}`.slice(-2);
+    $: seconds = `00${((totalTime/1000)%60)}`.slice(-2);
+    $: formattedTime = `${hours}:${minutes}:${seconds}`;
+
 	let mapState = {
         container: undefined,
         center: undefined,
@@ -198,6 +203,17 @@
             </label>
         </div>
     {/each}
+</div>
+
+<div class="absolute top-[5rem] right-4 z-10
+    bg-gray-800 rounded
+    px-2 py-1
+    opacity-50">
+<!--"glass p-2 items-right text-white border border-text-white"-->
+    <h1 class="mb-2 border-b border-white">
+        Total Time
+    </h1>
+    ${formattedTime}
 </div>
 
 
