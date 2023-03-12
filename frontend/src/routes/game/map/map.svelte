@@ -1,10 +1,10 @@
 <script>
 	import { onDestroy, onMount } from 'svelte';
-	import { subscribeToLocation, unsubscribeToLocation, locationStore } from '../../../stores';
-    import { PUBLIC_GOOGLE_MAPS_DARK_MODE, PUBLIC_GOOGLE_MAPS_LIGHT_MODE } from '$env/static/public';
-    import { gameStore } from '../../../stores';
-	import { get } from 'svelte/store';
-	import { each } from 'svelte/internal';
+	import { PUBLIC_GOOGLE_MAPS_DARK_MODE, PUBLIC_GOOGLE_MAPS_LIGHT_MODE } from '$env/static/public';
+    import { Game, Location } from '../../../stores';
+
+    const gameStore = Game.store;
+    const locationStore = Location.store;
 
 	let mapState = {
         container: undefined,
@@ -35,20 +35,20 @@
     }
 
     const regenerateMap = (mapState) => {
-        // let destinations = $gameStore.game.destinations;
-        // let index = get(locationStore).index;
-        // let currentDestination = currentDestination[0];
-        // if (index != -1) {
-        //     currentDestination = destinations[index];
-        // } else {
-        //     currentDestination = undefined;
-        // }
+        let destinations = $gameStore.game.destinations;
+        let index = get(locationStore).index;
+        let currentDestination = currentDestination[0];
+        if (index != -1) {
+            currentDestination = destinations[index];
+        } else {
+            currentDestination = undefined;
+        }
         
-        // if (index == destinations.length - 1) {
-        //     get(locationStore).index = -1;
-        // } else {
-        //     get(locationStore).index = index + 1;
-        // }
+        if (index == destinations.length - 1) {
+            get(locationStore).index = -1;
+        } else {
+            get(locationStore).index = index + 1;
+        }
 
         let currentIndex = $locationStore.index;
         locationStore.set({
@@ -58,11 +58,9 @@
 
         console.log($gameStore);
 
-        //let currentDestination = getDestWithIndex(currentIndex, $gameStore.destinations);
-        let currentDestination = $gameStore.destinations[currentIndex];
+        // let currentDestination = getDestWithIndex(currentIndex, $gameStore.destinations);
+        // let currentDestination = $gameStore.destinations[currentIndex];
         
-
-
         mapState.map = new google.maps.Map(mapState.container, {
             zoom: 20,
             // TODO: Get user current location
@@ -116,7 +114,6 @@
         console.log({ lat: midpointLat, lng: midpointLng })
         mapState.map.setCenter({ lat: midpointLat, lng: midpointLng });
 
-        
         if (mapLoc) mapState.map?.setCenter(mapLoc);
         if (mapZoom) mapState.map?.setZoom(mapZoom);
         mapState = mapState;
@@ -134,11 +131,11 @@
         });
 
         regenerateMap(mapState);
-        subscribeToLocation(mapState);
+        Location.subscribe();
     });
 
     onDestroy(() => {
-        unsubscribeToLocation();
+        Location.unsubscribe();
     });
 
     const checkboxes = [
@@ -160,7 +157,6 @@
                 return destinations[i];
             }
         }
-
         return undefined;
     }
 </script>
@@ -199,7 +195,6 @@
         </div>
     {/each}
 </div>
-
 
 <div
     class="full-screen"

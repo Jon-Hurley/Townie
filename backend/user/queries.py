@@ -57,9 +57,14 @@ def getUserFromPhone(phone):
 def deleteUser(userKey, passwordHash):
     return arango_con.db.aql.execute(
         """
+        WITH User
+
         FOR user IN User
             FILTER user._key == @userKey
                 && user.passwordHash == @passwordHash
+
+            FOR v, e IN 1..1 ANY user._id Friends
+                REMOVE e IN Friends
             
             REMOVE user
             IN User
@@ -67,7 +72,7 @@ def deleteUser(userKey, passwordHash):
         """,
         bind_vars={
             'passwordHash': passwordHash,
-            'userKey': str(userKey)
+            'userKey': userKey
         }
     )
 
@@ -175,7 +180,7 @@ def sendFriendRequest(toKey, fromKey):
         """
         LET originUsername = (
             FOR user IN User
-                FILTER user._key == @toKey
+                FILTER user._key == @fromKey
                 RETURN user.username
         )[0]
 

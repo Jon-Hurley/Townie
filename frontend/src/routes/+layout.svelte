@@ -5,7 +5,7 @@
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
     
-	import { gameStore, mapStore, userStore } from '../stores';
+	import { mapStore, userStore } from '../stores';
     import { autoLogin } from '../requests/account';
     import Navbar from '../components/navbar.svelte';
     import AccountBar from '../components/account-bar.svelte';

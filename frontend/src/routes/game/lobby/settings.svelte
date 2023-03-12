@@ -1,14 +1,13 @@
 <script>
 	import { onMount } from 'svelte';
     import { blueStyle, buttonStyle, grayStyle, hr, largeTitle, inputStyle } from '../../../css';
-	import { updateSettings } from '../../../requests/group';
-	import { gameStore } from '../../../stores';
+	import { Game } from '../../../stores';
 	import Autocomplete from './autocomplete.svelte';
     const section = "font-semibold text-lg text-center mb-3";
 
     let form = {};
     onMount(() => {
-        gameStore.subscribe(gs => {
+        Game.store.subscribe(gs => {
             if (gs) {
                 form = { ...gs.game.settings };
                 form.otherCompletionTime = form.otherCompletionTime;
@@ -21,7 +20,7 @@
 	let isOpen = true;
 
     const _updateSettings = () => {
-        updateSettings(form);
+        Game.updateSettings(form);
     };
 
     const checkboxes = [
@@ -44,7 +43,6 @@
     ]
 </script>
 
-{#if $gameStore}
 <button type="button" class="{buttonStyle} {grayStyle} w-full" on:click={() => (isOpen = true)}>
 	Settings
 </button>
@@ -257,4 +255,3 @@
         </div>
     </div>
 </div>
-{/if}

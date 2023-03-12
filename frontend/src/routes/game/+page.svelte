@@ -1,9 +1,9 @@
 <script>
 	import { onMount } from 'svelte';
     import { goto } from '$app/navigation';
-	import { gameStore } from '../../stores';
+	import { Game } from '../../stores';
 
 	onMount(() => {
-		goto(`/game/${$gameStore?.game?.page || 'join'}`)
+		goto('game/' + Game.getPage())
     });
 </script>

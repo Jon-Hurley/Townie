@@ -1,19 +1,18 @@
 <script>
-	import { onMount, onDestroy } from 'svelte';
     import { goto } from '$app/navigation';
-	import { gameStore } from '../../stores';
+	import { Game } from '../../stores';
     import { page } from '$app/stores';
+    import { browser } from '$app/environment'; 
     
-    $: if ($gameStore) {
-        console.log("UPDATING PAGE")
+    let gameStore = Game.store;
 
+    $: if (browser) {
+        console.log("RUNNING")
         const currPage = $page.path;
-        const targetPage = `/game/${$gameStore?.game?.page || 'join'}/`;
+        const targetPage = '/game/' + ($gameStore?.game?.page || 'join');
         if (currPage !== targetPage) {
-            console.log("Going to: ", targetPage)
             goto(targetPage);
         }
-        console.log($gameStore);
     }
 </script>
 

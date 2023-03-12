@@ -59,7 +59,10 @@ def onDefault(request):
     if method == 'get-game':
         gameKey = body['gameKey']
         data = queries.getGame(gameKey).batch()[0]
-        return JsonResponse(data)
+        return JsonResponse({
+            'method': 'get-game',
+            'data': data
+        })
     
     if method == 'update-settings':
         gameKey = body['gameKey']
@@ -68,12 +71,17 @@ def onDefault(request):
         res = queries.updateGameSettings(gameKey, settings)
         print(res)
         propogateAllUpdates(gameKey)
-        return JsonResponse({})
+        return JsonResponse({
+            'method': 'update-settings'
+        })
 
     if method == 'start-game':
         gameKey = body['gameKey']
         settings = body['settings']
         res = queries.startGame(gameKey, settings)
+        return JsonResponse({
+            'method': 'start-game'
+        })
         # print("HELLO", gameKey)
     # print(data)
     # propogateAllUpdates(
