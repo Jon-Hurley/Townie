@@ -2,13 +2,16 @@
 	import { goto } from '$app/navigation';
 	import { updateAccount, deleteUser } from '../../../requests/account';
 	import { userStore } from '../../../stores';
+	import { buttonStyle, blueStyle, grayStyle } from '../../../css';
 	const title = 'text-gray-700 font-semibold text-lg mt-6';
 	const hr = 'my-2 bg-gray-100 h-[2px]';
+	let hidingState = "Show my Exact Location";
 
 	const form = {
 		username: '',
 		password: '',
-        phone: ''
+        phone: '',
+		showLocation: true
 	};
 	let errorMessage = false;
 
@@ -49,6 +52,29 @@
 	</div>
 	<div class="text-gray-700 text-md text-center">
 		#{$userStore.key}
+	</div>
+</div>
+
+<div class="my-5 w-full">
+	<div class="font-semibold text-lg text-center mb-3">
+	</div>
+	<div
+            class="flex justify-center gap-2"
+            style="max-height: 100%"
+    >
+	<button
+        class="{buttonStyle} {form['showLocation'] ? blueStyle : (blueStyle)}"
+        on:click={() => {
+        	form['showLocation'] = !form['showLocation'];
+			if (form['showLocation']) {
+				hidingState = "Hide my Exact Location";
+			} else {
+				hidingState = "Show my Exact Location";
+			}
+        }}
+    >
+    	{hidingState}
+    </button>
 	</div>
 </div>
 
