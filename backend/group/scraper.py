@@ -62,24 +62,48 @@ def map(settings, gameKey):
         if lengthToUse > 25:
             lengthToUse = 25
         min_times = []
-        for i in range(lengthToUse):
-            min_time = 100000000
-            listDurations = []
+        distances = gmaps.distance_matrix(origin, locationList, mode, None, None, "imperial", None, None, None, None)
+        print(distances)
+        listDurations = [len(list)]
+        print(distances['rows'])
+        for i in range(len(distances['rows'][0]['elements'])):
+            listDurations.append(int(distances['rows'][0]['elements'][i]['duration']['text'][0]))
+        print("LIST DURATIONS")
+        print(listDurations)
+        min_time = 1000000000
+        marked_indices = []
+        index = 0
+        count = 0
+        while len(marked_indices) < len(listDurations):
+            for i in range(len(listDurations)):
+                if min_time > listDurations[i] and marked_indices.count(i) == 0:
+                    min_time = listDurations[i]
+                    index = i
+            marked_indices.append(index)
             index = 0
-            distances = gmaps.distance_matrix(origin, locationList, mode, None, None, "imperial", None, None, None, None, None)
-            for j in range(len(distances['rows'][0]['elements'])):
-                listDuration = int(distances['rows'][0]['elements'][j]['duration']['text'][0])
-                listDurations.append(listDuration)
-            for j in range(len(listDurations)):
-                if listDurations[j] < min_time:
-                    min_time = listDurations[j]
-                    index = j
-            min_times.append(min_time)
-            orderedList.append(list[index])
-            list.pop(index)
-            origin = dict(lat=locationList[index][0], lng=locationList[index][1])
-            locationList.pop(index)
-            time_spent += min_time
+            count = count + 1
+        for i in range(len(marked_indices)):
+            orderedList.append(list[marked_indices[i]])
+        print(orderedList)
+
+        # for i in range(lengthToUse):
+        #     min_time = 100000000
+        #     listDurations = []
+        #     index = 0
+        #     #distances = gmaps.distance_matrix(origin, locationList, mode, None, None, "imperial", None, None, None, None, None)
+        #     for j in range(len(distances['rows'][0]['elements'])):
+        #         listDuration = int(distances['rows'][0]['elements'][j]['duration']['text'][0])
+        #         listDurations.append(listDuration)
+        #     for j in range(len(listDurations)):
+        #         if listDurations[j] < min_time:
+        #             min_time = listDurations[j]
+        #             index = j
+        #     min_times.append(min_time)
+        #     orderedList.append(list[index])
+        #     list.pop(index)
+        #     origin = dict(lat=locationList[index][0], lng=locationList[index][1])
+        #     locationList.pop(index)
+        #     time_spent += min_time
         while time_spent > max_time:
             min_in_max = 0
             index = 0

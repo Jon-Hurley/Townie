@@ -175,7 +175,7 @@ def sendFriendRequest(toKey, fromKey):
 """
 LET originUsername = (
 FOR user IN User
-FILTER user._key == @toKey
+FILTER user._key == @fromKey
 RETURN user.username
 )[0]
 

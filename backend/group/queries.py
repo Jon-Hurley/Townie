@@ -106,39 +106,39 @@ def updatePlayerLocation(playerKey, lon, lat):
 
 def getGame(gameKey):
     return arango_con.db.aql.execute(
-"""
-WITH User, Destinations
+    """
+        WITH User, Destinations
 
-            LET players = (
-FOR v, e IN 1..1 INBOUND CONCAT("Games/", @key) Players
-RETURN {
-key: v._key,
-username: v.username,
-connectionId: e.connectionId,
-lon: e.lon,
-lat: e.lat
-}
-)
+                    LET players = (
+        FOR v, e IN 1..1 INBOUND CONCAT("Games/", @key) Players
+            RETURN {
+                key: v._key,
+                username: v.username,
+                connectionId: e.connectionId,
+                lon: e.lon,
+                lat: e.lat
+            }
+        )
 
-            LET destinations = (
-FOR v, e IN 1..1 OUTBOUND CONCAT("Games/", @key) Itineraries
-RETURN {
-index: e.index,
-points: e.points,
-name: v.name,
-lon: v.longitude,
-lat: v.latitude
-}
-)
+        LET destinations = (
+            FOR v, e IN 1..1 OUTBOUND CONCAT("Games/", @key) Itineraries
+                RETURN {
+                    index: e.index,
+                    points: e.points,
+                    name: v.name,
+                    lon: v.longitude,
+                    lat: v.latitude
+                }
+        )
 
-            FOR game IN Games
-FILTER game._key == @key
-RETURN {
-game,
-players,
-destinations
-}
-""",
+        FOR game IN Games
+        FILTER game._key == @key
+        RETURN {
+            game,
+            players,
+            destinations
+        }
+    """,
 bind_vars={
 'key': str(gameKey),
 }

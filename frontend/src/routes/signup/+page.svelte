@@ -78,6 +78,7 @@
             message: "You have successfully created your account!",
             dest: '/game/join'
         };
+        goto('/account')
     }
 </script>
 
