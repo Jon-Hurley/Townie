@@ -13,6 +13,9 @@
         darkMode: false
     };
 
+    let markerList = [];
+    let circleList = [];
+
     locationStore.set({
         ...location,
         index: 0
@@ -105,8 +108,34 @@
         })
 
         var bounds = new google.maps.LatLngBounds();
-        bounds.extend(userCircle['center']);
-        bounds.extend(circle['center']);
+
+        for (let i = 0; i < gameStore.players.length; i++) {
+            if (gameStore.players[i]['showLocation']) {
+                let marker = new google.maps.Marker({
+                    position: { lat: gameStore.players[i]['lat'], lng: gameStore.players[i]['lon'] },
+                    map: mapState.map,
+                    title: gameStore.players[i]['username']
+                });
+                markerList.push(marker);
+                bounds.extend(marker['position']);
+            } else {
+                let circle = new google.maps.Circle({
+                    strokeColor: "#FF0000",
+                    strokeOpacity: 0.8,
+                    strokeWeight: 2,
+                    fillColor: "#FF0000",
+                    fillOpacity: 0.35,
+                    map: mapState.map,
+                    center: { lat: gameStore.players[i]['lat'], lng: gameStore.players[i]['lng'] },
+                    radius: 20
+                });
+                markerList.push(circle);
+                bounds.extend(circle['center']);
+            }
+        }
+
+        // bounds.extend(userCircle['center']);
+        // bounds.extend(circle['center']);
         mapState.map.setCenter(bounds.getCenter());
         mapState.map.fitBounds(bounds);
 
