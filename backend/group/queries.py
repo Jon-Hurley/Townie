@@ -32,9 +32,11 @@ def addPlayer(gameKey, userKey, connectionId):
                 _to: CONCAT("Games/", @gameKey),
                 connectionId: @connectionId,
                 destinationIndex: 0,
+                dist: 0,
                 points: 0,
                 lon: 0,
-                lat: 0
+                lat: 0,
+                totalDist: 0
             }
             UPDATE {
                 _to: CONCAT("Games/", @gameKey),
@@ -94,14 +96,57 @@ def updateGameSettings(gameKey, settings):
     }
     return arango_con.gameCollection.update(updates, return_new=True)
 
-def updatePlayerLocation(playerKey, lon, lat):
-    updates = {
-        '_key': playerKey,
-        'lon': lon,
-        'lat': lat
-    }
-    return arango_con.playerCollection.update(updates)
+def updatePlayerLocation(gameKey, userKey, lon, lat):
+    return arango_con.db.aql.execute(
+        """
+        WITH Destinations
 
+        LET x = (
+            FOR p IN Players
+                FILTER p._to == CONCAT("Games/", @gameKey)
+                AND p._from == CONCAT("User/", @userKey)
+                
+                LET delta = DISTANCE(p.lat, p.lon, @lon, @lat)
+                UPDATE p
+                WITH {
+                    lon: @lon,
+                    lat: @lat,
+                    dist: p.dist + delta,
+                    totalDist: p.totalDist + delta
+                }
+                IN Players
+                RETURN NEW
+        )[0]
+
+        FOR v, e IN 1..1 OUTBOUND CONCAT("Games/", @key) Itineraries
+            FILTER e.index == x.destinationIndex
+            RETURN {
+                playerKey: x._key,
+                dist: DISTANCE(v.lat, v.lon, x.lat, x.lon)
+            }
+        """,
+        bind_vars={
+            'gameKey': str(gameKey),
+            'userKey': str(userKey),
+            'lon': lon,
+            'lat': lat
+        }
+    )
+
+def updatePlayerDestination(playerKey):
+    return arango_con.db.aql.execute(
+        """
+            UPDATE @playerKey
+            WITH {
+                destinationIndex: OLD.destinationIndex + 1
+            }
+            IN Players
+            RETURN NEW
+        """,
+        bind_vars={
+            'playerKey': str(playerKey)
+        }
+    )
 
 def getGame(gameKey):
     return arango_con.db.aql.execute(

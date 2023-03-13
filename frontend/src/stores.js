@@ -106,7 +106,7 @@ export class Game {
             const gameKey = get(this.store).game._key;
             const settings = get(this.store).game.settings;
             this.send('start-game', { gameKey, settings });
-            resumePolling();
+            this.resumePolling();
         } catch (err) {
             console.log(err);
         }
@@ -123,7 +123,11 @@ export class Game {
     
     static updateLocation(lon, lat) {
         try {
-            this.send('update-location', { lon, lat });
+            this.send('update-location', {
+                lon, lat,
+                gameKey: get(Game.store).game._key,
+                userKey: get(userStore).key
+            });
         } catch (err) {
             console.log(err);
         }
@@ -152,14 +156,15 @@ export class Location {
 			const { latitude: lat, longitude: lng } = loc.coords;
 			const oldLoc = get(this.store);
 
-			if (!mapState.snapLocation) {
-				if (lat === oldLoc?.lat && lng === oldLoc?.lng) {
-					return;
-				}
-			}
+            if (lat === oldLoc?.lat && lng === oldLoc?.lng) {
+                if (!mapState.snapLocation) {
+                    return;
+                }
+            }
 
 			console.log('setting location store...');
 			this.store.set({ lat, lng });
+            Game.updateLocation(lng, lat);
 		};
 
 		this.interval = setInterval(() => {

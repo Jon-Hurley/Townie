@@ -24,7 +24,6 @@
             }
             return;
         }
-        goto("/game/map")
     }
 </script>
 

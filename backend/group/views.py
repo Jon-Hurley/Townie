@@ -82,6 +82,26 @@ def onDefault(request):
         return JsonResponse({
             'method': 'start-game'
         })
+    
+    if method == 'update-location':
+        gameKey = body['gameKey']
+        userKey = body['userKey']
+        lon = body['lon']
+        lat = body['lat']
+        res = queries.updatePlayerLocation(gameKey, userKey, lon, lat).batch()[0]
+        
+        if (res['dist'] > 20):
+            return JsonResponse({
+                'method': 'update-location'
+            })
+        
+        res = queries.updatePlayerDestination(res['playerKey'])
+        return JsonResponse({
+            'method': 'update-location',
+            'data': res
+        })
+        
+    
         # print("HELLO", gameKey)
     # print(data)
     # propogateAllUpdates(
