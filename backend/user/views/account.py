@@ -64,7 +64,7 @@ def verifySignup(request):
     otp = data['otp']
 
     if password.find(':') != -1:
-        return returnError("Passwords must not contain colons.", 400)
+        return returnError("Passwords may not contain colons.", 400)
 
     res = twilio_con.testVerification(phone, otp)
     if not res:
