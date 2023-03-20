@@ -2,24 +2,28 @@ import arango_con
 import time
 
 def createGame():
-    return arango_con.gameCollection.insert({
-        'page': 'lobby',
-        'startTime': 0,
-        'maxTime': 0,
-        'numFinished': 0,
-        'trueCompletionTime': 0,
-        'settings': {
-            'radius': 5,
-            'walkingAllowed': True,
-            'drivingAllowed': False,
-            'bicyclingAllowed': False,
-            'transitAllowed': False,
-            'theme': "None",
-            'desiredCompletionTime': 180,
-            'lon': 0.0,
-            'lat': 0.0
+    return arango_con.db.aql.execute(
+        """
+        INSERT {
+            page: 'lobby',
+            createTime: DATE_NOW(),
+            maxTime: DATE_NOW() + 24 * 60 * 60 * 1000,
+            settings: {
+                radius: 5,
+                walkingAllowed: True,
+                drivingAllowed: False,
+                bicyclingAllowed: False,
+                transitAllowed: False,
+                theme: "None",
+                desiredCompletionTime: 180,
+                lon: 0.0,
+                lat: 0.0
+            }
         }
-    })
+        INTO Games
+        RETURN NEW
+        """
+    )
 
 def addPlayer(gameKey, userKey, connectionId):
     return arango_con.db.aql.execute(
@@ -80,15 +84,38 @@ def startGame(gameKey, settings):
     # trueCompletionTime = WEB-SCRAPER(gameKey, settings)
     trueCompletionTime = 100
 
-    t = time.time()
-    return arango_con.gameCollection.update({
-        '_key': gameKey,
-        'page': 'map',
-        'startTime': t,
-        'maxTime': t + 24 * 60 * 60, # REPLACE W/ TTL index.
-        'trueCompletionTime': trueCompletionTime
-    })
-    
+    return arango_con.db.aql.execute(
+        """
+            LET t = DATE_NOW()
+
+            FOR p IN Players
+                FILTER p._to == CONCAT('Games/', @gameKey)
+                UPDATE p
+                WITH {
+                    prevTime: t,
+                    time: 0,
+                    totalTime: 0,
+                    paused: false
+                }
+                IN Players
+
+            UPDATE @gameKey
+            WITH {
+                page: 'map',
+                trueCompletionTime: @trueCompletionTime,
+                startTime: t
+            }
+            IN Games
+            RETURN NEW           
+        """,
+        bind_vars={
+            'gameKey': str(gameKey),
+            'trueCompletionTime': trueCompletionTime
+        }
+    )
+
+
+
 def updateGameSettings(gameKey, settings):
     updates = {
         '_key': gameKey,
@@ -96,55 +123,54 @@ def updateGameSettings(gameKey, settings):
     }
     return arango_con.gameCollection.update(updates, return_new=True)
 
-def updatePlayerLocation(gameKey, userKey, lon, lat):
+def updatePlayerLocation(connectionId, lon, lat):
     return arango_con.db.aql.execute(
         """
         WITH Destinations
 
-        LET x = (
-            FOR p IN Players
-                FILTER p._to == CONCAT("Games/", @gameKey)
-                AND p._from == CONCAT("User/", @userKey)
-                
-                LET delta = DISTANCE(p.lat, p.lon, @lon, @lat)
-                UPDATE p
-                WITH {
-                    lon: @lon,
-                    lat: @lat,
-                    dist: p.dist + delta,
-                    totalDist: p.totalDist + delta
-                }
-                IN Players
-                RETURN NEW
-        )[0]
+        FOR p IN Players
+            FILTER p.connectionId == @connectionId
+            
+            LET delta = p.lat ? DISTANCE(p.lat, p.lon, @lat, @lon) : 0
+            
+            LET destDelta = (
+                FOR v, e IN 1..1 OUTBOUND p._to Itineraries
+                    FILTER e.index == p.destinationIndex
+                    LET dist = DISTANCE(v.latitude, v.longitude, @lat, @lon)
+                    LET inc = (dist != NULL && dist < 20)
+                    RETURN {
+                        inc,
+                        points: e.points * inc
+                    }
+            )[0]
 
-        FOR v, e IN 1..1 OUTBOUND CONCAT("Games/", @key) Itineraries
-            FILTER e.index == x.destinationIndex
-            RETURN {
-                playerKey: x._key,
-                dist: DISTANCE(v.lat, v.lon, x.lat, x.lon)
-            }
-        """,
-        bind_vars={
-            'gameKey': str(gameKey),
-            'userKey': str(userKey),
-            'lon': lon,
-            'lat': lat
-        }
-    )
+            LET t = DATE_NOW()
+            LET dt = (1 - p.paused) * (t - p.prevTime)
 
-def updatePlayerDestination(playerKey):
-    return arango_con.db.aql.execute(
-        """
-            UPDATE @playerKey
+            UPDATE p
             WITH {
-                destinationIndex: OLD.destinationIndex + 1
+                lon: @lon,
+                lat: @lat,
+                
+                dist: (p.dist + delta) * (1 - destDelta.inc),
+                totalDist: p.totalDist + delta,
+                destinationIndex: p.destinationIndex + destDelta.inc,
+                points: p.points + destDelta.points,
+                
+                prevTime: t,
+                time: (p.time + dt) * (1 - destDelta.inc),
+                totalTime: p.totalTime + dt
             }
             IN Players
-            RETURN NEW
+            RETURN {
+                destinationIndex: NEW.destinationIndex,
+                time: OLD.time
+            }
         """,
         bind_vars={
-            'playerKey': str(playerKey)
+            'connectionId': str(connectionId),
+            'lon': lon,
+            'lat': lat
         }
     )
 

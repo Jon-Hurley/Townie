@@ -18,18 +18,20 @@ client = boto3.client(
 # FUCK DJANGO AND ITS BS CONCURRENCY REQS.
 
 def propogateUpdates(users, data, conExcl={}):
-    data = json.dumps({
-        'method': 'update-game',
-        'data': data
-    })
     for user in users:
         connectionId = user['connectionId']
         if connectionId in conExcl:
             continue
-        propogateUpdate(connectionId, data)
+        propogateUpdate(connectionId, user, data)
     return True
 
-def propogateUpdate(connectionId, data):
+def propogateUpdate(connectionId, user, data):
+    data['player'] = user
+    data = json.dumps({
+        'method': 'update-game',
+        'data': data,
+    })
+
     try:
         print("Emitting to: ", connectionId)
         response = client.post_to_connection(

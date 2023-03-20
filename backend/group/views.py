@@ -44,10 +44,6 @@ def onDisconnect(request):
     # else: connection was already updated, and no longer exists anyways.
     return JsonResponse({})
 
-# DEFAULT: (right now will be done in http requests lol)
-#       1. Update Game Settings
-#       2. Start Game
-#       3. Update Location
 @csrf_exempt
 def onDefault(request):
     data = json.loads(request.body)
@@ -78,69 +74,21 @@ def onDefault(request):
     if method == 'start-game':
         gameKey = body['gameKey']
         settings = body['settings']
-        res = queries.startGame(gameKey, settings)
+        res = queries.startGame(gameKey, settings).batch()[0]
+        propogateAllUpdates(gameKey)
         return JsonResponse({
             'method': 'start-game'
         })
     
     if method == 'update-location':
-        gameKey = body['gameKey']
-        userKey = body['userKey']
         lon = body['lon']
         lat = body['lat']
-        res = queries.updatePlayerLocation(gameKey, userKey, lon, lat).batch()[0]
-        
-        if (res['dist'] > 20):
-            return JsonResponse({
-                'method': 'update-location'
-            })
-        
-        res = queries.updatePlayerDestination(res['playerKey'])
+        res = queries.updatePlayerLocation(connectionId, lon, lat).batch()[0]
         return JsonResponse({
             'method': 'update-location',
             'data': res
         })
-        
-    
-        # print("HELLO", gameKey)
-    # print(data)
-    # propogateAllUpdates(
-    #     conExcl={ connectionId },
-    #     data=data
-    # )
-    
-    # body = json.loads(request.body)
-    # print(request.POST)
-    # print(request.GET)
-    # if body['action'] == 'update-game-settings':
-    #     return updateGameSettings(body)
-    # if body['action'] == 'start-game':
-    #     return startGame(body)
-    # if body['action'] == 'update-location':
-    #     return updatePlayerLocation(body)
     return JsonResponse({})
-
-def updatePlayerLocation(body):
-    playerKey = body['key']
-    lon = body['lon']
-    lat = body['lat']
-    res = queries.updatePlayerLocation(playerKey, lon, lat)
-    return JsonResponse(res)
-
-def updateGameSettings(body):
-    playerKey = body['key']
-    field = body['field']
-    value = body['value']
-
-    res = queries.updatePlayerLocation(playerKey, field, value)
-    return JsonResponse(res)
-
-def startGame(body):
-    gameKey = body['gameKey']
-    settings = body['settings']
-    res = queries.startGame(gameKey, settings)
-    propogateAllUpdates(gameKey)
-    return JsonResponse(res)
 
 def propogateAllUpdates(gameKey=None, conExcl={}, data=None):
     if data is None:
@@ -151,6 +99,6 @@ def propogateAllUpdates(gameKey=None, conExcl={}, data=None):
 # GET REQUEST: CREATE A LOBBY/GAME
 
 def createGame(request):
-    res = queries.createGame()
+    res = queries.createGame().batch()[0]
     print(res)
     return JsonResponse({'key': res['_key']})
