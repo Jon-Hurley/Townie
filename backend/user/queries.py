@@ -1,6 +1,7 @@
 import arango_con
 import time
 
+
 def createUser(username, passwordHash, phoneNumber):
     return arango_con.userCollection.insert(
         {
@@ -14,14 +15,16 @@ def createUser(username, passwordHash, phoneNumber):
         return_new=True
     )
 
+
 def getUserByUsername(username):
     return arango_con.userCollection.find({
-'username': username
-})
+        'username': username
+    })
+
 
 def updateInfo(userKey, passwordHash, newUsername, newPhone, newPasswordHash):
     return arango_con.db.aql.execute(
-"""
+        """
 FOR user IN User
 FILTER user._key == @userKey
 && user.passwordHash == @passwordHash
@@ -34,29 +37,32 @@ passwordHash: @newPasswordHash
 
             RETURN NEW
 """,
-bind_vars={
-'passwordHash': passwordHash,
-'userKey': userKey,
-'newUsername': newUsername,
-'newPhone': newPhone,
-'newPasswordHash': newPasswordHash
-}
-)
+        bind_vars={
+            'passwordHash': passwordHash,
+            'userKey': userKey,
+            'newUsername': newUsername,
+            'newPhone': newPhone,
+            'newPasswordHash': newPasswordHash
+        }
+    )
+
 
 def updatePassword(userKey, newPasswordHash):
     return arango_con.userCollection.update({
-'_key': userKey,
-'passwordHash': newPasswordHash
-})
+        '_key': userKey,
+        'passwordHash': newPasswordHash
+    })
+
 
 def getUserFromPhone(phone):
     return arango_con.userCollection.find({
-'phone': phone
-})
+        'phone': phone
+    })
+
 
 def deleteUser(userKey, passwordHash):
     return arango_con.db.aql.execute(
-"""
+        """
 FOR user IN User
 FILTER user._key == @userKey
 && user.passwordHash == @passwordHash
@@ -65,15 +71,16 @@ FILTER user._key == @userKey
 IN User
 RETURN OLD._key
 """,
-bind_vars={
-'passwordHash': passwordHash,
-'userKey': str(userKey)
-}
-)
+        bind_vars={
+            'passwordHash': passwordHash,
+            'userKey': str(userKey)
+        }
+    )
+
 
 def getUserWithFriendship(userKey, targetKey):
     return arango_con.db.aql.execute(
-"""
+        """
 LET userId = CONCAT("User/", @userKey)
 
         LET f = (
@@ -97,15 +104,16 @@ purchases: user.purchases,
 friendship: f
 }
 """,
-bind_vars={
-'targetKey': targetKey,
-'userKey': userKey
-}
-)
+        bind_vars={
+            'targetKey': targetKey,
+            'userKey': userKey
+        }
+    )
+
 
 def getUser(targetKey):
     return arango_con.db.aql.execute(
-"""
+        """
 FOR user IN User
 FILTER user._key == @targetKey
 RETURN {
@@ -116,14 +124,15 @@ points: user.points,
 purchases: user.purchases
 }
 """,
-bind_vars={
-'targetKey': targetKey
-}
-)
+        bind_vars={
+            'targetKey': targetKey
+        }
+    )
+
 
 def getUsersBySubstring(substr):
     return arango_con.db.aql.execute(
-"""
+        """
 FOR user IN User
 LET x = CONTAINS(LOWER(user.username), LOWER(@substr), true)
 SORT x
@@ -134,12 +143,13 @@ key: user._key,
 username: user.username
 }
 """,
-bind_vars={'substr': substr}
-)
+        bind_vars={'substr': substr}
+    )
+
 
 def getFriendsList(key):
     return arango_con.db.aql.execute(
-"""
+        """
 WITH User
 FOR v, e IN 1..1 ANY CONCAT("User/", @key) Friends
 FILTER e.status
@@ -148,12 +158,13 @@ key: v._key,
 username: v.username
 }
 """,
-bind_vars={'key': key}
-)
+        bind_vars={'key': key}
+    )
+
 
 def getPendingFriendsList(key):
     return arango_con.db.aql.execute(
-"""
+        """
 WITH User
 FOR v, e IN 1..1 ANY CONCAT("User/", @key) Friends
 FILTER NOT e.status
@@ -167,12 +178,13 @@ username: v.username
 timestamp: e.timestamp
 }
 """,
-bind_vars={'key': key}
-)
+        bind_vars={'key': key}
+    )
+
 
 def sendFriendRequest(toKey, fromKey):
     return arango_con.db.aql.execute(
-"""
+        """
 LET originUsername = (
 FOR user IN User
 FILTER user._key == @fromKey
@@ -194,16 +206,17 @@ targetPhone: user.phone,
 originUsername
 }
 """,
-bind_vars={
-'toKey': toKey,
-'fromKey': fromKey,
-'timestamp': time.time()
-}
-)
+        bind_vars={
+            'toKey': toKey,
+            'fromKey': fromKey,
+            'timestamp': time.time()
+        }
+    )
+
 
 def acceptFriendRequest(friendshipKey):
     return arango_con.db.aql.execute(
-"""
+        """
 LET pp = (
 UPDATE @key
 WITH { status: True }
@@ -225,31 +238,51 @@ targetPhone,
 originUsername
 }
 """,
-bind_vars={'key': friendshipKey}
-)
+        bind_vars={'key': friendshipKey}
+    )
+
 
 def rejectFriendRequest(friendshipKey):
     return arango_con.db.aql.execute(
-"""
-LET pp = (
-REMOVE @key
-IN Friends
-RETURN OLD
-)[0]
-LET targetPhone = (
-FOR penis IN User
-FILTER penis._id == pp._from
-RETURN penis.phone
-)[0]
-LET originUsername = (
-FOR penis IN User
-FILTER penis._id == pp._to
-RETURN penis.username
-)[0]
-RETURN {
-targetPhone,
-originUsername
-}
-""",
-bind_vars={'key': friendshipKey}
-)
+        """
+        LET pp = (
+            REMOVE @key
+            IN Friends
+            RETURN OLD
+        )[0]
+        LET targetPhone = (
+            FOR penis IN User
+            FILTER penis._id == pp._from
+            RETURN penis.phone
+        )[0]
+        LET originUsername = (
+            FOR penis IN User
+            FILTER penis._id == pp._to
+            RETURN penis.username
+        )[0]
+        RETURN {
+            targetPhone,
+            originUsername
+        }
+        """,
+        bind_vars={'key': friendshipKey}
+    )
+
+
+def getSummary(gameID):
+    return arango_con.db.aql.execute(
+        """
+        FOR game IN Games
+        FILTER game._key == @gameID
+        RETURN {
+            gameID: game._key,
+            startTime: game.startTime,
+            maxTime: game.maxTime,
+            numFinished: game.numFinished,
+            members: game.members,
+            destinations: game.destinations,
+            settings: game.settings
+        }
+        """,
+        bind_vars={'gameID': gameID}
+    )

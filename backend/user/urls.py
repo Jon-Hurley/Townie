@@ -14,6 +14,7 @@ urlpatterns = [
 
     path('search/', search.searchUsers),
     path('profile/<str:key>/', search.getUser),
+    path('game/<str:gameID>', search.getSummary),
 
     path('friends/', friend.getFriends),
     path('pending-friends/', friend.getPendingFriends),
