@@ -6,6 +6,12 @@
 	import { get } from 'svelte/store';
 	import { each } from 'svelte/internal';
 
+    let totalTime = Date.now() - Date.now();
+    $: hours = `00${((totalTime/1000/60/60)%60)}`.slice(-2);
+    $: minutes = `00${((totalTime/1000/60)%60)}`.slice(-2);
+    $: seconds = `00${((totalTime/1000)%60)}`.slice(-2);
+    $: formattedTime = `${hours}:${minutes}:${seconds}`;
+
 	let mapState = {
         container: undefined,
         center: undefined,
@@ -193,6 +199,18 @@
         return undefined;
     }
 </script>
+
+
+<!-- TIMER FEATURE -->
+<div class="absolute top-[5rem] right-4 z-10
+    bg-gray-800 rounded
+    px-2 py-1
+    opacity-50 text-gray-400">
+    <h1 class="border-b border-gray-400">
+        Total Time:
+    </h1>
+    {formattedTime}
+</div> 
 
 <div
     class="
