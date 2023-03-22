@@ -16,15 +16,11 @@
 			return;
 		}
 
-        errorMessage = await login(form.username, form.password);
+        errorMessage = await login(form.username, form.password, remember);
 		if (errorMessage) {
 			return;
 		}
 
-		if (remember) {
-			localStorage.setItem('username', form.username);
-			localStorage.setItem('password', form.password);
-		}
 		goto('/game/join');
 	};
 </script>

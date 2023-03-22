@@ -4,7 +4,6 @@ import twilio_con
 import user.queries as queries
 import json
 from hashlib import sha256
-from arango import DocumentInsertError
 
 def returnError(errorMessage, errCode):
     return JsonResponse(

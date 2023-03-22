@@ -3,25 +3,56 @@ import { PUBLIC_BACKEND_API } from '$env/static/public';
 import { get } from 'svelte/store';
 import { userStore } from './../stores'
 
-export const login = async(username, password) => {
+export const login = async(username, password, remember) => {
     try {
-        console.log(username, password);
+        console.log(username, password, remember);
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'user/login/',
             {
-                password: password,
-                username: username
+                password,
+                username
             }
         );
+        sessionStorage.setItem('username', username);
+        sessionStorage.setItem('password', password);
+        if (remember) {
+			localStorage.setItem('username', username);
+			localStorage.setItem('password', password);
+		}
         userStore.set(res.data);
         return null;
     } catch (err) {
+        console.log(err)
         return err?.response?.data?.errorMessage
             || 'Connection Refused. Failed to login user. Please try again.';
     }
 };
 
 export const autoLogin = async() => {
+    const sessionRes = await sessionLogin();
+    if (sessionRes) {
+        return true;
+    }
+    const localRes = await localLogin();
+    return localRes;
+};
+
+export const sessionLogin = async() => {
+    const username = sessionStorage.getItem('username');
+    const password = sessionStorage.getItem('password');
+    if (!username || !password) {
+        return false;
+    }
+    const errorMessage = await login(username, password);
+    if (errorMessage) {
+        sessionStorage.removeItem('username');
+        sessionStorage.removeItem('password');
+        return false;
+    }
+    return true;
+}
+
+export const localLogin = async() => {
     const username = localStorage.getItem('username');
     const password = localStorage.getItem('password');
     if (!username || !password) {
@@ -34,11 +65,11 @@ export const autoLogin = async() => {
         return false;
     }
     return true;
-};
+}
 
 export const logout = () => {
     console.log("logging out")
-    userStore.set({"username": "Signed Out", "key" : 0});
+    userStore.set(null);
 };
 
 export const signup = async(phone) => {
