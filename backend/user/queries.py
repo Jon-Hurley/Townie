@@ -180,7 +180,7 @@ def sendFriendRequest(toKey, fromKey):
         """
         LET originUsername = (
             FOR user IN User
-                FILTER user._key == @fromKey
+                FILTER user._key == @toKey
                 RETURN user.username
         )[0]
 

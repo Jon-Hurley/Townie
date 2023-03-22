@@ -41,6 +41,8 @@ declare module '$env/static/private' {
 	export const DriverData: string;
 	export const EDITOR: string;
 	export const EXEPATH: string;
+	export const FPS_BROWSER_APP_PROFILE_STRING: string;
+	export const FPS_BROWSER_USER_PROFILE_STRING: string;
 	export const GIT_ASKPASS: string;
 	export const GIT_LFS_PATH: string;
 	export const GPU_FORCE_64BIT_PTR: string;
@@ -173,6 +175,8 @@ declare module '$env/dynamic/private' {
 		DriverData: string;
 		EDITOR: string;
 		EXEPATH: string;
+		FPS_BROWSER_APP_PROFILE_STRING: string;
+		FPS_BROWSER_USER_PROFILE_STRING: string;
 		GIT_ASKPASS: string;
 		GIT_LFS_PATH: string;
 		GPU_FORCE_64BIT_PTR: string;
