@@ -3,7 +3,7 @@ import { PUBLIC_BACKEND_API } from '$env/static/public';
 import { get } from 'svelte/store';
 import { userStore } from './../stores'
 
-export const login = async(username, password) => {
+export const login = async (username, password) => {
     try {
         console.log(username, password);
         const res = await axios.post(
@@ -21,7 +21,7 @@ export const login = async(username, password) => {
     }
 };
 
-export const autoLogin = async() => {
+export const autoLogin = async () => {
     const username = localStorage.getItem('username');
     const password = localStorage.getItem('password');
     if (!username || !password) {
@@ -38,18 +38,19 @@ export const autoLogin = async() => {
 
 export const logout = () => {
     console.log("logging out")
-    userStore.set({"username": "Signed Out", "key" : 0});
+    userStore.set(null);
 };
 
-export const signup = async(phone) => {
+export const signup = async (phone, username) => {
     try {
-        console.log(phone);
+        console.log(phone, username);
         const res = await axios.post(
-                PUBLIC_BACKEND_API + 'user/signup/',
-                {
-                    phone
-                }
-                );
+            PUBLIC_BACKEND_API + 'user/signup/',
+            {
+                phone,
+                username
+            }
+        );
         return null;
     } catch (err) {
         return err?.response?.data?.errorMessage
@@ -57,17 +58,17 @@ export const signup = async(phone) => {
     }
 };
 
-export const verifySignup = async(username, password, phone, otp) => {
+export const verifySignup = async (username, password, phone, otp) => {
     try {
         const res = await axios.post(
-                PUBLIC_BACKEND_API + 'user/verify-signup/',
-                {
-                    phone,
-                    username,
-                    password,
-                    otp
-                }
-                );
+            PUBLIC_BACKEND_API + 'user/verify-signup/',
+            {
+                phone,
+                username,
+                password,
+                otp
+            }
+        );
         userStore.set(res.data);
         return null;
     } catch (err) {
@@ -76,21 +77,21 @@ export const verifySignup = async(username, password, phone, otp) => {
     }
 }
 
-export const updateAccount = async(password, newUsername, newPhone) => {
+export const updateAccount = async (password, newUsername, newPhone) => {
     try {
         const user = get(userStore);
         const res = await axios.post(
-                PUBLIC_BACKEND_API + 'user/update/',
-                {
-                    key: user.key,
-                    username: user.username,
-                    passwordHash: user.passwordHash,
+            PUBLIC_BACKEND_API + 'user/update/',
+            {
+                key: user.key,
+                username: user.username,
+                passwordHash: user.passwordHash,
 
-                    password,
-                    newUsername,
-                    newPhone
-                }
-                );
+                password,
+                newUsername,
+                newPhone
+            }
+        );
         userStore.set(res.data)
         return null;
     } catch (err) {
@@ -99,63 +100,63 @@ export const updateAccount = async(password, newUsername, newPhone) => {
     }
 };
 
-export const initiatePasswordReset = async(phone) => {
+export const initiatePasswordReset = async (phone) => {
     try {
         const res = await axios.post(
-                PUBLIC_BACKEND_API + 'user/initiate-password-reset/',
-                {
-                    phone
-                }
-                );
-        return null; 
+            PUBLIC_BACKEND_API + 'user/initiate-password-reset/',
+            {
+                phone
+            }
+        );
+        return null;
     } catch (err) {
         return err?.response?.data?.errorMessage
             || 'Connection Refused. Failed to find user. Please try again.';
     }
 };
 
-export const completePasswordReset = async(phone, otp, newPassword) => {
+export const completePasswordReset = async (phone, otp, newPassword) => {
     try {
         const res = await axios.post(
-                PUBLIC_BACKEND_API + 'user/complete-password-reset/',
-                {
-                    "phone" : phone,
-                    "otp" : otp,
-                    "newPassword" : newPassword
-                }
-                );
+            PUBLIC_BACKEND_API + 'user/complete-password-reset/',
+            {
+                "phone": phone,
+                "otp": otp,
+                "newPassword": newPassword
+            }
+        );
         console.log(res);
-        return null;       
+        return null;
     } catch (err) {
         return err?.response?.data?.errorMessage
             || 'Connection Refused. Failed to update password. Please try again.';
     }
 };
 
-export const verifyOTP = async(otp) => {
+export const verifyOTP = async (otp) => {
     try {
         const res = await axios.post(
-                PUBLIC_BACKEND_API + 'user/initiate-password-reset/',
-                {
-                    otp
-                }
-                );
+            PUBLIC_BACKEND_API + 'user/initiate-password-reset/',
+            {
+                otp
+            }
+        );
     } catch {
 
     }
 }
 
-export const deleteUser = async() => {
+export const deleteUser = async () => {
     try {
         const body = {
             key: get(userStore).key,
             passwordHash: get(userStore).passwordHash
         };
-        console.log({body})
+        console.log({ body })
         const res = await axios.post(
-                PUBLIC_BACKEND_API + 'user/delete/',
-                body
-                );
+            PUBLIC_BACKEND_API + 'user/delete/',
+            body
+        );
         userStore.set(null);
         return null;
     } catch (err) {

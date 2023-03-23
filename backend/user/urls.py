@@ -5,7 +5,7 @@ urlpatterns = [
     path('login/', account.login),
     path('signup/', account.signup),
     path('verify-signup/', account.verifySignup),
-    
+
     path('token-login/', account.loginWithToken),
     path('initiate-password-reset/', account.initiatePasswordReset),
     path('complete-password-reset/', account.completePasswordReset),
@@ -14,7 +14,6 @@ urlpatterns = [
 
     path('search/', search.searchUsers),
     path('profile/<str:key>/', search.getUser),
-    path('game/<str:gameID>', search.getSummary),
 
     path('friends/', friend.getFriends),
     path('pending-friends/', friend.getPendingFriends),

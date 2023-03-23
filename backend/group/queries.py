@@ -2,6 +2,7 @@ import arango_con
 import time
 from . import scraper
 
+
 def createGame():
     return arango_con.gameCollection.insert({
         'page': 'lobby',
@@ -22,6 +23,7 @@ def createGame():
         }
     })
 
+
 def addPlayer(gameKey, userKey, connectionId):
     return arango_con.db.aql.execute(
         """
@@ -35,11 +37,13 @@ def addPlayer(gameKey, userKey, connectionId):
                 destinationIndex: 0,
                 points: 0,
                 lon: 0,
-                lat: 0
+                lat: 0,
+                finished: false
             }
             UPDATE {
                 _to: CONCAT("Games/", @gameKey),
-                connectionId: @connectionId
+                connectionId: @connectionId,
+                finished: false
             }
             IN Players
             RETURN {
@@ -53,6 +57,7 @@ def addPlayer(gameKey, userKey, connectionId):
         }
     )
 
+
 def leaveGame(connectionId):
     return arango_con.db.aql.execute(
         """
@@ -60,13 +65,16 @@ def leaveGame(connectionId):
                 FILTER p.connectionId == @connectionId
                 
                 LET gameKey = p._to
-                REMOVE p._key in Players
+                UPDATE p WITH {
+                    finished: true
+                }
                 RETURN { gameKey }
         """,
         bind_vars={
             'connectionId': str(connectionId)
         }
     )
+
 
 def startGame(gameKey, settings):
     # GET GAME SETTINGS
@@ -77,16 +85,17 @@ def startGame(gameKey, settings):
 
     # TRIGGER WEB-SCRAPER: (get destinations & auto add to the DB)
     trueCompletionTime = scraper.map(settings, gameKey)
-    #trueCompletionTime = 100
+    # trueCompletionTime = 100
 
     t = time.time()
     return arango_con.gameCollection.update({
-'_key': gameKey,
-'page': 'map',
-'startTime': t,
-'maxTime': t + 24 * 60 * 60, # REPLACE W/ TTL index.
-'trueCompletionTime': trueCompletionTime
-})
+        '_key': gameKey,
+        'page': 'map',
+        'startTime': t,
+        'maxTime': t + 24 * 60 * 60,  # REPLACE W/ TTL index.
+        'trueCompletionTime': trueCompletionTime
+    })
+
 
 def updateGameSettings(gameKey, settings):
     updates = {
@@ -94,6 +103,7 @@ def updateGameSettings(gameKey, settings):
         'settings': settings
     }
     return arango_con.gameCollection.update(updates, return_new=True)
+
 
 def updatePlayerLocation(playerKey, lon, lat):
     updates = {
@@ -106,7 +116,7 @@ def updatePlayerLocation(playerKey, lon, lat):
 
 def getGame(gameKey):
     return arango_con.db.aql.execute(
-    """
+        """
         WITH User, Destinations
 
                     LET players = (
@@ -139,26 +149,29 @@ def getGame(gameKey):
             destinations
         }
     """,
-bind_vars={
-'key': str(gameKey),
-}
-)
+        bind_vars={
+            'key': str(gameKey),
+        }
+    )
+
 
 def createDestination(lat, lng, name, theme):
     try:
         list = [lat, lng]
         return arango_con.destinationCollection.insert({
-    'latitude': lat,
-    'longitude': lng,
-    'name': name,
-    'theme': theme
-    })
+            'latitude': lat,
+            'longitude': lng,
+            'name': name,
+            'theme': theme
+        })
     except:
         pass
 
+
 def getNearbyDestinations(lat, lng, radius):
-    #technially deprecated
+    # technially deprecated
     return arango_con.destinationCollection.find_in_radius(lat, lng, radius/0.000621371)
+
 
 def insertIntoItinerary(listDict, gameKey):
     for i in range(len(listDict['Destinations'])):

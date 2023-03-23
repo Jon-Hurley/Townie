@@ -54,10 +54,19 @@ def updatePassword(userKey, newPasswordHash):
     })
 
 
-def getUserFromPhone(phone):
-    return arango_con.userCollection.find({
-        'phone': phone
-    })
+def getUserFrom(phone, username):
+    return arango_con.db.aql.execute(
+        """
+            FOR user IN User
+            FILTER user.phone == @phone
+            || user.username == @username
+            RETURN user
+        """,
+        bind_vars={
+            'phone': phone,
+            'username': username
+        }
+    )
 
 
 def deleteUser(userKey, passwordHash):
@@ -266,23 +275,4 @@ def rejectFriendRequest(friendshipKey):
         }
         """,
         bind_vars={'key': friendshipKey}
-    )
-
-
-def getSummary(gameID):
-    return arango_con.db.aql.execute(
-        """
-        FOR game IN Games
-        FILTER game._key == @gameID
-        RETURN {
-            gameID: game._key,
-            startTime: game.startTime,
-            maxTime: game.maxTime,
-            numFinished: game.numFinished,
-            members: game.members,
-            destinations: game.destinations,
-            settings: game.settings
-        }
-        """,
-        bind_vars={'gameID': gameID}
     )

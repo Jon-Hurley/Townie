@@ -38,17 +38,17 @@ export const getUser = async (targetKey) => {
     }
 };
 
-export const getSummary = async (gameID) => {
+export const getSummary = async (gameKey) => {
     try {
         const res = await axios.post(
-            PUBLIC_BACKEND_API + 'user/game/' + gameID + '/',
+            PUBLIC_BACKEND_API + 'group/get-game/',
             {
-                gameID: gameID
+                gameKey,
             }
         );
         return res.data;
     } catch (err) {
         console.log(err);
-        return null;
+        return false;
     }
 }

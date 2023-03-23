@@ -1,12 +1,12 @@
 export const buttonBaseStyle = `
-    border-2 rounded
+    border-[1px] rounded
     font-medium
     hover:bg-black hover:bg-opacity-5
     focus:outline-none focus:ring-0
     transition duration-150 ease-in-out
 `;
 export const buttonStyle = `
-    p-3 text-md
+    py-2 px-3 text-md
     ${buttonBaseStyle}
 `;
 
