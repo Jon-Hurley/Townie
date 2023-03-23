@@ -8,8 +8,10 @@
 	let summary;
 
 	onMount(async () => {
-		const key = $page.params.slug;
-		summary = await getSummary(key);
+		const gameKey = $page.params.slug;
+		console.log($page);
+		console.log({ gameKey });
+		summary = await getSummary(gameKey);
 	});
 </script>
 
@@ -17,9 +19,9 @@
 	<div class="h-full flex flex-col">
 		<Summary {summary} />
 	</div>
-{:else if summary === 0}
+{:else if summary === false}
 	<div class="h-full flex flex-col">
-		<h1 class="text-2xl text-center">No game summary found</h1>
+		<h1 class="text-2xl mt-4 text-center text-gray-700">No game summary found.</h1>
 	</div>
 {:else}
 	<Loading />

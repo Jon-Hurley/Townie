@@ -84,10 +84,11 @@
 <div class={title}>Share Game!</div>
 <hr class={hr} />
 
-{#each media as media}
-	<!-- svelte-ignore a11y-click-events-have-key-events -->
-	<div
-		class="
+<div class="flex flex-row justify-center">
+	{#each media as media}
+		<!-- svelte-ignore a11y-click-events-have-key-events -->
+		<div
+			class="
 			border-gray-200 border-4 rounded-full
 			p-3 m-0
 			text-indigo-500 font-semibold
@@ -99,37 +100,38 @@
 			overflow-visible
 			cursor-pointer
 		"
-		on:click={() => {
-			if (media.name === 'Copy Link') {
-				navigator.clipboard.writeText('link');
-				messageObj = {
-					status: 1,
-					message: 'Link copied to clipboard!',
-					dest: null
-				};
-			} else {
-				window.open(media.link, '_blank');
-			}
-		}}
-	>
-		<svg
-			xmlns="http://www.w3.org/2000/svg"
-			fill="none"
-			viewBox="0 0 48 48"
-			stroke-width="1.5"
-			stroke="currentColor"
+			on:click={() => {
+				if (media.name === 'Copy Link') {
+					navigator.clipboard.writeText('link');
+					messageObj = {
+						status: 1,
+						message: 'Link copied to clipboard!',
+						dest: null
+					};
+				} else {
+					window.open(media.link, '_blank');
+				}
+			}}
 		>
-			<path stroke-linecap="round" stroke-linejoin="round" d={media.icon} />
-		</svg>
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				fill="none"
+				viewBox="0 0 48 48"
+				stroke-width="1.5"
+				stroke="currentColor"
+			>
+				<path stroke-linecap="round" stroke-linejoin="round" d={media.icon} />
+			</svg>
 
-		<div class="text-center">{media.name}</div>
-	</div>
-{/each}
+			<div class="text-center">{media.name}</div>
+		</div>
+	{/each}
+</div>
 
 <div class={title}>Start Time:</div>
 <hr class={hr} />
 <div class="px-2 py-4 uppercase">
-	{new Date(summary.game.startTime).toLocaleString()}
+	{new Date(summary.game.startTime * 1000).toLocaleString()}
 </div>
 
 <div class={title}>How many finished?</div>

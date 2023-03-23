@@ -28,9 +28,16 @@
 	let lastState = false;
 	$: {
 		console.log('NEW USER: ', $userStore);
-		if (lastState && !$userStore) goto('/login');
+		if (lastState && !$userStore) {
+			goto('/login');
+			console.log('User state set to null: GOTO LOGIN');
+		}
 		if (!lastState && $userStore) {
-			if ($page.path === '/login' || $page.path === '/signup') goto('/account');
+			console.log('PAGE PATH: ', $page);
+			if ($page.route.id === '/login' || $page.route.id === '/signup') {
+				goto('/account');
+				console.log('User state set to valid: GOTO ACCOUNT');
+			}
 		}
 		lastState = !!$userStore;
 	}
