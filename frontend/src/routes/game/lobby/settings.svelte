@@ -19,8 +19,10 @@
     let otherCompletionTime = false;
     let otherRadius = false;
 	let isOpen = true;
+    let otherBudget = false;
 
     const _updateSettings = () => {
+        console.log(form)
         updateSettings(form);
     };
 
@@ -123,7 +125,7 @@
                 bind:value={form.theme}
                 class="w-40"
             >
-                <option value="None">None</option>
+                <option value=null>None</option>
                 <option value="restaurant">Food</option>
                 <option value="park">Park</option>
                 <option value="museum">Museum</option>
@@ -208,8 +210,8 @@
                 <option value={50}>50 miles</option>
                 <option value={100}>Max: 100 miles</option>
                 <option value="Other">Other</option>
-            </select
->
+            </select>
+
             {#if otherRadius}
                 <input
                     class="w-40"
@@ -230,7 +232,74 @@
                         }
                     }}
                 />
-                <text>Nonnegative please :)</text>
+            {/if}
+        </div>
+        <div
+        class="
+                flex justify-between items-center
+                bg-white p-3
+                border-2 border-gray-200 rounded
+            "
+        >
+            <div class="font-semibold">
+                Max Budget Per Attraction
+            </div>
+            <select
+                on:change={e => {
+                    const v = e.target.value;
+                    otherBudget = v === "Other";
+                    console.log("OtherBudget " + otherBudget)
+                    if (!otherBudget) {
+                        form.budget = parseInt(v);
+                        form = form;
+                    }
+                }}
+                value={form.budget}
+                class="w-40"
+            >
+                <option value={0}>Free</option>
+                <option value={1}>10 dollars</option>
+                <option value={2}>25 dollars</option>
+                <option value={3}>50 dollars</option>
+                <option value={4}>Splurge!</option>
+                <option value="Other">Other</option>
+            </select>
+
+            {#if otherBudget}
+                <input
+                    class="w-40"
+                    placeholder="Other"
+                    type="number"
+                    min="0"
+                    value={form.budget}
+                    on:input={e => {
+                        let v;
+                        try {
+                            v = parseInt(e.target.value)
+                        } catch (err) {
+                            v = 0;
+                        }
+                        const budget1 = Math.abs(v);
+                        if (budget1 == 0) {
+                            form.budget = 0;
+                        }
+                        else if (budget1 < 10) {
+                            form.budget = 1;
+                        }
+                        else if (budget1 < 25) {
+                            form.budget = 2;
+                        }
+                        else if (budget1 < 45) {
+                            form.budget = 3;
+                        }
+                        else {
+                            form.budget = 4;
+                        }
+                        // if (form.budget > 100) {
+                        //     form.budget = 100;
+                        // }
+                    }}
+                />
             {/if}
         </div>
         
