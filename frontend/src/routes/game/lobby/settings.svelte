@@ -1,11 +1,12 @@
 <script>
 	import { onMount } from 'svelte';
     import { blueStyle, buttonStyle, grayStyle, hr, largeTitle, inputStyle } from '../../../css';
-	import { Game } from '../../../stores';
+	import { Game } from '../../../Game';
 	import Autocomplete from './autocomplete.svelte';
     const section = "font-semibold text-lg text-center mb-3";
 
     let form = {};
+    
     onMount(() => {
         Game.store.subscribe(gs => {
             if (gs) {

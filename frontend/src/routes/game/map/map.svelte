@@ -1,164 +1,30 @@
 <script>
 	import { onDestroy, onMount } from 'svelte';
-	import { PUBLIC_GOOGLE_MAPS_DARK_MODE, PUBLIC_GOOGLE_MAPS_LIGHT_MODE } from '$env/static/public';
-    import { Game, Location } from '../../../stores';
+	import { Location } from '../../../Location';
+    import { Map } from '../../../Map';
 
-    const gameStore = Game.store;
-    const locationStore = Location.store;
-
-	let mapState = {
-        container: undefined,
-        center: undefined,
-        map: undefined,
-        darkMode: false
-    };
-
-    locationStore.set({
-        ...location,
-        index: 0
-    })
-
-    // const randomizeLocation = (lat, lng, radius) => {
-    //     var x0 = lng;
-    //     var y0 = lat;
-    //     var newRadius = radius / 100000;
-
-    //     var randint = Math.random();
-    //     var randint2 = Math.random();
-    //     var scale = newRadius * Math.sqrt(randint);
-    //     var scale2 = 2 * Math.PI * randint2;
-
-    //     var xAdd = scale * Math.cos(scale2);
-    //     var yAdd = scale * Math.sin(scale2);
-
-    //     return { lat: yAdd + y0, lng: xAdd + x0 }
-    // }
-
-    // const regenerateMap = (mapState) => {
-    //     let destinations = $gameStore.game.destinations;
-    //     let index = $locationStore.index;
-    //     let currentDestination = currentDestination[0];
-    //     if (index != -1) {
-    //         currentDestination = destinations[index];
-    //     } else {
-    //         currentDestination = undefined;
-    //     }
-        
-    //     if (index == destinations.length - 1) {
-    //         $locationStore.index = -1;
-    //     } else {
-    //         $locationStore.index = index + 1;
-    //     }
-
-    //     let currentIndex = $locationStore.index;
-    //     locationStore.set({
-    //         ...locationStore,
-    //         index: currentIndex + 1
-    //     })
-
-    //     console.log($gameStore);
-
-    //     // let currentDestination = getDestWithIndex(currentIndex, $gameStore.destinations);
-    //     // let currentDestination = $gameStore.destinations[currentIndex];
-        
-    //     mapState.map = new google.maps.Map(mapState.container, {
-    //         zoom: 20,
-    //         // TODO: Get user current location
-    //         center: { lat: 38.2400, lng: -85.6994},
-    //         mapId: mapState.darkMode ? PUBLIC_GOOGLE_MAPS_DARK_MODE
-    //                                  : PUBLIC_GOOGLE_MAPS_LIGHT_MODE,
-    //         disableDefaultUI: true
-    //     });
-    //     const mapLoc = mapState.map?.getCenter();
-    //     const mapZoom = mapState.map?.getZoom();
-
-    //     //console.log(randomizeLocation(currentDestination.latitude, currentDestination.longitude, 20));
-        
-    //     let alteredCoords = randomizeLocation(currentDestination.latitude, currentDestination.longitude, 20);
-
-    //     console.log(alteredCoords)
-    //     let circle = new google.maps.Circle({
-    //         strokeColor: "#FF0000",
-    //         strokeOpacity: 0.8,
-    //         strokeWeight: 2,
-    //         fillColor: "#FF0000",
-    //         fillOpacity: 0.35,
-    //         map: mapState.map,
-    //         center: alteredCoords,
-    //         // center: randomizeLocation(40.423538, -86.921738, 20),
-    //         radius: 20,
-    //     })
-
-    //     console.log(circle.center.lat())
-
-    //     let userCircle = new google.maps.Circle({
-    //         strokeColor: "#FF0000",
-    //         strokeOpacity: 0.8,
-    //         strokeWeight: 2,
-    //         fillColor: "#FF0000",
-    //         fillOpacity: 0.35,
-    //         map: mapState.map,
-    //         center: { lat: 38.2400, lng: -85.6994},
-    //         radius: 20,
-    //     })
-
-    //     var bounds = new google.maps.LatLngBounds();
-    //     bounds.extend(userCircle['center']);
-    //     bounds.extend(circle['center']);
-    //     mapState.map.setCenter(bounds.getCenter());
-    //     mapState.map.fitBounds(bounds);
-
-    //     const midpointLat = (userCircle['center']['lat']() + circle['center']['lat']()) / 2;
-    //     const midpointLng = (userCircle['center']['lng']() + circle['center']['lng']()) / 2;
-
-    //     console.log({ lat: midpointLat, lng: midpointLng })
-    //     mapState.map.setCenter({ lat: midpointLat, lng: midpointLng });
-
-    //     if (mapLoc) mapState.map?.setCenter(mapLoc);
-    //     if (mapZoom) mapState.map?.setZoom(mapZoom);
-    //     mapState = mapState;
-    // }
-
-    onMount(() => {
-        const mapLoc = mapState.map?.getCenter();
-        const mapZoom = mapState.map?.getZoom();
-        mapState.map = new google.maps.Map(mapState.container, {
-            zoom: 20,
-            center: {lat: 40.4251, lng: -86.9129},
-            mapId: mapState.darkMode ? PUBLIC_GOOGLE_MAPS_DARK_MODE
-                                     : PUBLIC_GOOGLE_MAPS_LIGHT_MODE,
-            disableDefaultUI: true
-        });
-
-        // regenerateMap(mapState);
-        Location.subscribe(mapState);
+    onMount(async() => {
+        await Map.regenerate();
+        await Location.subscribe();
     });
 
     onDestroy(() => {
         Location.unsubscribe();
+        Map.cancelSnapLocation();
     });
-
+    
     const checkboxes = [
         {
             title: "Dark Mode",
-            fn: () => {},//regenerateMap,
+            fn: () => Map.regenerate(),
             mapProp: "darkMode"
         },
         {
             title: "Snap Location",
-            fn: () => {},
+            fn: () => Map.toggleSnapLocation(),
             mapProp: "snapLocation"
         }
     ]
-
-    // const getDestWithIndex = (index, destinations) => {
-    //     for (let i = 0; i < destinations.length; i++) {
-    //         if (destinations[i]['index'] == index) {
-    //             return destinations[i];
-    //         }
-    //     }
-    //     return undefined;
-    // }
 </script>
 
 <div
@@ -183,7 +49,7 @@
                     cursor-pointer
                     ring-2 ring-gray-400
                 "
-                bind:checked={mapState[box.mapProp]}
+                bind:checked={Map[box.mapProp]}
                 on:change={box.fn}
             >
             <label
@@ -198,7 +64,7 @@
 
 <div
     class="full-screen"
-    bind:this={mapState.container}
+    bind:this={Map.container}
 />
 
 <style>

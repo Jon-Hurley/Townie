@@ -149,6 +149,7 @@ def deleteUser(request):
     try:
         docs = queries.deleteUser(key, passwordHash).batch()
     except Exception as e:
+        print(e.error_message, e.http_code)
         return returnError(e.error_message, e.http_code)
 
     if len(docs) == 0:

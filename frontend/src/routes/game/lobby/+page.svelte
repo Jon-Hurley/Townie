@@ -3,7 +3,7 @@
     import { goto } from "$app/navigation"
 	import Settings from "./settings.svelte";
 	import Modal from "../../../components/modal.svelte";
-	import { Game } from "../../../stores";
+	import { Game } from "../../../Game";
     const title = "text-gray-700 font-semibold text-lg mt-2";
     const hr = "bg-gray-100 h-[2px] mt-4";
 

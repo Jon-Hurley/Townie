@@ -1,7 +1,7 @@
 <script>
     import { buttonStyle, blueStyle, indigoStyle, inputStyle } from '../../../css';
     import { createGame } from '../../../requests/group';
-	import { Game } from '../../../stores';
+    import { Game } from '../../../Game';
 	
     let lobbyInput;
 

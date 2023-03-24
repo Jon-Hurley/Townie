@@ -57,14 +57,14 @@ def getUserFromPhone(phone):
 def deleteUser(userKey, passwordHash):
     return arango_con.db.aql.execute(
         """
-        WITH User
-
         FOR user IN User
             FILTER user._key == @userKey
                 && user.passwordHash == @passwordHash
 
-            FOR v, e IN 1..1 ANY user._id Friends
-                REMOVE e IN Friends
+            LET x = (
+                FOR v, e IN 1..1 ANY user._id GRAPH Friendships
+                    REMOVE e IN Friends
+            )
             
             REMOVE user
             IN User
@@ -191,7 +191,7 @@ def sendFriendRequest(toKey, fromKey):
                 _to: CONCAT('User/', @toKey),
                 gamesPlayed: 0,
                 status: false,
-                timestamp: @timestamp
+                creationTime: DATE_NOW()
             } IN Friends
             RETURN {
                 key: NEW._key,
@@ -201,8 +201,7 @@ def sendFriendRequest(toKey, fromKey):
         """,
         bind_vars={
             'toKey': toKey,
-            'fromKey': fromKey,
-            'timestamp': time.time()
+            'fromKey': fromKey
         }
     )
 
@@ -211,7 +210,10 @@ def acceptFriendRequest(friendshipKey):
         """
         LET pp = (
             UPDATE @key
-            WITH { status: True }
+            WITH {
+                status: True,
+                acceptanceTime: DATE_NOW()
+            }
             IN Friends
             RETURN NEW
         )[0]

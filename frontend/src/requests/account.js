@@ -163,19 +163,6 @@ export const completePasswordReset = async(phone, otp, newPassword) => {
     }
 };
 
-export const verifyOTP = async(otp) => {
-    try {
-    const res = await axios.post(
-        PUBLIC_BACKEND_API + 'user/initiate-password-reset/',
-        {
-            otp
-        }
-    );
-    } catch {
-        
-    }
-}
-
 export const deleteUser = async() => {
     try {
         const body = {
