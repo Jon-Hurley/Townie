@@ -5,6 +5,7 @@
     import { goto } from "$app/navigation"
 	import Settings from "./settings.svelte";
 	import Modal from "../../../components/modal.svelte";
+	import { login } from "../../../requests/account";
 
     const title = "text-gray-700 font-semibold text-lg mt-2";
     const hr = "bg-gray-100 h-[2px] mt-4"; 
@@ -14,6 +15,8 @@
         message: null,
         dest: null
     };
+
+    console.log($gameStore.players);
 
     const _startGame = async() => {
         const err = await startGame();

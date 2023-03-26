@@ -69,7 +69,7 @@
         mapState.map = new google.maps.Map(mapState.container, {
             zoom: 20,
             // TODO: Get user current location
-            center: { lat: 38.2400, lng: -85.6994},
+            center: { lat: 40.423538, lng: -86.921738},
             mapId: mapState.darkMode ? PUBLIC_GOOGLE_MAPS_DARK_MODE
                                      : PUBLIC_GOOGLE_MAPS_LIGHT_MODE,
             disableDefaultUI: true
@@ -111,12 +111,12 @@
 
 
 
-        for (let i = 0; i < gameStore.players.length; i++) {
-            if (gameStore.players[i]['showLocation']) {
+        for (let i = 0; i < $gameStore.players.length; i++) {
+            if ($gameStore.players[i]['showLocation']) {
                 let marker = new google.maps.Marker({
-                    position: { lat: gameStore.players[i]['lat'], lng: gameStore.players[i]['lon'] },
+                    position: { lat: $gameStore.players[i]['lat'], lng: $gameStore.players[i]['lon'] },
                     map: mapState.map,
-                    title: gameStore.players[i]['username']
+                    title: $gameStore.players[i]['username']
                 });
                 markerList.push(marker);
                 bounds.extend(marker['position']);
@@ -128,7 +128,7 @@
                     fillColor: "#FF0000",
                     fillOpacity: 0.35,
                     map: mapState.map,
-                    center: { lat: gameStore.players[i]['lat'], lng: gameStore.players[i]['lon'] },
+                    center: { lat: $gameStore.players[i]['lat'], lng: $gameStore.players[i]['lon'] },
                     radius: 20
                 });
                 circleList.push(circle);

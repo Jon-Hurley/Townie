@@ -14,3 +14,8 @@ def getUser(request, key):
     userKey = json.loads(request.body)['key']
     res = queries.getUserWithFriendship(userKey, targetKey=key).batch()[0]
     return JsonResponse(res)
+
+def getGameLog(request):
+    userKey = json.loads(request.body)['key']
+    res = queries.getGameLog(userKey).batch()
+    return JsonResponse({ 'games': list(res) })

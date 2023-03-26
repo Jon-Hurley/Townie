@@ -261,3 +261,7 @@ def rejectFriendRequest(friendshipKey):
         """,
         bind_vars={'key': friendshipKey}
     )
+
+def getGameLog(userKey):
+    return arango_con.db.aql.execute(
+    )
