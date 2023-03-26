@@ -109,6 +109,8 @@
 
         var bounds = new google.maps.LatLngBounds();
 
+
+
         for (let i = 0; i < gameStore.players.length; i++) {
             if (gameStore.players[i]['showLocation']) {
                 let marker = new google.maps.Marker({
@@ -126,10 +128,10 @@
                     fillColor: "#FF0000",
                     fillOpacity: 0.35,
                     map: mapState.map,
-                    center: { lat: gameStore.players[i]['lat'], lng: gameStore.players[i]['lng'] },
+                    center: { lat: gameStore.players[i]['lat'], lng: gameStore.players[i]['lon'] },
                     radius: 20
                 });
-                markerList.push(circle);
+                circleList.push(circle);
                 bounds.extend(circle['center']);
             }
         }
@@ -183,15 +185,7 @@
         }
     ]
 
-    const getDestWithIndex = (index, destinations) => {
-        for (let i = 0; i < destinations.length; i++) {
-            if (destinations[i]['index'] == index) {
-                return destinations[i];
-            }
-        }
 
-        return undefined;
-    }
 </script>
 
 <div

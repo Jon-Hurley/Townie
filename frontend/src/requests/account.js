@@ -76,7 +76,7 @@ export const verifySignup = async(username, password, phone, otp) => {
     }
 }
 
-export const updateAccount = async(password, newUsername, newPhone) => {
+export const updateAccount = async(password, newUsername, newPhone, newHidingState) => {
     try {
         const user = get(userStore);
         const res = await axios.post(
@@ -88,7 +88,8 @@ export const updateAccount = async(password, newUsername, newPhone) => {
 
                 password,
                 newUsername,
-                newPhone
+                newPhone,
+                newHidingState
             }
         );
         userStore.set(res.data)

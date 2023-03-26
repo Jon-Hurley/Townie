@@ -5,7 +5,7 @@
 	import { buttonStyle, blueStyle, grayStyle } from '../../../css';
 	const title = 'text-gray-700 font-semibold text-lg mt-6';
 	const hr = 'my-2 bg-gray-100 h-[2px]';
-	let hidingState = "Show my Exact Location";
+	
 
 	const form = {
 		username: '',
@@ -14,6 +14,8 @@
 		showLocation: true
 	};
 	let errorMessage = false;
+
+	let hidingState = $userStore['hidingState'] ? "Show my Exact Location" : "Hide my Exact Location";
 
 	const _deleteUser = async () => {
 		errorMessage = await deleteUser();
@@ -36,8 +38,11 @@
 		if (!form?.phone?.length) {
 			form.phone = $userStore.phone;
 		}
-
-		errorMessage = await updateAccount(form.password, form.username, form.phone);
+		if (form.showLocation == undefined) {
+			form.showLocation = $userStore.hidingState;
+		}
+		
+		errorMessage = await updateAccount(form.password, form.username, form.phone, form.showLocation);
 		if (errorMessage) {
 			return;
 		}
@@ -66,6 +71,7 @@
         class="{buttonStyle} {form['showLocation'] ? blueStyle : (blueStyle)}"
         on:click={() => {
         	form['showLocation'] = !form['showLocation'];
+			console.log("Have now updated show location to " + form['showLocation']);
 			if (form['showLocation']) {
 				hidingState = "Hide my Exact Location";
 			} else {

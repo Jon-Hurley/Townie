@@ -119,6 +119,8 @@ def updateInfo(request):
 
     newUsername = data['newUsername']
     newPhone = data['newPhone']
+    newHidingState = data['newHidingState']
+
 
     newPasswordHash = passwordHash
     if newUsername != username:
@@ -127,7 +129,8 @@ def updateInfo(request):
     try:
         docs = queries.updateInfo(
             key, passwordHash,
-            newUsername, newPhone, newPasswordHash
+            newUsername, newPhone, newPasswordHash,
+            newHidingState
         ).batch()
     except Exception as e:
         em = e.error_message
