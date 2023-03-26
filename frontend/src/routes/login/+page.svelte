@@ -29,6 +29,7 @@
 	};
 </script>
 
+
 <div class="flex h-full w-full items-center justify-center p-4">
 	<div class="w-full max-w-md space-y-8">
         <h2 class="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">

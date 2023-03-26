@@ -39,7 +39,7 @@
     $: {
         console.log("NEW USER: ", $userStore);
         if (lastState && !$userStore)
-            goto('/login')
+            goto('/login');
         lastState = !!$userStore;
     }
 </script>
