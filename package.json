@@ -8,5 +8,7 @@
 		"backend": "python ./backend/manage.py runserver"
 	},
 	"type": "module",
-	"dependencies": {}
+	"dependencies": {
+		"svelte-carousel": "^1.0.24"
+	}
 }

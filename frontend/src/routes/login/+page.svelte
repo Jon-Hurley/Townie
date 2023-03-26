@@ -32,13 +32,14 @@
 
 <div class="flex h-full w-full items-center justify-center p-4">
 	<div class="w-full max-w-md space-y-8">
-        <h2 class="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
+		<!--<img class="ml-9 justify-center rounded-md object-scale-down w-72" src = "/Townie-Full-Logo.jpg", alt = "Townie logo"/>-->
+        <h2 class="text-center text-3xl font-bold tracking-tight text-gray-900">
             Log in to Account
         </h2>
 
 		<form class="mt-8 space-y-6" >
 			<input type="hidden" name="remember" value="true" />
-			<div class="-space-y-px rounded-md shadow-sm">
+			<div class="space-y-px rounded-md shadow-sm">
 				<div>
 					<label for="username" class="sr-only">
                         Username

@@ -5,6 +5,7 @@
     import { gameStore } from '../../../stores';
 	import { get } from 'svelte/store';
 	import { each } from 'svelte/internal';
+    import Tutorial from "../../../components/tutorial.svelte";
 
     let totalTime = Date.now() - Date.now();
     $: hours = `00${((totalTime/1000/60/60)%60)}`.slice(-2);
@@ -199,7 +200,6 @@
         return undefined;
     }
 </script>
-
 
 <!-- TIMER FEATURE -->
 <div class="absolute top-[5rem] right-4 z-10
