@@ -9,9 +9,24 @@ usersToCreate = [
         "phone": "+13176909263"
     },
     {
-        "username": "Jacc",
+        "username": "Jack",
         "password": "123",
-        "phone": "+11111111111"
+        "phone": "+17654121446"
+    },
+    {
+        "username": "Sai",
+        "password": "123",
+        "phone": "+16309779653"
+    },
+    {
+        "username": "Lexie",
+        "password": "123",
+        "phone": "+13178288301"
+    },
+    {
+        "username": "Jon",
+        "password": "123",
+        "phone": "+18124066193"
     }
 ]
 
@@ -19,6 +34,22 @@ friendsToCreate = [
     {
         "_from": 0,
         "_to": 1,
+        "status": True
+    },
+    {
+        "_from": 2,
+        "_to": 0,
+        "status": True
+    },
+    {
+        "_from": 4,
+        "_to": 3,
+        "status": True
+    },
+    {
+        "_from": 0,
+        "_to": 4,
+        "status": True
     }
 ]
 
@@ -42,13 +73,14 @@ for friend in friendsToCreate:
             _from: CONCAT('User/', @fromKey),
             _to: CONCAT('User/', @toKey),
             gamesPlayed: 0,
-            status: true,
+            status: @status,
             creationTime: DATE_NOW(),
             acceptanceTime: DATE_NOW()
         } IN Friends
         """,
         bind_vars={
             'toKey': usersToCreate[toKey]["_key"],
-            'fromKey': usersToCreate[fromKey]["_key"]
+            'fromKey': usersToCreate[fromKey]["_key"],
+            'status': friend['status']
         }
     )
