@@ -32,8 +32,8 @@ def map(settings, gameKey):
         mode = "bicycling"
     elif settings['transitAllowed']:
         mode = "transit"
-    
     place_info = json.dumps(gmaps.places(None, (settings['lat'], settings['lon']), settings['radius'], None, None, settings['budget'], False, settings['theme'], None, None))
+    print(place_info)
     place3 = json.loads(place_info)
     for i in range(len(place3['results'])): #used to be len(place3['results'])
         name_dest = place3['results'][i]['name']
@@ -102,6 +102,5 @@ def map(settings, gameKey):
         total_time = total_time - temp['time']
     
     listDict = dict(Destinations=orderedList, trueCompletionTime=total_time)
-    print(listDict)
     queries.insertIntoItinerary(listDict, gameKey)
     return total_time

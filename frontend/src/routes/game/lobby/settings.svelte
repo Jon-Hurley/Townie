@@ -125,7 +125,7 @@
                 bind:value={form.theme}
                 class="w-40"
             >
-                <option value=null>None</option>
+                <option value="tourist_attraction">Tourism</option>
                 <option value="restaurant">Food</option>
                 <option value="store">Store</option>
                 <option value="museum">Museum</option>
