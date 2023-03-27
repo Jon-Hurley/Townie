@@ -44,10 +44,10 @@
             {#each gameLog as game}
                 <div class="{game['destinationsCompleted'] == game['totalDestinations'] ? greenStyle : redStyle}
                             border-2
-                            border-indigo-600 
+                            {game['destinationsCompleted'] == game['totalDestinations'] ? "border-green-600" : "border-red-600"}
                             p-2
                             rounded
-                            bg-red-100/50         
+                            {game['destinationsCompleted'] == game['totalDestinations'] ? "bg-green-100/50" : "bg-red-100/50"}         
                 ">
                     <div>
                         Time Spent Playing: {game['timeSpent']}
@@ -65,7 +65,13 @@
     <hr class={hr}>
 </div>
 {:else}
-    <div class="{listItem}">
-        You have no games played.
+    <div class="flex flex-col h-full">
+        <div class="{largeTitle}">
+            Previous Games:
+            <div class="{title} text-center">
+                You have no games played.
+            </div>
+        </div>
+        
     </div>
 {/if}
