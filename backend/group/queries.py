@@ -1,5 +1,6 @@
 import arango_con
 import time
+from . import scraper
 
 def createGame():
     return arango_con.db.aql.execute(
@@ -82,8 +83,8 @@ def startGame(gameKey, settings):
     # settings = lobbyRes['settings']
 
     # TRIGGER WEB-SCRAPER: (get destinations & auto add to the DB)
-    # trueCompletionTime = WEB-SCRAPER(gameKey, settings)
-    trueCompletionTime = 100
+    trueCompletionTime = scraper.map(settings, gameKey)
+    #trueCompletionTime = 100
 
     return arango_con.db.aql.execute(
         """
@@ -233,7 +234,7 @@ def getNearbyDestinations(lat, lng, radius):
 
 def insertIntoItinerary(listDict, gameKey):
     for i in range(len(listDict['Destinations'])):
-        searcher = dict(lat=listDict['Destinations'][i]['destination']['location'][0], lon=listDict['Destinations'][i]['destination']['location'][1])
+        searcher = dict(name=listDict['Destinations'][i]['destination']['name'])
         destination = arango_con.destinationCollection.find(searcher)
         destination1 = [doc for doc in destination]
         arango_con.db.aql.execute(

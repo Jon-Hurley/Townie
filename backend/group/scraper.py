@@ -32,18 +32,20 @@ def map(settings, gameKey):
         mode = "bicycling"
     elif settings['transitAllowed']:
         mode = "transit"
-    
     place_info = json.dumps(gmaps.places(None, (settings['lat'], settings['lon']), settings['radius'], None, None, settings['budget'], False, settings['theme'], None, None))
     place3 = json.loads(place_info)
-    
     for i in range(len(place3['results'])): #used to be len(place3['results'])
         name_dest = place3['results'][i]['name']
         latitude = place3['results'][i]['geometry']['location']['lat']
         longitude = place3['results'][i]['geometry']['location']['lng']
         queries.createDestination(latitude, longitude, name_dest, settings['theme'])
         destination = dict(name=name_dest, location=[latitude, longitude]) #used to have an address as well
-        list.append(destination)
-
+        new_name = False
+        for j in range(len(list)):
+            if (destination['name'] == list[j]['name']):
+               new_name = True 
+        if not new_name:
+            list.append(destination)
     radius = float(settings['radius'])
 
     list2 = queries.getNearbyDestinations(settings['lat'], settings['lon'], radius)
@@ -54,7 +56,11 @@ def map(settings, gameKey):
         lat = float(thing['latitude'])
         lng = float(thing['longitude'])
         new_loc = dict(name=name, location=[lat, lng])
-        if new_loc not in list:
+        new_name = False
+        for j in range(len(list)):
+            if new_loc['name'] == list[j]['name']:
+                new_loc = False
+        if not new_name:
             list.append(new_loc)
     
     locationList = []
@@ -94,5 +100,6 @@ def map(settings, gameKey):
         total_time = total_time - temp['time']
     
     listDict = dict(Destinations=orderedList, trueCompletionTime=total_time)
+    print(listDict)
     queries.insertIntoItinerary(listDict, gameKey)
     return total_time
