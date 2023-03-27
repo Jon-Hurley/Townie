@@ -2,9 +2,9 @@
     import Notif from './notif.svelte';
 	import { acceptFriend, loadNotifications, rejectFriend } from '../../requests/friend';
 	import { onMount } from 'svelte';
-	import Loading from '../../components/loading.svelte';
+	import Loading from '../../general-components/loading.svelte';
 	import { largeTitle, listItem } from '../../css';
-	import Modal from '../../components/modal.svelte';
+	import Modal from '../../general-components/modal.svelte';
 
     let notifs = [];
     let loading = true;

@@ -117,10 +117,11 @@ export const updateAccount = async (password, newUsername, newPhone) => {
                 key: user.key,
                 username: user.username,
                 passwordHash: user.passwordHash,
+                token: user.token,
 
                 password,
                 newUsername,
-                newPhone
+                newPhone                
             }
         );
         userStore.set(res.data)
@@ -136,7 +137,8 @@ export const initiatePasswordReset = async (phone) => {
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'user/initiate-password-reset/',
             {
-                phone
+                phone,
+                token: get(userStore).token
             }
         );
         return null;
@@ -153,7 +155,8 @@ export const completePasswordReset = async (phone, otp, newPassword) => {
             {
                 "phone": phone,
                 "otp": otp,
-                "newPassword": newPassword
+                "newPassword": newPassword,
+                token: get(userStore).token,
             }
         );
         console.log(res);
@@ -168,7 +171,8 @@ export const deleteUser = async() => {
     try {
         const body = {
             key: get(userStore).key,
-            passwordHash: get(userStore).passwordHash
+            passwordHash: get(userStore).passwordHash,
+            token: get(userStore).token
         };
         console.log({ body })
         const res = await axios.post(

@@ -2,7 +2,7 @@ import {
     PUBLIC_GOOGLE_MAPS_DARK_MODE,
     PUBLIC_GOOGLE_MAPS_LIGHT_MODE
 } from '$env/static/public';
-import { Location } from './classes/Location';
+import { Location } from './Location';
 
 export class Map {
     static container = undefined;

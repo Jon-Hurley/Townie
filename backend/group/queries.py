@@ -69,12 +69,14 @@ def leaveGame(connectionId):
         """
             FOR p IN Players
                 FILTER p.connectionId == @connectionId
-                
-                LET gameKey = p._to
-                UPDATE p WITH {
+                UPDATE p
+                WITH {
                     finished: true
                 }
-                RETURN { gameKey }
+                IN Players
+                RETURN {
+                    playerId: OLD._to
+                }
         """,
         bind_vars={
             'connectionId': str(connectionId)

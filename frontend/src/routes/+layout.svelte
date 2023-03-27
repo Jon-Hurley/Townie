@@ -9,9 +9,11 @@
     import { autoLogin } from '../requests/account';
     import Navbar from './navbar.svelte';
     import AccountBar from './account-bar.svelte';
+	import Loading from '../general-components/loading.svelte';
 
 	let mounted = false;
 	mapStore.set(false);
+    let loaded = false;
 
 	onMount(async () => {
 		// create a function for the GOOGLE API to call when done initializing
@@ -22,23 +24,24 @@
 		if (!res) {
 			goto('/login');
 		}
+        loaded = true;
 	});
 
 	// IF user goes valid to invalid, GOTO login.
 	let lastState = false;
 	$: {
-		console.log('NEW USER: ', $userStore);
-		if (lastState && !$userStore) {
-			goto('/login');
-			console.log('User state set to null: GOTO LOGIN');
-		}
-		if (!lastState && $userStore) {
-			console.log('PAGE PATH: ', $page);
-			if ($page.route.id === '/login' || $page.route.id === '/signup') {
-				goto('/account');
-				console.log('User state set to valid: GOTO ACCOUNT');
-			}
-		}
+        console.log('NEW USER: ', $userStore);
+        if (lastState && !$userStore) {
+            goto('/login');
+            console.log('User state set to null: GOTO LOGIN');
+        }
+        if (!lastState && $userStore) {
+            console.log('PAGE PATH: ', $page);
+            if ($page.route.id === '/login' || $page.route.id === '/signup') {
+                goto('/account');
+                console.log('User state set to valid: GOTO ACCOUNT');
+            }
+        }
 		lastState = !!$userStore;
 	}
 </script>
@@ -54,14 +57,18 @@
 	{/if}
 </svelte:head>
 
-<div class="flex flex-col justify-between items-center h-screen w-screen">
-    {#if $userStore}
-        <AccountBar/>
-        <div class="m-0 w-full p-4 h-full">
+{#if loaded}
+    <div class="flex flex-col justify-between items-center h-screen w-screen">
+        {#if $userStore}
+            <AccountBar/>
+            <div class="m-0 w-full p-4 h-full">
+                <slot/>
+            </div>
+            <Navbar/>
+        {:else}
             <slot/>
-        </div>
-        <Navbar/>
-    {:else}
-        <slot/>
-    {/if}
-</div>
+        {/if}
+    </div>
+{:else}
+    <Loading/>
+{/if}

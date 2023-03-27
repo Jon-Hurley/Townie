@@ -7,6 +7,11 @@ export class Game {
     /** @type {WebSocket} */
     static ws = undefined;
     static interval = undefined;
+    static messageObj = writable({
+        status: 0,
+        message: null,
+        dest: null
+    });
 
     static send(method, data) {
         const objStr = JSON.stringify({ method, ...data });
@@ -15,21 +20,38 @@ export class Game {
 
     static setDefaultEvents() {
         Game.ws.onmessage = (m) => {
-            const res = JSON.parse(m.data);
-            console.log("WS MESSAGE:", res);
-            switch (res.method) {
-                case 'get-game':
-                case 'update-game': {
-                    Game.store.set(res.data);
-                    return;
-                }
-                default: {
-                    console.log("No response behavior")
-                }
-            }            
+            try {
+                var res = JSON.parse(m.data);
+                console.log("WS MESSAGE:", res);
+                
+                switch (res.method) {
+                    case 'get-game':
+                    case 'update-game': {
+                        Game.store.set(res.data);
+                        return;
+                    }
+                    default: {
+                        console.log("No response behavior")
+                    }
+                } 
+
+            } catch (err) {
+                console.log("WS ERROR:", m, err);
+                Game.messageObj.set({
+                    status: 0,
+                    message: err,
+                    dest: null
+                });
+                return;
+            }        
         };
         Game.ws.onerror = (e) => {
             console.log("WS ERROR:", e);
+            Game.messageObj.set({
+                status: 0,
+                message: err,
+                dest: null
+            });
         }
         Game.ws.onclose = () => {
             Game.ws = undefined;
@@ -77,12 +99,16 @@ export class Game {
             Game.store.set(res);
 
             Game.setDefaultEvents();
-            return null;
         } catch (err) {
             console.log(err);
             Game.ws?.close();
             Game.ws = undefined;
-            return "Unable to connect to lobby. Please try again.";
+            Game.store.set(null);
+            Game.messageObj.set({
+                status: 0,
+                message: "Unable to connect to lobby. Please try again.",
+                dest: null
+            });
         }
     }
 

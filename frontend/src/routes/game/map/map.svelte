@@ -1,7 +1,7 @@
 <script>
 	import { onDestroy, onMount } from 'svelte';
-	import { Location } from '../../../Location';
-    import { Map } from '../../../Map';
+	import { Location } from '../../../classes/Location';
+    import { Map } from '../../../classes/Map';
 
     onMount(async() => {
         await Map.regenerate();

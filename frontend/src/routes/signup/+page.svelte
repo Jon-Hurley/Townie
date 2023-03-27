@@ -1,6 +1,6 @@
 <script>
 	import { goto } from '$app/navigation';
-	import Modal from '../../components/modal.svelte';
+	import Modal from '../../general-components/modal.svelte';
 	import { signup, verifySignup } from '../../requests/account';
 
 	let username = '';

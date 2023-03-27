@@ -2,7 +2,7 @@
 	import { acceptFriend, rejectFriend, sendFriendRequest } from "../../../requests/friend";
 	import { userStore } from "../../../stores";
     import { buttonStyle, redStyle, greenStyle, blueStyle, indigoStyle } from '../../../css'
-	import Modal from "../../../components/modal.svelte";
+	import Modal from "../../../general-components/modal.svelte";
     const title = "text-gray-700 font-semibold text-lg mt-6";
     const hr = "my-2 bg-gray-100 h-[2px]";
 

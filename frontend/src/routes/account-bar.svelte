@@ -5,8 +5,9 @@
 	import { page } from '$app/stores';
 	import { logout } from '../requests/account';
 	import { onMount } from 'svelte';
-	import { leaveGame } from '../requests/group';
-	import { gameStore } from '../stores';
+	import { Game } from '../classes/Game';
+
+    const gameStore = Game.store;
 
 	let currentPage;
 	page.subscribe((v) => (currentPage = v.route.id));
@@ -24,7 +25,7 @@
 	};
 
 	const _leaveGame = async () => {
-		let res = await leaveGame();
+		let res = await Game.leave();
 	};
 
 	$: pages = [

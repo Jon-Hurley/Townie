@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import { getSummary } from '../../../requests/search';
-	import Loading from '../../../components/loading.svelte';
+	import Loading from '../../../general-components/loading.svelte';
 	import Summary from './summary.svelte';
 
 	let summary;

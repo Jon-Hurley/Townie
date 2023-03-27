@@ -3,6 +3,8 @@ import { PUBLIC_BACKEND_API } from '$env/static/public';
 import { userStore } from '../stores';
 import { get } from 'svelte/store';
 
+// NOTE: ALL REQUESTS HERE SHOULD BE PUBLIC (NOT AUTH NEEDED).
+
 export const getUsers = async (substr) => {
     if (!substr || substr.length === 0) {
         return [];

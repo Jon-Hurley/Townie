@@ -4,7 +4,10 @@ import twilio_con
 import user.queries as queries
 import json
 from hashlib import sha256
-
+import jwt
+import dotenv
+import os
+dotenv.load_dotenv()
 
 def returnError(errorMessage, errCode):
     return JsonResponse(
@@ -14,14 +17,22 @@ def returnError(errorMessage, errCode):
         status=errCode
     )
 
+def getUserFromToken(token):
+    user = jwt.decode(
+        token,
+        os.environ.get('JWT_TOKEN_SECRET'),
+        algorithms=["HS256"]
+    )
+    return user
 
 def returnUserPrivate(user):
     del user['_id']
-    del user['_rev']
-    user['key'] = user['_key']
-    del user['_key']
+    user['access_token'] = jwt.encode(
+        user,
+        os.environ.get('JWT_TOKEN_SECRET'),
+        algorithm="HS256"
+    )
     return JsonResponse(user)
-
 
 def returnUserPublic(user):
     del user['_id']

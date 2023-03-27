@@ -103,14 +103,13 @@ def propogateAllUpdates(gameKey=None, conExcl={}, data=None):
 
 # GET REQUEST: CREATE A LOBBY/GAME
 
-
+@csrf_exempt
 def createGame(request):
     res = queries.createGame().batch()[0]
     print(res)
     return JsonResponse({'key': res['_key']})
 
 # GET REQUEST: GET GAME DATA
-
 
 @csrf_exempt
 def getGame(request):

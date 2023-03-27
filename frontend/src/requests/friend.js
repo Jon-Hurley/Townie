@@ -8,7 +8,8 @@ export const getFriends = async() => {
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'user/friends/',
             {
-                key: get(userStore).key
+                key: get(userStore).key,
+                token: get(userStore).token
             }
         );
         console.log(res);
@@ -25,7 +26,8 @@ export const sendFriendRequest = async(toKey) => {
             PUBLIC_BACKEND_API + 'user/request-friend/',
             {
                 fromKey: get(userStore).key,
-                toKey: toKey
+                toKey: toKey,
+                token: get(userStore).token
             }
         );
         console.log("res: ", res.data)
@@ -41,7 +43,8 @@ export const acceptFriend = async(friendshipKey) => {
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'user/accept-friend/',
             {
-                key: friendshipKey
+                key: friendshipKey,
+                token: get(userStore).token
             }
         );
         return null;
@@ -60,7 +63,8 @@ export const rejectFriend = async(friendshipKey) => {
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'user/reject-friend/',
             {
-                key: friendshipKey
+                key: friendshipKey,
+                token: get(userStore).token
             }
         );
         return null;
@@ -88,7 +92,8 @@ export const loadNotifications = async() => {
             axios.post(
                 PUBLIC_BACKEND_API + 'user/pending-friends/',
                 {
-                    key: get(userStore).key
+                    key: get(userStore).key,
+                    token: get(userStore).token
                 }
             )
         ]);
