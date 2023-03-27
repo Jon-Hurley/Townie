@@ -74,7 +74,7 @@ def onDefault(request):
         gameKey = body['gameKey']
         settings = body['settings']
         res = queries.startGame(gameKey, settings)
-        return(res)
+        #return(res)
         # print("HELLO", gameKey)
     # print(data)
     # propogateAllUpdates(
@@ -91,7 +91,7 @@ def onDefault(request):
     #     return startGame(body)
     # if body['action'] == 'update-location':
     #     return updatePlayerLocation(body)
-    return JsonResponse({})
+    return JsonResponse(res) # I ADDED THIS CHANGE. RETURNING RES ALONE DIDN'T WORK
 
 def updatePlayerLocation(body):
     playerKey = body['key']
