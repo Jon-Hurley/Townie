@@ -83,7 +83,7 @@ def startGame(gameKey, settings):
     # settings = lobbyRes['settings']
 
     # TRIGGER WEB-SCRAPER: (get destinations & auto add to the DB)
-    trueCompletionTime = scraper.map(settings, gameKey)
+    trueCompletionTime = scraper.generate(settings, gameKey)
     #trueCompletionTime = 100
 
     return arango_con.db.aql.execute(

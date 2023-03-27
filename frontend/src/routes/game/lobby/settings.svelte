@@ -204,9 +204,9 @@
             <option value={2}>2 miles</option>
             <option value={5}>5 miles</option>
             <option value={10}>10 miles</option>
+            <option value={15}>15 miles</option>
             <option value={20}>20 miles</option>
-            <option value={50}>50 miles</option>
-            <option value={100}>Max: 100 miles</option>
+            <option value={25}>Max: 25 miles</option>
             <option value="Other">Other</option>
         </select>
 
@@ -225,8 +225,8 @@
                         v = 0;
                     }
                     form.radius = Math.abs(v);
-                    if (form.radius > 100) {
-                        form.radius = 100;
+                    if (form.radius > 25) {
+                        form.radius = 25;
                     }
                 }}
             />

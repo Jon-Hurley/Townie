@@ -6,7 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 from . import queries
 
 @csrf_exempt
-def map(settings, gameKey):
+def generate(settings, gameKey):
     # Allows inputs for the settings:
     # settings['theme']
     # settings['radius']
@@ -32,6 +32,7 @@ def map(settings, gameKey):
         mode = "bicycling"
     elif settings['transitAllowed']:
         mode = "transit"
+    print(int(settings['radius']/0.000621371))
     place_info = json.dumps(gmaps.places(None, (settings['lat'], settings['lon']),  int(settings['radius']/0.000621371), None, None, settings['budget'], False, settings['theme'], None, None))
     place3 = json.loads(place_info)
     for i in range(len(place3['results'])): #used to be len(place3['results'])
@@ -62,13 +63,14 @@ def map(settings, gameKey):
                 new_loc = False
         if not new_name:
             list.append(new_loc)
-    
+    if len(list) == 0:
+        print("ERROR: No destinations were found")
+        return 0
     locationList = []
     origin = dict(lat=settings['lat'], lng=settings['lon'])
     locationList.append(origin)
     for i in range(len(list)):
         locationList.append(list[i]['location'])
-
     orderedList = []
     lengthToUse = len(list)
     if lengthToUse > 10:
