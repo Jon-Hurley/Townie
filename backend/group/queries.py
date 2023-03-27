@@ -16,7 +16,7 @@ def createGame():
                 transitAllowed: False,
                 theme: "restaurant",
                 desiredCompletionTime: 180,
-                budget: 10,
+                budget: 1,
                 lon: 0.0,
                 lat: 0.0
             }

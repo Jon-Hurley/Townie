@@ -281,21 +281,18 @@
                     if (budget1 == 0) {
                         form.budget = 0;
                     }
-                    else if (budget1 < 10) {
+                    else if (budget1 <= 10) {
                         form.budget = 1;
                     }
-                    else if (budget1 < 25) {
+                    else if (budget1 <= 25) {
                         form.budget = 2;
                     }
-                    else if (budget1 < 45) {
+                    else if (budget1 <= 50) {
                         form.budget = 3;
                     }
-                    else {
+                    else if (budget1 > 50) {
                         form.budget = 4;
                     }
-                    // if (form.budget > 100) {
-                    //     form.budget = 100;
-                    // }
                 }}
             />
         {/if}
