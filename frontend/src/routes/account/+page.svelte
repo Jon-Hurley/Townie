@@ -5,6 +5,7 @@
 	import { deleteUser, logout } from '../../requests/account';
     import { gameLogStore, userStore } from '../../stores';
     import { getGameLog } from '../../requests/search';
+	import { blueStyle, buttonStyle } from '../../css';
 
 
     
@@ -32,14 +33,6 @@
         }
         console.log(res);
 	};
-
-    const _navigateToGameLogs = async () => {
-        console.log("making it here")
-        const res = await getGameLog(get(userStore).key)
-        gameLogStore.set(res);
-        goto('/account/game_log')
-        return;
-    };
 </script>
 
         <div class="my-5 w-full">
@@ -121,13 +114,12 @@
             {$userStore.rank}
         </div>
 
-        <div class={title}>
-            <button
-                on:click={() => {_navigateToGameLogs()}}
-            >
-                Go to Game Logs  
-            </button>
-            
+        <div>
+			<a href='/account/game_log'>
+            	<button class="{buttonStyle} {blueStyle}">
+                	Go to Game Logs  
+            	</button>
+			</a>
         </div>
         
 {#if popupOpen}

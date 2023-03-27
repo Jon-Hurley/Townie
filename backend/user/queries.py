@@ -263,6 +263,7 @@ def rejectFriendRequest(friendshipKey):
     )
 
 def getGameLog(userKey):
+    print(userKey)
     return arango_con.db.aql.execute(
         """
         FOR game IN PastGames
@@ -274,5 +275,6 @@ def getGameLog(userKey):
             timeSpent: game.timeSpent,
             points: game.points
         }
-        """
+        """,
+        bind_vars={'key': int(userKey)}
     )

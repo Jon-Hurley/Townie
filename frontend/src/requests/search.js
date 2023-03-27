@@ -46,6 +46,7 @@ export const getGameLog = async() => {
                 key: get(userStore).key
             }
         );
+        console.log(res.data);
         return res.data.games;
     } catch (err) {
         console.log(err);
