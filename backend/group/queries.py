@@ -232,27 +232,31 @@ def getNearbyDestinations(lat, lng, radius):
 
 def insertIntoItinerary(listDict, gameKey):
     for i in range(len(listDict['Destinations'])):
-        searcher = dict(name=listDict['Destinations'][i]['name'])
+        searcher = dict(name=listDict['Destinations'][i]['destination']['name'])
         destination = arango_con.destinationCollection.find(searcher)
         destination1 = [doc for doc in destination]
         arango_con.db.aql.execute(
-        """
+            """
         UPSERT {
             _from: @gameKey,
             _to: @DestKey,
             index: @index,
-            points: @points
+            points: @points,
+            timeToCompletion: @time
         }
         INSERT {
             _from: @gameKey,
             _to: @DestKey,
             index: @index,
-            points: @points
+            points: @points,
+            timeToCompletion: @time
         }
         UPDATE {
             _from: @gameKey,
             _to: @DestKey,
-            points: @points
+            index: @index,
+            points: @points,
+            timeToCompletion: @time
         }
         IN Itineraries
         RETURN {
@@ -263,6 +267,7 @@ def insertIntoItinerary(listDict, gameKey):
                 'gameKey': "Games/" + str(gameKey),
                 'DestKey': destination1[0]['_id'],
                 'index': i,
-                'points': 11
+                'points': 11,
+                'time': listDict['Destinations'][i]['time']
             }
         )
