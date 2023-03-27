@@ -41,7 +41,12 @@ def map(settings, gameKey):
         longitude = place3['results'][i]['geometry']['location']['lng']
         queries.createDestination(latitude, longitude, name_dest, settings['theme'])
         destination = dict(name=name_dest, location=[latitude, longitude]) #used to have an address as well
-        list.append(destination)
+        new_name = False
+        for j in range(len(list)):
+            if (destination['name'] == list[j]['name']):
+               new_name = True 
+        if not new_name:
+            list.append(destination)
 
     radius = float(settings['radius'])
 
@@ -53,7 +58,11 @@ def map(settings, gameKey):
         lat = float(thing['latitude'])
         lng = float(thing['longitude'])
         new_loc = dict(name=name, location=[lat, lng])
-        if new_loc not in list:
+        new_name = False
+        for j in range(len(list)):
+            if new_loc['name'] == list[j]['name']:
+                new_loc = False
+        if not new_name:
             list.append(new_loc)
     
     locationList = []

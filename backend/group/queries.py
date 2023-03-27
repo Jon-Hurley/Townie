@@ -162,9 +162,10 @@ def getNearbyDestinations(lat, lng, radius):
 
 def insertIntoItinerary(listDict, gameKey):
     for i in range(len(listDict['Destinations'])):
-        searcher = dict(lon=listDict['Destinations'][i]['destination']['location'][1], lat=listDict['Destinations'][i]['destination']['location'][0])
+        searcher = dict(name=listDict['Destinations'][i]['destination']['name'])
         destination = arango_con.destinationCollection.find(searcher)
         destination1 = [doc for doc in destination]
+        print(destination1)
         arango_con.db.aql.execute(
             """
         UPSERT {
