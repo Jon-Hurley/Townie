@@ -32,7 +32,7 @@ def map(settings, gameKey):
         mode = "bicycling"
     elif settings['transitAllowed']:
         mode = "transit"
-    place_info = json.dumps(gmaps.places(None, (settings['lat'], settings['lon']), settings['radius'], None, None, settings['budget'], False, settings['theme'], None, None))
+    place_info = json.dumps(gmaps.places(None, (settings['lat'], settings['lon']),  int(settings['radius']/0.000621371), None, None, settings['budget'], False, settings['theme'], None, None))
     place3 = json.loads(place_info)
     for i in range(len(place3['results'])): #used to be len(place3['results'])
         name_dest = place3['results'][i]['name']
@@ -46,8 +46,8 @@ def map(settings, gameKey):
                new_name = True 
         if not new_name:
             list.append(destination)
+    
     radius = float(settings['radius'])
-
     list2 = queries.getNearbyDestinations(settings['lat'], settings['lon'], radius)
     dblist = [doc for doc in list2]
     for i in range(len(dblist)): #used to be len(dblist)
@@ -68,7 +68,7 @@ def map(settings, gameKey):
     locationList.append(origin)
     for i in range(len(list)):
         locationList.append(list[i]['location'])
-    
+
     orderedList = []
     lengthToUse = len(list)
     if lengthToUse > 10:

@@ -125,7 +125,7 @@
             >
                 <option value="tourist_attraction">Tourism</option>
                 <option value="restaurant">Food</option>
-                <option value="park">Park</option>
+                <option value="store">Shopping</option>
                 <option value="museum">Museum</option>
             </select>
         </div>
