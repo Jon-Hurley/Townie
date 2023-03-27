@@ -264,4 +264,15 @@ def rejectFriendRequest(friendshipKey):
 
 def getGameLog(userKey):
     return arango_con.db.aql.execute(
+        """
+        FOR game IN PastGames
+        LET x = POSITION(game.playerKeys, @key, true)
+        FILTER x != -1
+        RETURN {
+            totalDestinations: game.totalDestinations,
+            destinationsCompleted: game.destinationsCompleted,
+            timeSpent: game.timeSpent,
+            points: game.points
+        }
+        """
     )

@@ -1,17 +1,12 @@
 <script>
 	import { onMount } from "svelte/types/runtime/internal/lifecycle";
     import { buttonStyle, gridItem, indigoStyle, redStyle, greenStyle, largeTitle, listItem } from "../../../css";
-    import Loading from '../../components/loading.svelte';
-
+    import { Loading } from '../../components/loading.svelte';
 
     const title = "text-gray-700 font-semibold text-lg mt-2";
     const hr = "bg-gray-100 h-[2px] mt-4"; 
     
     let loading = true;
-
-    onMount(async() => {
-
-    });
 </script>
 
 {#if loading}

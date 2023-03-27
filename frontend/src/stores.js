@@ -6,7 +6,7 @@ export const gameStore = writable();
 
 export const locationStore = writable();
 
-export const gameLogStore = writeable();
+export const gameLogStore = writable();
 
 export const subscribeToLocation = (mapState) => {
     let interval;

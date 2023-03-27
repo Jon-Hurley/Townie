@@ -3,7 +3,8 @@
 	import { get } from 'svelte/store';
 	//import Layout from '../../account/[slug]/edit/';
 	import { deleteUser, logout } from '../../requests/account';
-    import { userStore } from '../../stores';
+    import { gameLogStore, userStore } from '../../stores';
+    import { getGameLog } from '../../requests/search';
 
 
     
@@ -31,6 +32,14 @@
         }
         console.log(res);
 	};
+
+    const _navigateToGameLogs = async () => {
+        console.log("making it here")
+        const res = await getGameLog(get(userStore).key)
+        gameLogStore.set(res);
+        goto('/account/game_log')
+        return;
+    };
 </script>
 
         <div class="my-5 w-full">
@@ -110,6 +119,15 @@
         <hr class={hr}>
         <div class="px-2 py-4 uppercase">
             {$userStore.rank}
+        </div>
+
+        <div class={title}>
+            <button
+                on:click={() => {_navigateToGameLogs()}}
+            >
+                Go to Game Logs  
+            </button>
+            
         </div>
         
 {#if popupOpen}
