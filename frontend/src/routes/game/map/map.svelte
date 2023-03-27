@@ -2,6 +2,7 @@
 	import { onDestroy, onMount } from 'svelte';
 	import { Location } from '../../../Location';
     import { Map } from '../../../Map';
+	import Settings from '../lobby/settings.svelte';
 
     onMount(async() => {
         await Map.regenerate();
@@ -66,6 +67,9 @@
     class="full-screen"
     bind:this={Map.container}
 />
+<div>
+    <Settings/>
+</div>
 
 <style>
     .full-screen {

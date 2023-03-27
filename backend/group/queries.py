@@ -14,8 +14,9 @@ def createGame():
                 drivingAllowed: False,
                 bicyclingAllowed: False,
                 transitAllowed: False,
-                theme: "None",
+                theme: "restaurant",
                 desiredCompletionTime: 180,
+                budget: 10,
                 lon: 0.0,
                 lat: 0.0
             }

@@ -24,6 +24,7 @@
             }
             return;
         }
+        goto(Game.getPage())
     }
 </script>
 

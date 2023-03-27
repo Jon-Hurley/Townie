@@ -2,6 +2,7 @@
     import { buttonStyle, blueStyle, indigoStyle, inputStyle } from '../../../css';
     import { createGame } from '../../../requests/group';
     import { Game } from '../../../Game';
+    import { goto } from '$app/navigation';
 	
     let lobbyInput;
 
@@ -16,6 +17,8 @@
         console.log("lobby created w/ key: ", lobbyKey);
         const res = await Game.join(lobbyKey);
         console.log("Err:", res);
+        goto(Game.getPage()) // JON ADDED THIS
+        
     };
 </script>
 
