@@ -41,7 +41,7 @@ if not db.has_collection('User'):
         fields=['lon', 'lat']
     )
     destinationCollection.add_persistent_index(
-        fields=['name'],
+        fields=['lon', 'lat'],
         unique=True,
         sparse=True
     )

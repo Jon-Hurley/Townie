@@ -33,9 +33,9 @@ def map(settings, gameKey):
     elif settings['transitAllowed']:
         mode = "transit"
     
-    place_info = json.dumps(gmaps.places(settings['theme'], (settings['lat'], settings['lon']), settings['radius'], None, None, settings['budget']))
+    place_info = json.dumps(gmaps.places(None, (settings['lat'], settings['lon']), settings['radius'], None, None, settings['budget'], False, settings['theme'], None, None))
     place3 = json.loads(place_info)
-
+    
     for i in range(len(place3['results'])): #used to be len(place3['results'])
         name_dest = place3['results'][i]['name']
         latitude = place3['results'][i]['geometry']['location']['lat']
@@ -94,6 +94,5 @@ def map(settings, gameKey):
         total_time = total_time - temp['time']
     
     listDict = dict(Destinations=orderedList, trueCompletionTime=total_time)
-
     queries.insertIntoItinerary(listDict, gameKey)
     return total_time
