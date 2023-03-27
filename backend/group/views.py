@@ -5,6 +5,8 @@ import group.queries as queries
 from ws_con import propogateUpdates, forceDisconnect
 
 # CONNECT: JOIN GAME
+
+
 @csrf_exempt
 def onConnect(request):
     # load input
@@ -19,12 +21,12 @@ def onConnect(request):
     oldDoc = res.batch()[0]['oldDoc']
     if oldDoc:
         forceDisconnect(oldDoc['connectionId'])
-    
+
     # relay game all game data to all players (except the new one)
     data = queries.getGame(gameKey).batch()[0]
     print(data)
     propogateAllUpdates(
-        conExcl={ connectionId },
+        conExcl={connectionId},
         data=data
     )
 
@@ -32,15 +34,17 @@ def onConnect(request):
     return JsonResponse(data)
 
 # DISCONNECT: LEAVE GAME
+
+
 @csrf_exempt
 def onDisconnect(request):
     body = json.loads(request.body)
     connectionId = body['connectionId']
     print(connectionId)
     res = queries.leaveGame(connectionId).batch()
-    if len(res): # a player was removed from DB.
-        gameKey = res[0]['gameKey'][6:] # [6:] = id -> key
-        propogateAllUpdates(gameKey, { connectionId })
+    if len(res):  # a player was removed from DB.
+        gameKey = res[0]['gameKey'][6:]  # [6:] = id -> key
+        propogateAllUpdates(gameKey, {connectionId})
     # else: connection was already updated, and no longer exists anyways.
     return JsonResponse({})
 
@@ -90,6 +94,7 @@ def onDefault(request):
         })
     return JsonResponse({})
 
+
 def propogateAllUpdates(gameKey=None, conExcl={}, data=None):
     if data is None:
         data = queries.getGame(gameKey).batch()[0]
@@ -98,7 +103,19 @@ def propogateAllUpdates(gameKey=None, conExcl={}, data=None):
 
 # GET REQUEST: CREATE A LOBBY/GAME
 
+
 def createGame(request):
     res = queries.createGame().batch()[0]
     print(res)
     return JsonResponse({'key': res['_key']})
+
+# GET REQUEST: GET GAME DATA
+
+
+@csrf_exempt
+def getGame(request):
+    data = json.loads(request.body)
+    print(data)
+    gameKey = data['gameKey']
+    data = queries.getGame(gameKey).batch()[0]
+    return JsonResponse(data)

@@ -72,13 +72,14 @@ export const logout = () => {
     userStore.set(null);
 };
 
-export const signup = async(phone) => {
+export const signup = async (phone, username) => {
     try {
-        console.log(phone);
+        console.log(phone, username);
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'user/signup/',
             {
-                phone
+                phone,
+                username
             }
         );
         return null;
@@ -88,7 +89,7 @@ export const signup = async(phone) => {
     }
 };
 
-export const verifySignup = async(username, password, phone, otp) => {
+export const verifySignup = async (username, password, phone, otp) => {
     try {
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'user/verify-signup/',
@@ -107,7 +108,7 @@ export const verifySignup = async(username, password, phone, otp) => {
     }
 }
 
-export const updateAccount = async(password, newUsername, newPhone) => {
+export const updateAccount = async (password, newUsername, newPhone) => {
     try {
         const user = get(userStore);
         const res = await axios.post(
@@ -130,7 +131,7 @@ export const updateAccount = async(password, newUsername, newPhone) => {
     }
 };
 
-export const initiatePasswordReset = async(phone) => {
+export const initiatePasswordReset = async (phone) => {
     try {
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'user/initiate-password-reset/',
@@ -138,25 +139,25 @@ export const initiatePasswordReset = async(phone) => {
                 phone
             }
         );
-        return null; 
+        return null;
     } catch (err) {
         return err?.response?.data?.errorMessage
             || 'Connection Refused. Failed to find user. Please try again.';
     }
 };
 
-export const completePasswordReset = async(phone, otp, newPassword) => {
+export const completePasswordReset = async (phone, otp, newPassword) => {
     try {
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'user/complete-password-reset/',
             {
-                "phone" : phone,
-                "otp" : otp,
-                "newPassword" : newPassword
+                "phone": phone,
+                "otp": otp,
+                "newPassword": newPassword
             }
         );
         console.log(res);
-        return null;       
+        return null;
     } catch (err) {
         return err?.response?.data?.errorMessage
             || 'Connection Refused. Failed to update password. Please try again.';
@@ -169,7 +170,7 @@ export const deleteUser = async() => {
             key: get(userStore).key,
             passwordHash: get(userStore).passwordHash
         };
-        console.log({body})
+        console.log({ body })
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'user/delete/',
             body

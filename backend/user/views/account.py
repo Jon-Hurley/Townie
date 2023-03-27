@@ -5,6 +5,7 @@ import user.queries as queries
 import json
 from hashlib import sha256
 
+
 def returnError(errorMessage, errCode):
     return JsonResponse(
         {
@@ -13,12 +14,14 @@ def returnError(errorMessage, errCode):
         status=errCode
     )
 
+
 def returnUserPrivate(user):
     del user['_id']
     del user['_rev']
     user['key'] = user['_key']
     del user['_key']
     return JsonResponse(user)
+
 
 def returnUserPublic(user):
     del user['_id']
@@ -28,6 +31,7 @@ def returnUserPublic(user):
     del user['_key']
     return JsonResponse(user)
 
+
 def getPasswordHash(password, username):
     saltedPassword = f'{password}:{username}:hJ)R-PQ*CS'
     encodedPassword = saltedPassword.encode('utf-8')
@@ -36,23 +40,26 @@ def getPasswordHash(password, username):
     hash = h.hexdigest()
     return hash
 
-@csrf_exempt # note csrf is being wonky, add this to POST/PUT/DELETE reqs for now
+
+@csrf_exempt  # note csrf is being wonky, add this to POST/PUT/DELETE reqs for now
 def signup(request):
     print("Running")
     data = json.loads(request.body)
     phone = data['phone']
+    username = data['username']
 
     try:
-        docs = queries.getUserFromPhone(phone).batch()
+        docs = queries.getUserFrom(phone, username).batch()
     except Exception as e:
         return returnError(e.error_message, e.http_code)
-    
+
     if len(docs) != 0:
-        return returnError('There already exists an account with this phone number.', 401)
+        return returnError('There already exists an account with this phone number or username.', 401)
 
     res = twilio_con.sendVerification(phone)
     print(res)
     return JsonResponse({})
+
 
 @csrf_exempt
 def verifySignup(request):
@@ -63,16 +70,16 @@ def verifySignup(request):
     otp = data['otp']
 
     if password.find(':') != -1:
-        return returnError("Passwords must not contain colons.", 400)
-    
+        return returnError("Passwords may not contain colons.", 400)
+
     res = twilio_con.testVerification(phone, otp)
     if not res:
         return returnError('Invalid OTP.', 401)
-    
+
     # ADD ANY OTHER PASSWORD RESTRICTIONS
 
     passwordHash = getPasswordHash(password, username)
-    
+
     try:
         doc = queries.createUser(username, passwordHash, phone)
     except Exception as e:
@@ -83,7 +90,8 @@ def verifySignup(request):
 
     return returnUserPrivate(doc['new'])
 
-@csrf_exempt # note csrf is being wonky, add this to POST/PUT/DELETE reqs for now
+
+@csrf_exempt  # note csrf is being wonky, add this to POST/PUT/DELETE reqs for now
 def login(request):
     data = json.loads(request.body)
     username = data['username']
@@ -93,16 +101,17 @@ def login(request):
         docs = queries.getUserByUsername(username).batch()
     except Exception as e:
         return returnError(e.error_message, e.http_code)
-    
+
     if len(docs) == 0:
         return returnError('Invalid username.', 401)
-    
+
     user = docs[0]
     passwordHash = getPasswordHash(password, username)
     if user['passwordHash'] != passwordHash:
         return returnError('Invalid password.', 401)
 
     return returnUserPrivate(user)
+
 
 @csrf_exempt
 def updateInfo(request):
@@ -122,7 +131,7 @@ def updateInfo(request):
     newPasswordHash = passwordHash
     if newUsername != username:
         newPasswordHash = getPasswordHash(password, newUsername)
-    
+
     try:
         docs = queries.updateInfo(
             key, passwordHash,
@@ -133,11 +142,13 @@ def updateInfo(request):
         if em.find('unique constraint violated') != -1:
             return returnError('This username or phone number is already taken.', e.http_code)
         return returnError(em, e.http_code)
-    
+
     if len(docs) == 0:
-        return returnError('Invalid password.', 401) # NOTE: could also be invalid key, but I trust not
+        # NOTE: could also be invalid key, but I trust not
+        return returnError('Invalid password.', 401)
 
     return returnUserPrivate(docs[0])
+
 
 @csrf_exempt
 def deleteUser(request):
@@ -153,16 +164,18 @@ def deleteUser(request):
         return returnError(e.error_message, e.http_code)
 
     if len(docs) == 0:
-        return returnError('Unauthorized.', 401) # invalid passwordHash or key
+        return returnError('Unauthorized.', 401)  # invalid passwordHash or key
 
     return JsonResponse({})
 
 # TO-DO:
 
+
 def loginWithToken(request):
     return JsonResponse({
         ":)": ":)"
     })
+
 
 @csrf_exempt
 def initiatePasswordReset(request):
@@ -173,7 +186,7 @@ def initiatePasswordReset(request):
         docs = queries.getUserFromPhone(phone).batch()
     except Exception as e:
         return returnError(e.error_message, e.http_code)
-    
+
     if len(docs) != 1:
         return returnError('Invalid phone.', 401)
 
@@ -197,7 +210,7 @@ def completePasswordReset(request):
         docs = queries.getUserFromPhone(phone).batch()
     except Exception as e:
         return returnError(e.error_message, e.http_code)
-    
+
     if len(docs) != 1:
         return returnError('Invalid phone.', 401)
 
@@ -214,5 +227,5 @@ def completePasswordReset(request):
         doc = queries.updatePassword(userKey, newPasswordHash)
     except Exception as e:
         return returnError("Invalid user key.", 500)
-    
+
     return JsonResponse({})
