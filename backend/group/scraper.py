@@ -157,7 +157,7 @@ def extendGame(settings, gameKey):
     listDict = dict(Destinations=ordered_dests, trueCompletionTime=total_time + game1[0]['trueCompletionTime'])
     index = queries.getHighestIndex(game1[0])
     queries.insertIntoNewItinerary(listDict, gameKey, index)
-    return total_time
+    return game1[0]['trueCompletionTime'] + total_time
     
 # could be errors here
 @csrf_exempt
@@ -173,5 +173,5 @@ def truncateGame(settings, gameKey):
         total_time -= removed_dest['timeToCompletion']
         unused_itinerary.append(itinerary.pop())
     queries.insertIntoUnusedItinerary(unused_itinerary, gameKey, len(itinerary))
-    return total_time
+    return game1[0]['trueCompletionTime'] - total_time
     

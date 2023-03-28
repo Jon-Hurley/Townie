@@ -388,8 +388,8 @@ def getItinerary(game):
     edges1 = [doc for doc in edges]
     return edges1
 
-def updateTrueTime(game, addedTime):
-    game['trueCompletionTime'] += addedTime
+def updateTrueTime(game, new_time):
+    game['trueCompletionTime'] = new_time
     arango_con.gameCollection.update_vertex(game)
 
 def removeItinerary(itinerary):
