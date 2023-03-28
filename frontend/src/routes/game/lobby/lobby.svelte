@@ -1,8 +1,8 @@
 <script>
-	import { buttonStyle, gridItem, indigoStyle, largeTitle } from "../../../css";
-	import Settings from "./settings.svelte";
+	import { gridItem, largeTitle } from "../../../css";
 	import Modal from "../../../general-components/modal.svelte";
 	import { Game } from "../../../classes/Game";
+	import Subnav from "../subnav.svelte";
     const title = "text-gray-700 font-semibold text-lg mt-2";
     const hr = "bg-gray-100 h-[2px] mt-4";
 
@@ -13,18 +13,6 @@
         message: null,
         dest: null
     };
-
-    const _startGame = async() => {
-        const err = Game.start();
-        if (err) {
-            messageObj = {
-                status: 0,
-                message: err,
-                dest: null
-            }
-            return;
-        }
-    }
 </script>
 
 <Modal
@@ -69,13 +57,5 @@
     </div>
     <hr class={hr}>
     
-    <div class="flex w-full justify-between mt-4">
-        <Settings/>
-        <button
-            class="{buttonStyle} {indigoStyle} w-24 ml-2"
-            on:click={_startGame}
-        >
-            Start
-        </button>
-    </div>
+    <Subnav/>
 </div>

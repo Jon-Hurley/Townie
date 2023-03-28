@@ -1,11 +1,14 @@
 <script>
 	import { onMount } from 'svelte';
-    import { blueStyle, buttonStyle, grayStyle, hr, largeTitle, inputStyle } from '../../../css';
-	import { Game } from '../../../classes/Game';
-	import Autocomplete from './autocomplete.svelte';
+    import { blueStyle, buttonStyle, grayStyle, hr, largeTitle, inputStyle, indigoStyle, redStyle } from '../../css';
+	import { Game } from '../../classes/Game';
+	import Autocomplete from './lobby/autocomplete.svelte';
     const section = "font-semibold text-lg text-center mb-3";
 
     let form = {};
+    let otherCompletionTime = false;
+    let otherRadius = false;
+	let isOpen = false;
     
     onMount(() => {
         Game.store.subscribe(gs => {
@@ -14,11 +17,7 @@
                 form.otherCompletionTime = form.otherCompletionTime;
             }
         })
-    })
-
-    let otherCompletionTime = false;
-    let otherRadius = false;
-	let isOpen = true;
+    });    
 
     const _updateSettings = () => {
         Game.updateSettings(form);
@@ -44,8 +43,12 @@
     ]
 </script>
 
-<button type="button" class="{buttonStyle} {grayStyle} w-full" on:click={() => (isOpen = true)}>
-	Settings
+<button
+    type="button"
+    class="{buttonStyle} {grayStyle} w-full"
+    on:click={() => isOpen = true}
+>
+    Settings
 </button>
 
 <div

@@ -39,15 +39,15 @@ def getUserFromToken(token):
     dt = 30 * 60
 
     # not past expiration time
-    if user['exp'] > t:
+    if user['expiration'] > t:
         return user, None
     
     # past expiration time by more than 30 minutes: log out
-    if user['exp'] < t + dt:
+    if user['expiration'] < t + dt:
         return None, None
     
     # past expiration time by less than 30 minutes: refresh token
-    user['exp'] = t + dt
+    user['expiration'] = t + dt
     newToken = jwt.encode(
         user,
         os.environ.get('JWT_TOKEN_SECRET'),
@@ -64,7 +64,7 @@ def returnUserPrivate(user):
 
     t = time.time()
     dt = 30 * 60
-    user['exp'] = t + dt
+    user['expiration'] = t + dt
 
     token = jwt.encode(
         user,

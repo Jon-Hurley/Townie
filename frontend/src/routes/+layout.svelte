@@ -44,6 +44,7 @@
         }
 		lastState = !!$userStore;
 	}
+    $: console.log({slots: $$slots})
 </script>
 
 <!-- Once mounted, bring in the GOOGLE API -->

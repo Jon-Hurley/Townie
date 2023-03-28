@@ -32,6 +32,7 @@
                         <button 
                             id="ok-btn"
                             on:click={() => {
+                                console.log({message})
                                 if (message.includes("Invalid access token")) {
                                     logout();
                                 }

@@ -39,7 +39,7 @@ export class Game {
                 console.log("WS ERROR:", m, err);
                 Game.messageObj.set({
                     status: 0,
-                    message: err,
+                    message: "Invalid response. Please try again later.",
                     dest: null
                 });
                 return;
@@ -49,7 +49,7 @@ export class Game {
             console.log("WS ERROR:", e);
             Game.messageObj.set({
                 status: 0,
-                message: err,
+                message: "Connections error. Please try again later.",
                 dest: null
             });
         }
@@ -64,10 +64,11 @@ export class Game {
         Game.stopPolling();
         
         Game.interval = setInterval(() => {
-            console.log(get(Game.store))
-            Game.send('get-game', {
-                gameKey: get(Game.store).game._key
-            });
+            if (get(Game?.store)?.game) {
+                Game.send('get-game', {
+                    gameKey: get(Game.store).game._key
+                });
+            }
         }, 10000);
     }
     
@@ -115,8 +116,8 @@ export class Game {
     static leave() {
         try {
             Game.stopPolling();
-            Game.store.set(null);
             Game.ws?.close();
+            Game.store.set(null);
             return true;
         } catch (err) {
             console.log(err);
