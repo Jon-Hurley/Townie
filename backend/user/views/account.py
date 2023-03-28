@@ -63,11 +63,14 @@ def login(request):
     username = data['username']
     password = data['password']
 
+    if password.find(':') != -1:
+        return util.returnError("Passwords may not contain colons.", 400)
+
     try:
         docs = queries.getUserByUsername(username).batch()
     except Exception as e:
         return util.returnError(e.error_message, e.http_code)
-
+    
     if len(docs) == 0:
         return util.returnError('Invalid username.', 401)
 
@@ -76,7 +79,29 @@ def login(request):
     if user['passwordHash'] != passwordHash:
         return util.returnError('Invalid password.', 401)
 
+    if user['login2FA']:
+        # res = twilio_con.sendVerification(user['phone'])
+        return JsonResponse({
+            'verifyToken': util.getVerifyJWT(user)
+        })
+    
     return util.returnUserPrivate(user)
+
+@csrf_exempt
+def verifyLogin(request):
+    data = json.loads(request.body)
+    otp = data['otp']
+
+    verifyToken = data['verifyToken']
+    user = util.getVerifyJWTData(verifyToken)
+    phone = user['phone']
+
+    # res = twilio_con.testVerification(phone, otp)
+    if False:
+        return util.returnError('Invalid OTP.', 401)
+    
+    return util.returnUserPrivate(user)
+
 
 def loginWithToken(request):
     data = json.loads(request.body)
@@ -106,14 +131,16 @@ def loginWithToken(request):
 @csrf_exempt
 def updateInfo(request):
     data = json.loads(request.body)
-    key = data['key']
-    username = data['username']
-    password = data['password']
-    passwordHash = data['passwordHash']
-
+    
     user, newToken = util.getUserFromToken(data['token'])
     if user is None:
         return util.returnError('Invalid token.', 401)
+    
+    key = user['key']
+    username = user['username']
+    password = user['password']
+    passwordHash = user['passwordHash']
+    # login2FA = user['login2FA']
 
     expectedInputHash = util.getPasswordHash(password, username)
     if expectedInputHash != passwordHash:
@@ -121,7 +148,7 @@ def updateInfo(request):
 
     newUsername = data['newUsername']
     newPhone = data['newPhone']
-
+    newLogin2FA = data['newLogin2FA']
     newPasswordHash = passwordHash
     if newUsername != username:
         newPasswordHash = util.getPasswordHash(password, newUsername)
@@ -129,7 +156,7 @@ def updateInfo(request):
     try:
         docs = queries.updateInfo(
             key, passwordHash,
-            newUsername, newPhone, newPasswordHash
+            newUsername, newPhone, newPasswordHash, newLogin2FA
         ).batch()
     except Exception as e:
         em = e.error_message

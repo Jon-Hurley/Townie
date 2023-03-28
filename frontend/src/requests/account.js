@@ -19,6 +19,29 @@ export const login = async(username, password, remember) => {
 			localStorage.setItem('username', username);
 			localStorage.setItem('password', password);
 		}
+
+        if (res.data.verifyToken) {
+            return res.data;
+        }
+
+        userStore.set(res.data);
+        return null;
+    } catch (err) {
+        console.log(err)
+        return err?.response?.data?.errorMessage
+            || 'Connection Refused. Failed to login user. Please try again.';
+    }
+};
+
+export const verifyLogin = async(verifyToken, otp) => {
+    try {
+        const res = await axios.post(
+            PUBLIC_BACKEND_API + 'user/verify-login/',
+            {
+                verifyToken,
+                otp
+            }
+        );
         userStore.set(res.data);
         return null;
     } catch (err) {

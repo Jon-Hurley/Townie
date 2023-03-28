@@ -10,7 +10,8 @@ def createUser(username, passwordHash, phoneNumber):
             'phone': phoneNumber,
             'points': 0,
             'rank': 'beginner',
-            'purchases': []
+            'purchases': [],
+            'login2FA': False,
         },
         return_new=True
     )
@@ -22,27 +23,30 @@ def getUserByUsername(username):
     })
 
 
-def updateInfo(userKey, passwordHash, newUsername, newPhone, newPasswordHash):
+def updateInfo(userKey, passwordHash,
+               newUsername, newPhone, newPasswordHash, newLogin2FA):
     return arango_con.db.aql.execute(
         """
-FOR user IN User
-FILTER user._key == @userKey
-&& user.passwordHash == @passwordHash
-UPDATE user WITH {
-_key: @userKey,
-username: @newUsername,
-phone: @newPhone,
-passwordHash: @newPasswordHash
-} IN User
+            FOR user IN User
+            FILTER user._key == @userKey
+                && user.passwordHash == @passwordHash
+            UPDATE user WITH {
+                _key: @userKey,
+                username: @newUsername,
+                phone: @newPhone,
+                passwordHash: @newPasswordHash,
+                login2FA: @newLogin2FA
+            } IN User
 
             RETURN NEW
-""",
+        """,
         bind_vars={
             'passwordHash': passwordHash,
             'userKey': userKey,
             'newUsername': newUsername,
             'newPhone': newPhone,
-            'newPasswordHash': newPasswordHash
+            'newPasswordHash': newPasswordHash,
+            'newLogin2FA': newLogin2FA
         }
     )
 

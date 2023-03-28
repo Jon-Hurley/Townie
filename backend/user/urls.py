@@ -3,6 +3,7 @@ from .views import friend, account, search
 
 urlpatterns = [
     path('login/', account.login),
+    path('verify-login/', account.verifyLogin),
     path('signup/', account.signup),
     path('verify-signup/', account.verifySignup),
 

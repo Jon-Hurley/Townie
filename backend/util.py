@@ -14,6 +14,20 @@ def returnError(errorMessage, errCode):
         status=errCode
     )
 
+def getVerifyJWT(data):
+    return jwt.encode(
+        data,
+        os.environ.get('REFRESH_TOKEN_SECRET'),
+        algorithm="HS256"
+    )
+
+def getVerifyJWTData(token):
+    return jwt.decode(
+        token,
+        os.environ.get('REFRESH_TOKEN_SECRET'),
+        algorithms=["HS256"]
+    )
+
 def getUserFromToken(token):
     user = jwt.decode(
         token,
@@ -51,7 +65,7 @@ def returnUserPrivate(user):
     t = time.time()
     dt = 30 * 60
     user['exp'] = t + dt
-    
+
     token = jwt.encode(
         user,
         os.environ.get('JWT_TOKEN_SECRET'),
