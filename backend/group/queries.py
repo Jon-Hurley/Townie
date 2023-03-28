@@ -359,39 +359,76 @@ def findUnusedItineraries(gameKey):
     itineraries1 = [doc for doc in itineraries]
     return itineraries1
 
-def findUnusedDests(listDict):
+def findUnusedDestsFromItinerary(listDict):
     list = []
     for i in range(len(listDict)):
-        destinations = arango_con.destinationCollection.find(dict(_to=listDict[i]['_to']))
+        destinations = arango_con.destinationCollection.find(dict(_id=listDict[i]['_to']))
         destinations1 = [doc for doc in destinations]
-    for i in range(len(destinations1)):
-        list.append(destinations1[i])
+        list.append(destinations1[0])
+    return list
     
 def findPlayers(gameKey):
     players = arango_con.playerCollection.find(dict(_to="Games/" + str(gameKey)))
     players1 = [doc for doc in players]
     return players1
 
-def removeUnusedItinerary(itinerary):
-    old_itinerary = arango_con.unusedItineraryCollection.delete_edge(itinerary)
+def removeUnusedItinerary(itinerary, gameKey):
+    old_itinerary = arango_con.unusedItineraryCollection.delete_match(dict(name=itinerary['name'], _from="Games/" + str(gameKey)))
 
-def getHighestIndex(gameKey):
+# def getHighestIndex(gameKey):
+#     game = arango_con.gameCollection.find(dict(_id=("Games/" + str(gameKey))))
+#     game1 = [doc for doc in game]
+#     edges = arango_con.itineraryCollection.edges(game1[0]['game']['_id'])
+#     edges1 = [doc for doc in edges]
+#     num_index = len(edges1)
+#     return num_index
+
+# def getItinerary(game):
+#     print(game)
+#     edges = arango_con.itineraryCollection.edges(game['game']['_id'])
+#     edges1 = [doc for doc in edges]
+#     return edges1
+
+def updateTrueTime(gameKey, settings):
+    new_desired_time = settings['desiredCompletionTime']
     game = arango_con.gameCollection.find(dict(_id=("Games/" + str(gameKey))))
     game1 = [doc for doc in game]
-    edges = arango_con.gameCollection.edges(game1[0])
-    edges1 = [doc for doc in edges]
-    num_index = len(edges1)
-    return num_index
+    
+    new_true_time = 0
+    if new_desired_time < game1[0]['settings']['desiredCompletionTime']:
+        print("decrease")
+        new_true_time = scraper.truncateGame(settings, gameKey)
+    elif new_desired_time > game1[0]['settings']['desiredCompletionTime']:
+        print("increase")
+        new_true_time = scraper.extendGame(settings, gameKey)
+    game1[0]['settings'] = settings
+    game1[0]['trueCompletionTime'] = new_true_time
+    return arango_con.gameCollection.update_match(dict(_key=game1[0]['_key']), game1[0])
 
-def getItinerary(game):
-    edges = arango_con.gameCollection.edges(game)
-    edges1 = [doc for doc in edges]
-    return edges1
+def removeItinerary(itinerary, gameKey):
+    arango_con.itineraryCollection.delete_match(dict(index=itinerary['index'], _from="Games/" + str(gameKey)))
 
-def updateTrueTime(game, new_time):
-    game['trueCompletionTime'] = new_time
-    arango_con.gameCollection.update_vertex(game)
+def getItinerary(gameKey):
+    return arango_con.db.aql.execute(
+        """
+            WITH Destinations
 
-def removeItinerary(itinerary):
-    for i in range(len(itinerary)):
-        arango_con.itineraryCollection.delete_edge(itinerary[i])
+            LET destinations = (
+                FOR v, e IN 1..1 OUTBOUND CONCAT("Games/", @key) Itineraries
+                    RETURN {
+                        index: e.index,
+                        points: e.points,
+                        timeToCompletion: e.timeToCompletion,
+                        name: v.name,
+                        lon: v.longitude,
+                        lat: v.latitude
+                    }
+            )
+            RETURN {
+                destinations
+            }
+        """,
+        bind_vars={
+            'key': str(gameKey),
+        }
+    )

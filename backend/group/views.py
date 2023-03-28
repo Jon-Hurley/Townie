@@ -70,6 +70,17 @@ def onDefault(request):
         return JsonResponse({
             'method': 'update-settings'
         })
+    
+    if method == 'update-time':
+        gameKey = body['gameKey']
+        settings = body['settings']
+        print(gameKey, settings)
+        res = queries.updateTrueTime(gameKey, settings)
+        print(res)
+        propogateAllUpdates(gameKey)
+        return JsonResponse({
+            'method': 'update-time'
+        })
 
     if method == 'start-game':
         gameKey = body['gameKey']

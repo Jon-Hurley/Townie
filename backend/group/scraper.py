@@ -67,10 +67,12 @@ def generate(settings, gameKey):
         print("No destinations were found")
         return 0
     locationList = []
+    list_copy = []
     origin = dict(lat=settings['lat'], lng=settings['lon'])
     locationList.append(origin)
     for i in range(len(list)):
         locationList.append(list[i]['location'])
+        list_copy.append(list[i])
     orderedList = []
     lengthToUse = len(list)
     if lengthToUse > 10:
@@ -78,7 +80,7 @@ def generate(settings, gameKey):
     unusedList = []
     for i in range(len(locationList) - lengthToUse):
         locationList.pop()
-        unusedList.append(list[i])
+        unusedList.append(list_copy.pop())
     
     queries.insertIntoUnusedItinerary(unusedList, gameKey, len(locationList))
     
@@ -89,9 +91,10 @@ def generate(settings, gameKey):
         min_time = 10000000000000000000000
         index = 0
         for j in range(len(distances['rows'][i]['elements'])):
-            if distances['rows'][i]['elements'][j]['duration']['value'] != 0 and distances['rows'][i]['elements'][j]['duration']['value'] < min_time and j not in marked_indices and j != 0:
-                min_time = distances['rows'][i]['elements'][j]['duration']['value']
-                index = j
+            if distances['rows'][i]['elements'][j]['status'] == "OK": 
+                if distances['rows'][i]['elements'][j]['duration']['value'] != 0 and distances['rows'][i]['elements'][j]['duration']['value'] < min_time and j not in marked_indices and j != 0:
+                    min_time = distances['rows'][i]['elements'][j]['duration']['value']
+                    index = j
         marked_indices.append(index)
         min_times.append(min_time)
     
@@ -112,66 +115,87 @@ def generate(settings, gameKey):
 
 @csrf_exempt
 def extendGame(settings, gameKey):
+    mode = ""
+    if settings['drivingAllowed']:
+        mode = "driving"
+    elif settings['walkingAllowed']:
+        mode = "walking"
+    elif settings['bicyclingAllowed']:
+        mode = "bicycling"
+    elif settings['transitAllowed']:
+        mode = "transit"
     new_time = settings['desiredCompletionTime']
     new_itineraries = queries.findUnusedItineraries(gameKey)
-    new_dests = queries.findUnusedDests(new_itineraries)
+    new_dests = queries.findUnusedDestsFromItinerary(new_itineraries)
     gmaps = googlemaps.Client(key=os.environ.get('GOOGLE_API_KEY'))
     players = queries.findPlayers(gameKey)
     player1 = players[0]
-    origin = dict(lat=player1['lat'], lon=player1['lon'])
+    origin = dict(lat=player1['lat'], lng=player1['lon'])
     dests_to_compute = []
     dests_to_compute.append(origin)
     for i in range(len(new_dests)):
-        location_dict = dict(lat=new_dests[i]['latitude'], lon=new_dests[i]['longitude'])
+        location_dict = dict(lat=new_dests[i]['latitude'], lng=new_dests[i]['longitude'])
         dests_to_compute.append(location_dict)
     length_to_use = len(dests_to_compute)
     if length_to_use > 10:
         length_to_use = 10
     while len(dests_to_compute) > length_to_use:
         dests_to_compute.pop()
-    distances = gmaps.distance_matrix(dests_to_compute, dests_to_compute)
-    
+    distances = gmaps.distance_matrix(dests_to_compute, dests_to_compute, mode, None, None, "imperial")
     ordered_dests = []
     min_times = []
     marked_indices = []
+    
     for i in range(len(distances['rows'])):
         min_time = 100000000000000000
         index = 0
+        added = False
         for j in range(len(distances['rows'][i]['elements'])):
-            if distances['rows'][i]['elements'][j]['duration']['value'] != 0 and distances['rows'][i]['elements'][j]['duration']['value'] < min_time and j not in marked_indices and j != 0:
-                min_time = distances['rows'][i]['elements'][j]['duration']['value']
-                index = j
-        marked_indices.append(index)
-        min_times.append(min_time)
-    total_time = 0
+            if distances['rows'][i]['elements'][j]['status'] == "OK":
+                if distances['rows'][i]['elements'][j]['duration']['value'] != 0 and distances['rows'][i]['elements'][j]['duration']['value'] < min_time and j not in marked_indices and j != 0:
+                    min_time = distances['rows'][i]['elements'][j]['duration']['value']
+                    print(min_time)
+                    index = j
+                    added = True
+        if added:
+            marked_indices.append(index)
+            min_times.append(min_time)
+    game = queries.getGame(gameKey)
+    game1 = [doc for doc in game]
+    total_time = game1[0]['game']['trueCompletionTime']
     for i in range(len(marked_indices) -1):
-        if (total_time > settings['desiredCompletionTime'] * 60):
+        if (total_time < settings['desiredCompletionTime'] * 60):
             new_itinerary = dict(destination=new_dests[marked_indices[i]], time=min_times[i])
             ordered_dests.append(new_itinerary)
             total_time += min_times[i]
-            queries.removeUnusedItinerary(new_itineraries[i])
+            queries.removeUnusedItinerary(new_itineraries[i], gameKey)
         else:
             break
-    game = queries.getGame(gameKey)
-    game1 = [doc for doc in game]
-    listDict = dict(Destinations=ordered_dests, trueCompletionTime=total_time + game1[0]['trueCompletionTime'])
-    index = queries.getHighestIndex(game1[0])
+    
+    listDict = dict(Destinations=ordered_dests, trueCompletionTime=total_time)
+    itinerary = queries.getItinerary(gameKey)
+    itinerary1 = [doc for doc in itinerary]
+    index = len(itinerary1[0]['destinations'])
     queries.insertIntoNewItinerary(listDict, gameKey, index)
-    return game1[0]['trueCompletionTime'] + total_time
+    return total_time
     
 # could be errors here
 @csrf_exempt
 def truncateGame(settings, gameKey):
     game = queries.getGame(gameKey)
     game1 = [doc for doc in game]
-    total_time = game1[0]['trueCompletionTime']
-    itinerary = queries.getItinerary(game1[0])
+    total_time = game1[0]['game']['trueCompletionTime']
+    itinerary = queries.getItinerary(gameKey)
+    itinerary1 = [doc for doc in itinerary]
+    actual_itinerary = itinerary1[0]
+    print(actual_itinerary)
     unused_itinerary = []
-    while settings['desiredCompletionTime'] * 60 < game1[0]['trueCompletionTime']:
-        removed_dest = itinerary.pop()
-        queries.removeItinerary(removed_dest)
+    while settings['desiredCompletionTime'] * 60 < total_time:
+        removed_dest = actual_itinerary['destinations'].pop()
+        print("removed dest: " + str(removed_dest))
+        queries.removeItinerary(removed_dest, gameKey)
         total_time -= removed_dest['timeToCompletion']
-        unused_itinerary.append(itinerary.pop())
-    queries.insertIntoUnusedItinerary(unused_itinerary, gameKey, len(itinerary))
-    return game1[0]['trueCompletionTime'] - total_time
+        unused_itinerary.append(removed_dest)
+    queries.insertIntoUnusedItinerary(unused_itinerary, gameKey, len(actual_itinerary))
+    return total_time
     

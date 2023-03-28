@@ -139,6 +139,15 @@ export class Game {
         }
     }
 
+    static updateTime(form) {
+        try {
+            const gameKey = get(Game.store).game._key;
+            Game.send('update-time', { gameKey, settings: form});
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
     static getPage() {
         return get(Game.store)?.game?.page || 'join'
     }

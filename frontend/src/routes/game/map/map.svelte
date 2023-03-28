@@ -3,6 +3,7 @@
 	import { Location } from '../../../Location';
     import { Map } from '../../../Map';
 	import Settings from '../lobby/settings.svelte';
+	import Newtime from './newtime.svelte';
 
     onMount(async() => {
         await Map.regenerate();
@@ -68,6 +69,9 @@
     bind:this={Map.container}
 />
 
+<div>
+    <Newtime/>
+</div>
 <style>
     .full-screen {
         width: 100vw;
