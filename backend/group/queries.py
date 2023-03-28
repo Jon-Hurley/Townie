@@ -188,7 +188,9 @@ def getGame(gameKey):
                         username: v.username,
                         connectionId: e.connectionId,
                         lon: e.lon,
-                        lat: e.lat
+                        lat: e.lat,
+                        hidingState: v.hidingState,
+                        destinationIndex: e.destinationIndex
                     }
             )
 

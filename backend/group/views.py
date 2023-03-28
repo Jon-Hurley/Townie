@@ -55,6 +55,7 @@ def onDefault(request):
     if method == 'get-game':
         gameKey = body['gameKey']
         data = queries.getGame(gameKey).batch()[0]
+        print("dest index: " + str(data['players'][0]['destinationIndex']))
         return JsonResponse({
             'method': 'get-game',
             'data': data

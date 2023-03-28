@@ -20,7 +20,10 @@ export class Game {
             switch (res.method) {
                 case 'get-game':
                 case 'update-game': {
+                    console.log("In game.js update game")
+                    console.log(res.data.players[0].destinationIndex)
                     Game.store.set(res.data);
+                    console.log(get(Game.store));
                     return;
                 }
                 default: {
@@ -56,7 +59,8 @@ export class Game {
 
     static async join(gameKey) {
         try {
-            const userKey = get(userStore).key;
+            const user = get(userStore);
+            const userKey = user.key;
             Game.ws = new WebSocket(`${PUBLIC_BACKEND_WS}?gameKey=${gameKey}&userKey=${userKey}`);
             await new Promise((res, rej) => { 
                 Game.ws.onerror = () => rej();
@@ -141,5 +145,14 @@ export class Game {
 
     static getPage() {
         return get(Game.store)?.game?.page || 'join'
+    }
+
+    static getPlayer(username) {
+        console.log("This is the game store")
+        console.log(get(Game.store))
+        /** @type {Array} */
+        let pps = get(Game.store)?.players;
+
+        return pps.find(pp => pp.username === username);
     }
 };
