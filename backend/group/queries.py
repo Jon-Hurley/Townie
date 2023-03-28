@@ -274,6 +274,48 @@ def insertIntoItinerary(listDict, gameKey):
             }
         )
 
+def insertIntoNewItinerary(listDict, gameKey, index):
+    for i in range(len(listDict['Destinations'])):
+        searcher = dict(name=listDict['Destinations'][i]['destination']['name'])
+        destination = arango_con.destinationCollection.find(searcher)
+        destination1 = [doc for doc in destination]
+        arango_con.db.aql.execute(
+            """
+        UPSERT {
+            _from: @gameKey,
+            _to: @DestKey,
+            index: @index,
+            points: @points,
+            timeToCompletion: @time
+        }
+        INSERT {
+            _from: @gameKey,
+            _to: @DestKey,
+            index: @index,
+            points: @points,
+            timeToCompletion: @time
+        }
+        UPDATE {
+            _from: @gameKey,
+            _to: @DestKey,
+            index: @index,
+            points: @points,
+            timeToCompletion: @time
+        }
+        IN Itineraries
+        RETURN {
+            oldDoc: OLD
+        }
+        """,
+            bind_vars={
+                'gameKey': "Games/" + str(gameKey),
+                'DestKey': destination1[0]['_id'],
+                'index': i + index,
+                'points': 11,
+                'time': listDict['Destinations'][i]['time']
+            }
+        )
+
 def insertIntoUnusedItinerary(listDict, gameKey, index):
     for i in range(len(listDict)):
         searcher = dict(name=listDict[i]['name'])
@@ -311,3 +353,45 @@ def insertIntoUnusedItinerary(listDict, gameKey, index):
                 'points': 11,
             }
         )
+
+def findUnusedItineraries(gameKey):
+    itineraries = arango_con.unusedItineraryCollection.find(dict(_from="Games/" + str(gameKey)))
+    itineraries1 = [doc for doc in itineraries]
+    return itineraries1
+
+def findUnusedDests(listDict):
+    list = []
+    for i in range(len(listDict)):
+        destinations = arango_con.destinationCollection.find(dict(_to=listDict[i]['_to']))
+        destinations1 = [doc for doc in destinations]
+    for i in range(len(destinations1)):
+        list.append(destinations1[i])
+    
+def findPlayers(gameKey):
+    players = arango_con.playerCollection.find(dict(_to="Games/" + str(gameKey)))
+    players1 = [doc for doc in players]
+    return players1
+
+def removeUnusedItinerary(itinerary):
+    old_itinerary = arango_con.unusedItineraryCollection.delete_edge(itinerary)
+
+def getHighestIndex(gameKey):
+    game = arango_con.gameCollection.find(dict(_id=("Games/" + str(gameKey))))
+    game1 = [doc for doc in game]
+    edges = arango_con.gameCollection.edges(game1[0])
+    edges1 = [doc for doc in edges]
+    num_index = len(edges1)
+    return num_index
+
+def getItinerary(game):
+    edges = arango_con.gameCollection.edges(game)
+    edges1 = [doc for doc in edges]
+    return edges1
+
+def updateTrueTime(game, addedTime):
+    game['trueCompletionTime'] += addedTime
+    arango_con.gameCollection.update_vertex(game)
+
+def removeItinerary(itinerary):
+    for i in range(len(itinerary)):
+        arango_con.itineraryCollection.delete_edge(itinerary[i])
