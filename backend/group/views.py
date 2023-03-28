@@ -63,6 +63,7 @@ def onDefault(request):
     if method == 'update-settings':
         gameKey = body['gameKey']
         settings = body['settings']
+
         print(gameKey, settings)
         res = queries.updateGameSettings(gameKey, settings)
         print(res)
@@ -102,3 +103,8 @@ def createGame(request):
     res = queries.createGame().batch()[0]
     print(res)
     return JsonResponse({'key': res['_key']})
+
+def getThemeList(request):
+    res = queries.getThemeList().batch()
+    print(res)
+    return JsonResponse({ 'themes': list(res) })

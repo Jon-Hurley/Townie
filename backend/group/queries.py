@@ -311,3 +311,14 @@ def insertIntoUnusedItinerary(listDict, gameKey, index):
                 'points': 11,
             }
         )
+
+def getThemeList():
+    return arango_con.db.aql.execute(
+        """
+        FOR theme IN Themes
+            SORT theme.rating DESC
+            RETURN {
+                'theme': theme.name
+            }
+        """
+    )

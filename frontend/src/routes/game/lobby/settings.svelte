@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
     import { blueStyle, buttonStyle, grayStyle, hr, largeTitle, inputStyle } from '../../../css';
 	import { Game } from '../../../Game';
+	import { getThemeList } from '../../../requests/group';
 	import Autocomplete from './autocomplete.svelte';
     const section = "font-semibold text-lg text-center mb-3";
 
@@ -20,6 +21,9 @@
     let otherRadius = false;
 	let isOpen = true;
     let otherBudget = false;
+    let randomThemeChosen = false;
+
+    let themeValue = "";
 
     const _updateSettings = () => {
         Game.updateSettings(form);
@@ -43,6 +47,19 @@
             title: 'Public Transportation'
         }
     ]
+
+    const _generateRandomTheme = async() => {
+        let themes = await getThemeList();
+        let realThemes = themes['themes']
+        let index = Math.floor(2 * Math.random());
+        let theme;
+        if (realThemes[index] != undefined) {
+            theme = realThemes[index]['theme'];
+        } else {
+            theme = "blank";
+        }
+        return theme;
+    }
 </script>
 
 <button type="button" class="{buttonStyle} {grayStyle} w-full" on:click={() => (isOpen = true)}>
@@ -120,13 +137,52 @@
                 Theme
             </div>
             <select
-                bind:value={form.theme}
+                on:change={async (e) => {
+                    const v = e.target.value;
+                    randomThemeChosen = v === "random";
+                    if (!randomThemeChosen) {
+                        console.log(v);
+                        form.theme = v;
+                        themeValue = v;
+                    } else {
+                        let v;
+                        try {
+                            v = await _generateRandomTheme();
+                        } catch (err) {
+                            console.log(err)
+                            console.log("error with random theme generation")
+                            v = "Restaurants"
+                        }
+                        switch (v) {
+                            case 'Tourism':
+                                v = 'tourist-attraction';
+                                break;
+                            case 'Restaurants':
+                                v = 'restaurant';
+                                break;
+                            case 'Shopping':
+                                v = 'store';
+                                break;
+                            case 'Museums':
+                                v = 'museum';
+                                break;
+                            default:
+                                v = 'no_theme';
+                                break;
+                        }
+                        form.theme = v;
+                        console.log(v);
+                        themeValue = "random";
+                    }
+                }}
+                value={themeValue}
                 class="w-40"
             >
                 <option value="tourist_attraction">Tourism</option>
                 <option value="restaurant">Food</option>
                 <option value="store">Shopping</option>
                 <option value="museum">Museum</option>
+                <option value="random">Random</option>
             </select>
         </div>
         <div

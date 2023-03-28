@@ -12,3 +12,15 @@ export const createGame = async() => {
         return null;
     }
 };
+
+export const getThemeList = async() => {
+    try {
+        const res = await axios.get(
+            PUBLIC_BACKEND_API + 'group/get-theme-list'
+        );
+        return res.data;
+    } catch (err) {
+        console.log(err);
+        return null;
+    }
+};
