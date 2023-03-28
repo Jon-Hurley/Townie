@@ -169,7 +169,7 @@ def truncateGame(settings, gameKey):
     unused_itinerary = []
     while settings['desiredCompletionTime'] * 60 < game1[0]['trueCompletionTime']:
         removed_dest = itinerary.pop()
-        queries.re
+        queries.removeItinerary(removed_dest)
         total_time -= removed_dest['timeToCompletion']
         unused_itinerary.append(itinerary.pop())
     queries.insertIntoUnusedItinerary(unused_itinerary, gameKey, len(itinerary))
