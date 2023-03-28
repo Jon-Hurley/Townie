@@ -6,7 +6,7 @@
     const title = "text-gray-700 font-semibold text-lg mt-6";
     const hr = "my-2 bg-gray-100 h-[2px]";
 
-    export let user;
+    export let user, reloadUser;
 
     let messageObj = {
         status: 0,
@@ -21,10 +21,9 @@
                 status: 0,
                 message: errorMessage
             };
-        } else {
-            user.friendship[0].status = true;
-            user = user;
+            return;
         }
+        reloadUser();
     };
 
     const _rejectFriend = async() => {
@@ -34,10 +33,9 @@
                 status: 0,
                 message: errorMessage
             };
-        } else {
-            user.friendship = [];
-            user = user;
+            return;
         }
+        reloadUser();
     };
 
     const _sendFriendRequest = async() => {
@@ -47,16 +45,9 @@
                 status: 0,
                 message: res.errorMessage
             };
-        } else {
-            user.friendship = [
-                {
-                    key: res.key,
-                    status: false,
-                    inbound: false
-                }
-            ];
-            user = user;
+            return;
         }
+        reloadUser();
     };
 </script>
 

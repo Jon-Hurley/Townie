@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { PUBLIC_BACKEND_API } from '$env/static/public';
 import { get } from 'svelte/store';
-import { userStore } from './../stores'
+import { userStore } from './../stores';
 
 export const login = async(username, password, remember) => {
     try {
@@ -124,7 +124,7 @@ export const updateAccount = async (password, newUsername, newPhone) => {
                 newPhone                
             }
         );
-        userStore.set(res.data)
+        userStore.set(res.data);
         return null;
     } catch (err) {
         return err?.response?.data?.errorMessage
@@ -141,6 +141,7 @@ export const initiatePasswordReset = async (phone) => {
                 token: get(userStore).token
             }
         );
+        updateAccessToken(res);
         return null;
     } catch (err) {
         return err?.response?.data?.errorMessage
@@ -159,7 +160,7 @@ export const completePasswordReset = async (phone, otp, newPassword) => {
                 token: get(userStore).token,
             }
         );
-        console.log(res);
+        userStore.set(res.data);
         return null;
     } catch (err) {
         return err?.response?.data?.errorMessage

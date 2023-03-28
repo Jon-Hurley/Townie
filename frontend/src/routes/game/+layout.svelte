@@ -1,26 +1,31 @@
 <script>
-    import { goto } from '$app/navigation';
-	import { Game } from '../../classes/Game';
-    import { page } from '$app/stores';
-    import { browser } from '$app/environment'; 
-	import Modal from '../../general-components/modal.svelte';
+    import { Game } from '../../classes/Game';
+    import Modal from '../../general-components/modal.svelte';
+	import Join from './join/join.svelte';
+	import Lobby from './lobby/lobby.svelte';
     
     let gameStore = Game.store;
     let gameMessageObj = Game.messageObj;
-    console.log({gameMessageObj})
 
-    $: if (browser) {
-        console.log("RUNNING")
-        const currPage = $page.path;
-        const targetPage = '/game/' + ($gameStore?.game?.page || 'join');
-        if (currPage !== targetPage) {
-            goto(targetPage);
-        }
-    }
+    $: gamePage = $gameStore?.game?.page || 'join';
 </script>
 
 <Modal
 	{...$gameMessageObj}
 />
 
-<slot/>
+{#if gamePage === 'join'}
+    <slot name="join">
+        <Join/>
+    </slot>
+{:else if gamePage === 'lobby'}
+    <slot name="lobby">
+        <Lobby/>
+    </slot>
+{:else if gamePage === 'game'}
+    <slot name="game">
+        <Game/>
+    </slot>
+{:else if gamePage === 'summary'}
+    <slot name="summary"/>
+{/if}

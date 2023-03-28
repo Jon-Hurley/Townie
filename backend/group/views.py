@@ -3,6 +3,7 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 import group.queries as queries
 from ws_con import propogateUpdates, forceDisconnect
+import util
 
 # CONNECT: JOIN GAME
 
@@ -105,9 +106,18 @@ def propogateAllUpdates(gameKey=None, conExcl={}, data=None):
 
 @csrf_exempt
 def createGame(request):
+    data = json.loads(request.body)
+
+    user, newToken = util.getUserFromToken(data['token'])
+    if user is None:
+        return util.returnError('Invalid token', 401)
+    
     res = queries.createGame().batch()[0]
     print(res)
-    return JsonResponse({'key': res['_key']})
+    return JsonResponse({
+        'key': res['_key'],
+        'token': newToken
+    })
 
 # GET REQUEST: GET GAME DATA
 

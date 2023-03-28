@@ -1,17 +1,20 @@
 import axios from 'axios';
 import { PUBLIC_BACKEND_API } from '$env/static/public';
 import { get } from 'svelte/store';
-import { userStore } from '../stores';
+import { updateAccessToken, userStore } from '../stores';
 
 export const getFriends = async() => {
     try {
+        const body = {
+            key: get(userStore).key,
+            token: get(userStore).token
+        }
+        console.log(body)
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'user/friends/',
-            {
-                key: get(userStore).key,
-                token: get(userStore).token
-            }
+            body
         );
+        updateAccessToken(res);
         console.log(res);
         return res.data.friends || [];        
     } catch (err) {
@@ -30,6 +33,7 @@ export const sendFriendRequest = async(toKey) => {
                 token: get(userStore).token
             }
         );
+        updateAccessToken(res);
         console.log("res: ", res.data)
         return res.data;
     } catch (err) {
@@ -47,6 +51,7 @@ export const acceptFriend = async(friendshipKey) => {
                 token: get(userStore).token
             }
         );
+        updateAccessToken(res);
         return null;
     } catch (err) {
         console.log(err);
@@ -60,13 +65,16 @@ export const acceptFriend = async(friendshipKey) => {
 //      reject a friend request
 export const rejectFriend = async(friendshipKey) => {
     try {
+        const body = {
+            key: friendshipKey,
+            token: get(userStore).token
+        };
+        console.log(body)
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'user/reject-friend/',
-            {
-                key: friendshipKey,
-                token: get(userStore).token
-            }
+            body
         );
+        updateAccessToken(res);
         return null;
     } catch (err) {
         console.log(err);
@@ -97,6 +105,7 @@ export const loadNotifications = async() => {
                 }
             )
         ]);
+        updateAccessToken(res);
         const notifs = [
             ...processPending(pendingRes)
         ];

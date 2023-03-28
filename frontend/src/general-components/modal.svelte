@@ -1,5 +1,8 @@
 <script>
     import { goto } from '$app/navigation';
+	import { logout } from '../requests/account';
+	import User from '../routes/user/[slug]/user.svelte';
+	import { userStore } from '../stores';
     export let status, message, dest;
     console.log(status, message, dest);
 </script>
@@ -29,6 +32,9 @@
                         <button 
                             id="ok-btn"
                             on:click={() => {
+                                if (message.includes("Invalid access token")) {
+                                    logout();
+                                }
                                 message = null;
                             }}
                             class="px-4 py-2 border border-red-600 text-red-600 text-base font-medium rounded-md w-full shadow-sm bg-red-100 hover:border-red-800 hover:bg-red-400 focus:outline-none focus:ring-2 focus:ring-red-400"

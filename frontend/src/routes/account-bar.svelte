@@ -60,10 +60,9 @@
     "
 >
 	{#each pages as { page, tooltip, svg, text, styles }}
-		{#if page}
-			<button
-				type="button"
-				class="
+        <button
+            type="button"
+            class="
                 rounded-full
                 hover:text-indigo-500
                 transition-colors duration-500
@@ -71,39 +70,38 @@
                 flex items-center
                 {styles}
             "
-				data-bs-toggle="tooltip"
-				data-bs-placement="top"
-				title={tooltip}
-				on:click={() => {
-					if (page === '/login') {
-						_logout();
-						return;
-					}
-					if (page === '/game/join') {
-						_leaveGame();
-						return;
-					}
-					goto(page);
-				}}
-			>
-				<svg
-					class="h-8 w-8"
-					xmlns="http://www.w3.org/2000/svg"
-					fill="none"
-					viewBox="0 0 24 24"
-					stroke-width="1.5"
-					stroke="currentColor"
-					transform="scale(-1,1)"
-				>
-					<path d={svg} />
-				</svg>
+            data-bs-toggle="tooltip"
+            data-bs-placement="top"
+            title={tooltip}
+            on:click={() => {
+                if (page === '/login') {
+                    _logout();
+                    return;
+                }
+                if (page === '/game/join') {
+                    _leaveGame();
+                    return;
+                }
+                goto(page);
+            }}
+        >
+            <svg
+                class="h-8 w-8"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                transform="scale(-1,1)"
+            >
+                <path d={svg} />
+            </svg>
 
-				{#if text}
-					<div class="ml-4 text-xl font">
-						{text}
-					</div>
-				{/if}
-			</button>
-		{/if}
+            {#if text}
+                <div class="ml-4 text-xl font">
+                    {text}
+                </div>
+            {/if}
+        </button>
 	{/each}
 </nav>

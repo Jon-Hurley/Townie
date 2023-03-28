@@ -7,10 +7,12 @@
 
     let user;
 
-    onMount(async() => {
+    const loadUser = async() => {
         const key = $page.params.slug;
         user = await getUser(key);
-    });
+    }
+
+    onMount(loadUser);
 </script>
 
 {#if user}
@@ -19,6 +21,7 @@
     >
         <User
             user={user}
+            reloadUser={loadUser}
         />
     </div>
 {:else}
