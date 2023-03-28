@@ -75,8 +75,12 @@ def generate(settings, gameKey):
     lengthToUse = len(list)
     if lengthToUse > 10:
         lengthToUse = 10
-    while len(locationList) > lengthToUse:
+    unusedList = []
+    for i in range(len(locationList) - lengthToUse):
         locationList.pop()
+        unusedList.append(list[i])
+    
+    queries.insertIntoUnusedItinerary(unusedList, gameKey, len(locationList))
     
     min_times = []
     distances = gmaps.distance_matrix(locationList, locationList, mode, None, None, "imperial")
@@ -105,3 +109,9 @@ def generate(settings, gameKey):
     print(listDict)
     queries.insertIntoItinerary(listDict, gameKey)
     return total_time
+
+# @csrf_exempt
+# def extendGame(settings, gameKey):
+    
+# @csrf_exempt
+# def truncateGame(settings, gameKey):

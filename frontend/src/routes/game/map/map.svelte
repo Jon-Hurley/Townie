@@ -67,9 +67,6 @@
     class="full-screen"
     bind:this={Map.container}
 />
-<div>
-    <Settings/>
-</div>
 
 <style>
     .full-screen {

@@ -18,6 +18,7 @@ if not db.has_collection('User'):
     db.create_collection('Friends', edge=True)
     db.create_collection('Players', edge=True)
     db.create_collection('Itineraries', edge=True)
+    db.create_collection('UnusedItineraries', edge=True)
 
     userCollection = db.collection('User')
     friendsCollection = db.collection('Friends')
@@ -25,6 +26,7 @@ if not db.has_collection('User'):
     playerCollection = db.collection('Players')
     destinationCollection = db.collection('Destinations')
     itineraryCollection = db.collection('Itineraries')
+    unusedItineraryCollection = db.collection('UnusedItineraries')
 
     userCollection.add_persistent_index(
         fields=['username'],
@@ -73,6 +75,16 @@ if not db.has_collection('User'):
         unique=True,
         sparse=True
     )
+    unusedItineraryCollection.add_persistent_index(
+        fields=['_from', 'index'],
+        unique=True,
+        sparse=True
+    )
+    unusedItineraryCollection.add_persistent_index(
+        fields=['_from', '_to'],
+        unique=True,
+        sparse=True
+    )
 
 userCollection = db.collection('User')
 friendsCollection = db.collection('Friends')
@@ -80,3 +92,4 @@ gameCollection = db.collection('Games')
 playerCollection = db.collection('Players')
 destinationCollection = db.collection('Destinations')
 itineraryCollection = db.collection('Itineraries')
+unusedItineraryCollection = db.collection('UnusedItineraries')

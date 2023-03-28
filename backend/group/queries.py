@@ -273,3 +273,41 @@ def insertIntoItinerary(listDict, gameKey):
                 'time': listDict['Destinations'][i]['time']
             }
         )
+
+def insertIntoUnusedItinerary(listDict, gameKey, index):
+    for i in range(len(listDict)):
+        searcher = dict(name=listDict[i]['name'])
+        destination = arango_con.destinationCollection.find(searcher)
+        destination1 = [doc for doc in destination]
+        arango_con.db.aql.execute(
+            """
+        UPSERT {
+            _from: @gameKey,
+            _to: @DestKey,
+            index: @index,
+            points: @points,
+        }
+        INSERT {
+            _from: @gameKey,
+            _to: @DestKey,
+            index: @index,
+            points: @points,
+        }
+        UPDATE {
+            _from: @gameKey,
+            _to: @DestKey,
+            index: @index,
+            points: @points,
+        }
+        IN UnusedItineraries
+        RETURN {
+            oldDoc: OLD
+        }
+        """,
+            bind_vars={
+                'gameKey': "Games/" + str(gameKey),
+                'DestKey': destination1[0]['_id'],
+                'index': index + i,
+                'points': 11,
+            }
+        )
