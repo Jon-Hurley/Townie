@@ -229,3 +229,17 @@ def completePasswordReset(request):
         return returnError("Invalid user key.", 500)
 
     return JsonResponse({})
+
+
+@csrf_exempt
+def getRating(request):
+    data = json.loads(request.body)
+    theme = data['theme']
+    try:
+        res = queries.getRating(theme).batch()[0]
+    except:
+        return returnError("Invalid theme.", 400)
+    return JsonResponse({
+        "rating": res['rating'],
+        "numRatings": res['numRatings'],
+    })

@@ -20,4 +20,6 @@ urlpatterns = [
     path('accept-friend/', friend.acceptFriend),
     path('reject-friend/', friend.rejectFriend),
     path('request-friend/', friend.requestFriend),
+
+    path('rating/', account.getRating),
 ]
