@@ -4,6 +4,7 @@
 	//import Layout from '../../account/[slug]/edit/';
 	import { deleteUser, logout } from '../../requests/account';
     import { userStore } from '../../stores';
+	import { buttonStyle, blueStyle } from '../../css';
     const title = "text-gray-700 font-semibold text-lg mt-6";
     const hr = "my-2 bg-gray-100 h-[2px]";
 
@@ -99,6 +100,14 @@
     <div class="px-2 py-4 uppercase">
         {$userStore.rank}
     </div>
+
+	<div>
+		<a href='/account/game_log'>
+			<button class="{buttonStyle} {blueStyle}">
+				Go to Game Logs  
+			</button>
+		</a>
+	</div>
         
     {#if popupOpen}
             <!--deleteUser popup-->

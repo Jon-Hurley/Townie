@@ -1,6 +1,8 @@
 import { writable, get } from 'svelte/store';
 import { userStore } from './stores.js';
 import { PUBLIC_BACKEND_WS } from '$env/static/public';
+import { Map } from './Map.js';
+import { Location } from './Location.js';
 
 export class Game {
     static store = writable();
@@ -20,7 +22,24 @@ export class Game {
             switch (res.method) {
                 case 'get-game':
                 case 'update-game': {
+                    console.log("In game.js update game")
+                    console.log(res.data.players[0].destinationIndex)
                     Game.store.set(res.data);
+
+                    console.log(Map.map)
+
+                    if (Map.map) {
+
+                        console.log("We zoomin")
+
+                        Map.generateUserMarker();
+    	                Map.generateDestinationCircle();
+                        Map.generatePlayerMarkers();
+
+                        Map.setZoomAndCenter();
+                    }
+
+                    console.log(get(Game.store));
                     return;
                 }
                 default: {
@@ -56,12 +75,17 @@ export class Game {
 
     static async join(gameKey) {
         try {
-            const userKey = get(userStore).key;
-            Game.ws = new WebSocket(`${PUBLIC_BACKEND_WS}?gameKey=${gameKey}&userKey=${userKey}`);
+            const userLocation = await Location.getCurrentLocation();
+            const user = get(userStore);
+            const userKey = user.key;
+            user.token = "123";
+            Game.ws = new WebSocket(`${PUBLIC_BACKEND_WS}?gameKey=${gameKey}&token=${user.token}
+                                    &lat=${userLocation.coords.latitude}&lon=${userLocation.coords.longitude}`);
             await new Promise((res, rej) => { 
                 Game.ws.onerror = () => rej();
                 Game.ws.onopen = () => res();
             });
+
     
             Game.send('get-game', { gameKey });
             const res = await new Promise((res, rej) => { 
@@ -150,5 +174,18 @@ export class Game {
 
     static getPage() {
         return get(Game.store)?.game?.page || 'join'
+    }
+
+    static getPlayer(username) {
+        console.log("This is the game store")
+        console.log(get(Game.store))
+        /** @type {Array} */
+        let pps = get(Game.store)?.players;
+
+        return pps.find(pp => pp.username === username);
+    }
+
+    static getPlayers() {
+        return get(Game.store)?.players;
     }
 };

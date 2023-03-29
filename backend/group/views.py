@@ -10,12 +10,16 @@ def onConnect(request):
     # load input
     body = json.loads(request.body)
     gameKey = body['gameKey']
-    userKey = body['userKey']
+    token = body['token']
     connectionId = body['connectionId']
-    print(gameKey, userKey, connectionId)
+    lat = body['lat']
+    lon = body['lon']
+    print(gameKey, connectionId, lat, lon)
+
+    userKey = "10010279"
 
     # add user to game, canceling their previous connection if left open
-    res = queries.addPlayer(gameKey, userKey, connectionId)
+    res = queries.addPlayer(gameKey, userKey, connectionId, lat, lon)
     oldDoc = res.batch()[0]['oldDoc']
     if oldDoc:
         forceDisconnect(oldDoc['connectionId'])
@@ -63,6 +67,7 @@ def onDefault(request):
     if method == 'update-settings':
         gameKey = body['gameKey']
         settings = body['settings']
+
         print(gameKey, settings)
         res = queries.updateGameSettings(gameKey, settings)
         print(res)
@@ -113,3 +118,8 @@ def createGame(request):
     res = queries.createGame().batch()[0]
     print(res)
     return JsonResponse({'key': res['_key']})
+
+def getThemeList(request):
+    res = queries.getThemeList().batch()
+    print(res)
+    return JsonResponse({ 'themes': list(res) })

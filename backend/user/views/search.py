@@ -14,3 +14,10 @@ def getUser(request, key):
     userKey = json.loads(request.body)['key']
     res = queries.getUserWithFriendship(userKey, targetKey=key).batch()[0]
     return JsonResponse(res)
+
+@csrf_exempt
+def getGameLog(request):
+    userKey = json.loads(request.body)['key']
+    res = queries.getGameLog(userKey).batch()
+    print(res)
+    return JsonResponse({ 'games': list(res) })

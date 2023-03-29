@@ -11,7 +11,8 @@ def createUser(username, passwordHash, phoneNumber):
             'rank': 'beginner',
             'purchases': [],
             'weekly_game_played': False,
-            'next_available_game': int(time.time())
+            'next_available_game': int(time.time()),
+            'hidingState': True
         },
         return_new=True
     )
@@ -21,7 +22,7 @@ def getUserByUsername(username):
         'username': username
     })
 
-def updateInfo(userKey, passwordHash, newUsername, newPhone, newPasswordHash):
+def updateInfo(userKey, passwordHash, newUsername, newPhone, newPasswordHash, newHidingState):
     return arango_con.db.aql.execute(
         """
         FOR user IN User
@@ -31,7 +32,8 @@ def updateInfo(userKey, passwordHash, newUsername, newPhone, newPasswordHash):
                 _key: @userKey,
                 username: @newUsername,
                 phone: @newPhone,
-                passwordHash: @newPasswordHash
+                passwordHash: @newPasswordHash,
+                hidingState: @newHidingState
             } IN User
             
             RETURN NEW
@@ -41,7 +43,8 @@ def updateInfo(userKey, passwordHash, newUsername, newPhone, newPasswordHash):
             'userKey': userKey,
             'newUsername': newUsername,
             'newPhone': newPhone,
-            'newPasswordHash': newPasswordHash
+            'newPasswordHash': newPasswordHash,
+            'newHidingState': newHidingState
         }
     )
 
@@ -283,4 +286,21 @@ def rejectFriendRequest(friendshipKey):
         } 
         """,
         bind_vars={'key': friendshipKey}
+    )
+
+def getGameLog(userKey):
+    print(userKey)
+    return arango_con.db.aql.execute(
+        """
+        FOR game IN PastGames
+        LET x = POSITION(game.playerKeys, @key, true)
+        FILTER x != -1
+        RETURN {
+            totalDestinations: game.totalDestinations,
+            destinationsCompleted: game.destinationsCompleted,
+            timeSpent: game.timeSpent,
+            points: game.points
+        }
+        """,
+        bind_vars={'key': int(userKey)}
     )

@@ -27,7 +27,7 @@ def createGame():
         """
     )
 
-def addPlayer(gameKey, userKey, connectionId):
+def addPlayer(gameKey, userKey, connectionId, lat, lon):
     return arango_con.db.aql.execute(
         """
             UPSERT {
@@ -40,8 +40,8 @@ def addPlayer(gameKey, userKey, connectionId):
                 destinationIndex: 0,
                 dist: 0,
                 points: 0,
-                lon: 0,
-                lat: 0,
+                lon: @lon,
+                lat: @lat,
                 totalDist: 0
             }
             UPDATE {
@@ -56,7 +56,9 @@ def addPlayer(gameKey, userKey, connectionId):
         bind_vars={
             'gameKey': str(gameKey),
             'userKey': str(userKey),
-            'connectionId': str(connectionId)
+            'connectionId': str(connectionId),
+            'lat': float(lat),
+            'lon': float(lon)
         }
     )
 
@@ -188,7 +190,9 @@ def getGame(gameKey):
                         username: v.username,
                         connectionId: e.connectionId,
                         lon: e.lon,
-                        lat: e.lat
+                        lat: e.lat,
+                        hidingState: v.hidingState,
+                        destinationIndex: e.destinationIndex
                     }
             )
 
@@ -431,4 +435,14 @@ def getItinerary(gameKey):
         bind_vars={
             'key': str(gameKey),
         }
+    )
+def getThemeList():
+    return arango_con.db.aql.execute(
+        """
+        FOR theme IN Themes
+            SORT theme.rating DESC
+            RETURN {
+                'theme': theme.name
+            }
+        """
     )
