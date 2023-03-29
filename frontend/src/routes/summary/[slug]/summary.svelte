@@ -167,13 +167,15 @@
 	/>
 </div>
 <hr class={hr} />
+
 {#if userInGame}
-	<div />{/if}
+	<div />
+{/if}
 
 <div class={title}>How many finished?</div>
 <hr class={hr} />
 <div class="px-2 py-4 uppercase">
-	{summary.players.filter(p => p.finished).length}
+	{summary.players.filter((p) => p.finished).length}
 	/
 	{summary.players.length}
 </div>
