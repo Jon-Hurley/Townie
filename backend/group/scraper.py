@@ -33,8 +33,8 @@ def generate(settings, gameKey):
     elif settings['transitAllowed']:
         mode = "transit"
     print(int(settings['radius']/0.000621371))
-    #place_info = json.dumps(gmaps.places(None, (settings['lat'], settings['lon']),  int(settings['radius']/0.000621371), None, None, settings['budget'], False, settings['theme'], None, None))
-    place_info = json.dumps(gmaps.places_nearby((settings['lat'], settings['lon']),  int(settings['radius']/0.000621371), None, None, None, settings['budget'], None, False, None, settings['theme'], None))
+    place_info = json.dumps(gmaps.places(None, (settings['lat'], settings['lon']),  int(settings['radius']/0.000621371), None, None, settings['budget'], False, settings['theme'], None, None))
+    #place_info = json.dumps(gmaps.places_nearby((settings['lat'], settings['lon']),  int(settings['radius']/0.000621371), None, None, None, settings['budget'], None, False, None, settings['theme'], None))
     print(place_info)
     place3 = json.loads(place_info)
     for i in range(len(place3['results'])): #used to be len(place3['results'])
@@ -51,7 +51,7 @@ def generate(settings, gameKey):
             list.append(destination)
     
     radius = float(settings['radius'])
-    list2 = queries.getNearbyDestinations(settings['lat'], settings['lon'], radius)
+    list2 = queries.getNearbyDestinations(settings['lat'], settings['lon'], radius/0.000621371)
     dblist = [doc for doc in list2]
     for i in range(len(dblist)): #used to be len(dblist)
         thing = dblist[i]
@@ -59,11 +59,11 @@ def generate(settings, gameKey):
         lat = float(thing['latitude'])
         lng = float(thing['longitude'])
         new_loc = dict(name=name, location=[lat, lng])
-        new_name = False
+        new_name = True
         for j in range(len(list)):
             if new_loc['name'] == list[j]['name']:
-                new_loc = False
-        if not new_name:
+                new_name = False
+        if new_name:
             list.append(new_loc)
     if len(list) == 0:
         print("No destinations were found")
@@ -80,12 +80,10 @@ def generate(settings, gameKey):
     if lengthToUse > 10:
         lengthToUse = 10
     unusedList = []
-    print(locationList)
     for i in range(len(locationList) - lengthToUse):
         locationList.pop()
         unusedList.append(list_copy.pop())
-    
-    queries.insertIntoUnusedItinerary(unusedList, gameKey, len(locationList))
+    queries.insertIntoUnusedItinerary(unusedList, gameKey)
     
     min_times = []
     distances = gmaps.distance_matrix(locationList, locationList, mode, None, None, "imperial")
@@ -112,7 +110,6 @@ def generate(settings, gameKey):
         total_time = total_time - temp['time']
     
     listDict = dict(Destinations=orderedList, trueCompletionTime=total_time)
-    print(listDict)
     queries.insertIntoItinerary(listDict, gameKey)
     return total_time
 
@@ -191,14 +188,13 @@ def truncateGame(settings, gameKey):
     itinerary = queries.getItinerary(gameKey)
     itinerary1 = [doc for doc in itinerary]
     actual_itinerary = itinerary1[0]
-    print(actual_itinerary)
     unused_itinerary = []
     while settings['desiredCompletionTime'] * 60 < total_time:
-        removed_dest = actual_itinerary['destinations'].pop()
+        removed_dest = actual_itinerary['destinations'].pop(0)
         print("removed dest: " + str(removed_dest))
         queries.removeItinerary(removed_dest, gameKey)
         total_time -= removed_dest['timeToCompletion']
         unused_itinerary.append(removed_dest)
-    queries.insertIntoUnusedItinerary(unused_itinerary, gameKey, len(actual_itinerary))
+    queries.insertIntoUnusedItinerary(unused_itinerary, gameKey)
     return total_time
     

@@ -233,8 +233,19 @@ def createDestination(lat, lng, name, theme):
         pass
 
 def getNearbyDestinations(lat, lng, radius):
-    #technially deprecated
-    return arango_con.destinationCollection.find_in_radius(lat, lng, radius/0.000621371)
+    return arango_con.db.aql.execute(
+        """
+        FOR x IN Destinations
+            FILTER GEO_DISTANCE([@lat, @lng], [x.latitude, x.longitude]) <= @radius
+            FILTER GEO_DISTANCE([@lat, @lng], [x.latitude, x.longitude]) >= 100
+            RETURN x
+        """,
+        bind_vars={
+            'lat': lat,
+            'lng': lng,
+            'radius': radius
+        }
+    )
 
 def insertIntoItinerary(listDict, gameKey):
     for i in range(len(listDict['Destinations'])):
@@ -320,7 +331,7 @@ def insertIntoNewItinerary(listDict, gameKey, index):
             }
         )
 
-def insertIntoUnusedItinerary(listDict, gameKey, index):
+def insertIntoUnusedItinerary(listDict, gameKey):
     for i in range(len(listDict)):
         searcher = dict(name=listDict[i]['name'])
         destination = arango_con.destinationCollection.find(searcher)
@@ -330,19 +341,16 @@ def insertIntoUnusedItinerary(listDict, gameKey, index):
         UPSERT {
             _from: @gameKey,
             _to: @DestKey,
-            index: @index,
             points: @points,
         }
         INSERT {
             _from: @gameKey,
             _to: @DestKey,
-            index: @index,
             points: @points,
         }
         UPDATE {
             _from: @gameKey,
             _to: @DestKey,
-            index: @index,
             points: @points,
         }
         IN UnusedItineraries
@@ -353,7 +361,6 @@ def insertIntoUnusedItinerary(listDict, gameKey, index):
             bind_vars={
                 'gameKey': "Games/" + str(gameKey),
                 'DestKey': destination1[0]['_id'],
-                'index': index + i,
                 'points': 11,
             }
         )
@@ -377,7 +384,7 @@ def findPlayers(gameKey):
     return players1
 
 def removeUnusedItinerary(itinerary, gameKey):
-    old_itinerary = arango_con.unusedItineraryCollection.delete_match(dict(name=itinerary['name'], _from="Games/" + str(gameKey)))
+    old_itinerary = arango_con.unusedItineraryCollection.delete_match(dict(_to=itinerary['_id'], _from="Games/" + str(gameKey)))
 
 # def getHighestIndex(gameKey):
 #     game = arango_con.gameCollection.find(dict(_id=("Games/" + str(gameKey))))
