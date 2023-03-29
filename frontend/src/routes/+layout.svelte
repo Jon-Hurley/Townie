@@ -5,11 +5,12 @@
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
     
-	import { mapStore, userStore } from '../stores';
+	import { mapStore, popupQueue, userStore } from '../stores';
     import { autoLogin } from '../requests/account';
     import Navbar from './navbar.svelte';
     import AccountBar from './account-bar.svelte';
 	import Loading from '../general-components/loading.svelte';
+	import Modal from '../general-components/modal.svelte';
 
 	let mounted = false;
 	mapStore.set(false);
@@ -72,4 +73,10 @@
     </div>
 {:else}
     <Loading/>
+{/if}
+
+{#if $popupQueue.length}
+    <Modal
+        {...$popupQueue[0]}
+    />
 {/if}

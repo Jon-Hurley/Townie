@@ -9,6 +9,7 @@
     let loading = true;
     
     onMount(async() => {
+        if (!$userStore) return;
         friends = await getFriends($userStore.key);
         loading = false;
     });

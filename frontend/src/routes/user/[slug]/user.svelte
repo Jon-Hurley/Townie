@@ -2,59 +2,26 @@
 	import { acceptFriend, rejectFriend, sendFriendRequest } from "../../../requests/friend";
 	import { userStore } from "../../../stores";
     import { buttonStyle, redStyle, greenStyle, blueStyle, indigoStyle } from '../../../css'
-	import Modal from "../../../general-components/modal.svelte";
-    const title = "text-gray-700 font-semibold text-lg mt-6";
+	const title = "text-gray-700 font-semibold text-lg mt-6";
     const hr = "my-2 bg-gray-100 h-[2px]";
 
     export let user, reloadUser;
 
-    let messageObj = {
-        status: 0,
-        message: null,
-        dest: null
-    };
-
     const _acceptFriend = async() => {
-        const errorMessage = await acceptFriend(user.friendship[0].key);
-        if (errorMessage) {
-            messageObj = {
-                status: 0,
-                message: errorMessage
-            };
-            return;
-        }
+        const success = await acceptFriend(user.friendship[0].key);
         reloadUser();
     };
 
     const _rejectFriend = async() => {
-        const errorMessage = await rejectFriend(user.friendship[0].key);
-        if (errorMessage) {
-            messageObj = {
-                status: 0,
-                message: errorMessage
-            };
-            return;
-        }
+        const success = await rejectFriend(user.friendship[0].key);
         reloadUser();
     };
 
     const _sendFriendRequest = async() => {
         const res = await sendFriendRequest(user.key);
-        if (res.errorMessage) {
-            messageObj = {
-                status: 0,
-                message: res.errorMessage
-            };
-            return;
-        }
         reloadUser();
     };
 </script>
-
-
-<Modal
-    {...messageObj}
-/>
 
 <div class="my-5 w-full">
     <div class="text-gray-700 font-bold text-3xl text-center">
@@ -64,7 +31,6 @@
         #{user.key}
     </div>
 </div>
-
 
 {#if user.key !== $userStore.key}
     <div class="flex justify-center flex-wrap">

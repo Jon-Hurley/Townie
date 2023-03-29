@@ -1,5 +1,5 @@
 import { writable, get } from 'svelte/store';
-import { userStore } from '../stores.js';
+import { pushPopup, userStore } from '../stores.js';
 import { PUBLIC_BACKEND_WS } from '$env/static/public';
 
 export class Game {
@@ -7,11 +7,6 @@ export class Game {
     /** @type {WebSocket} */
     static ws = undefined;
     static interval = undefined;
-    static messageObj = writable({
-        status: 0,
-        message: null,
-        dest: null
-    });
 
     static send(method, data) {
         const objStr = JSON.stringify({ method, ...data });
@@ -37,21 +32,13 @@ export class Game {
 
             } catch (err) {
                 console.log("WS ERROR:", m, err);
-                Game.messageObj.set({
-                    status: 0,
-                    message: "Invalid response. Please try again later.",
-                    dest: null
-                });
+                pushPopup(0, "Invalid response. Please try again later.");
                 return;
             }        
         };
         Game.ws.onerror = (e) => {
             console.log("WS ERROR:", e);
-            Game.messageObj.set({
-                status: 0,
-                message: "Connections error. Please try again later.",
-                dest: null
-            });
+            pushPopup(0, "Connections error. Please try again later.");
         }
         Game.ws.onclose = () => {
             Game.ws = undefined;
@@ -105,11 +92,7 @@ export class Game {
             Game.ws?.close();
             Game.ws = undefined;
             Game.store.set(null);
-            Game.messageObj.set({
-                status: 0,
-                message: "Unable to connect to lobby. Please try again.",
-                dest: null
-            });
+            pushPopup(0, "Unable to connect to lobby. Please try again.");
         }
     }
 

@@ -1,9 +1,10 @@
 import axios from 'axios';
 import { PUBLIC_BACKEND_API } from '$env/static/public';
 import { get } from 'svelte/store';
-import { userStore } from './../stores';
+import { pushPopup, updateAccessToken, userStore } from './../stores';
+import { goto } from '$app/navigation';
 
-export const login = async(username, password, remember) => {
+export const login = async(username, password, remember, silent) => {
     try {
         console.log(username, password, remember);
         const res = await axios.post(
@@ -13,8 +14,12 @@ export const login = async(username, password, remember) => {
                 username
             }
         );
-        sessionStorage.setItem('username', username);
-        sessionStorage.setItem('password', password);
+
+        userStore.subscribe((user) => {
+            if (user?.token) {
+                sessionStorage.setItem('token', user.token);
+            }
+        });
         if (remember) {
 			localStorage.setItem('username', username);
 			localStorage.setItem('password', password);
@@ -25,11 +30,12 @@ export const login = async(username, password, remember) => {
         }
 
         userStore.set(res.data);
-        return null;
+        return true;
     } catch (err) {
-        console.log(err)
-        return err?.response?.data?.errorMessage
-            || 'Connection Refused. Failed to login user. Please try again.';
+        const err_message = err?.response?.data?.errorMessage
+                            || 'Connection Refused. Failed to update user. Please try again.';
+        if (!silent) pushPopup(0, err_message);
+        return false;
     }
 };
 
@@ -61,18 +67,25 @@ export const autoLogin = async() => {
 };
 
 export const sessionLogin = async() => {
-    const username = sessionStorage.getItem('username');
-    const password = sessionStorage.getItem('password');
-    if (!username || !password) {
+    const token = sessionStorage.getItem('token');
+    if (!token) {
         return false;
     }
-    const errorMessage = await login(username, password);
-    if (errorMessage) {
-        sessionStorage.removeItem('username');
-        sessionStorage.removeItem('password');
+
+    try {
+        const res = await axios.post(
+            PUBLIC_BACKEND_API + 'user/token-login/',
+            {
+                token
+            }
+        );
+        userStore.set(res.data);
+        sessionStorage.setItem('token', res.data.token);
+        return true;
+    } catch (err) {
+        sessionStorage.removeItem('token');
         return false;
     }
-    return true;
 }
 
 export const localLogin = async() => {
@@ -81,7 +94,7 @@ export const localLogin = async() => {
     if (!username || !password) {
         return false;
     }
-    const errorMessage = await login(username, password);
+    const errorMessage = await login(username, password, false, slient=true);
     if (errorMessage) {
         localStorage.removeItem('username');
         localStorage.removeItem('password');
@@ -105,10 +118,12 @@ export const signup = async (phone, username) => {
                 username
             }
         );
-        return null;
+        return true;
     } catch (err) {
-        return err?.response?.data?.errorMessage
-            || 'Connection Refused. User registration failed. Please try again.';
+        const err_message = err?.response?.data?.errorMessage
+                            || 'Connection Refused. Failed to update user. Please try again.';
+        pushPopup(0, err_message);
+        return false;
     }
 };
 
@@ -124,34 +139,37 @@ export const verifySignup = async (username, password, phone, otp) => {
             }
         );
         userStore.set(res.data);
-        return null;
+        pushPopup(1, 'You have successfully created your account!');
+        return true;
     } catch (err) {
-        return err?.response?.data?.errorMessage
-            || 'Incorrect OTP. Please try again.';
+        const err_message = err?.response?.data?.errorMessage
+                            || 'Connection Refused. Failed to update user. Please try again.';
+        pushPopup(0, err_message);
+        return false;
     }
 }
 
-export const updateAccount = async (password, newUsername, newPhone) => {
+export const updateAccount = async (password, newUsername, newPhone, newLogin2FA) => {
     try {
-        const user = get(userStore);
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'user/update/',
             {
-                key: user.key,
-                username: user.username,
-                passwordHash: user.passwordHash,
-                token: user.token,
-
+                token: get(userStore).token,
                 password,
                 newUsername,
-                newPhone                
+                newPhone,
+                newLogin2FA              
             }
         );
+        updateAccessToken(res);
         userStore.set(res.data);
-        return null;
+        pushPopup(1, "Account Updated Successfully!");
+        return true;
     } catch (err) {
-        return err?.response?.data?.errorMessage
-            || 'Connection Refused. Failed to update user. Please try again.';
+        const err_message = err?.response?.data?.errorMessage
+                            || 'Connection Refused. Failed to update user. Please try again.'
+        pushPopup(0, err_message);
+        return false;
     }
 };
 
@@ -160,15 +178,15 @@ export const initiatePasswordReset = async (phone) => {
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'user/initiate-password-reset/',
             {
-                phone,
-                token: get(userStore).token
+                phone
             }
         );
-        updateAccessToken(res);
-        return null;
+        return true;
     } catch (err) {
-        return err?.response?.data?.errorMessage
-            || 'Connection Refused. Failed to find user. Please try again.';
+        const err_message = err?.response?.data?.errorMessage
+                            || 'Connection Refused. Failed to update user. Please try again.'
+        pushPopup(0, err_message);
+        return false;
     }
 };
 
@@ -179,15 +197,20 @@ export const completePasswordReset = async (phone, otp, newPassword) => {
             {
                 "phone": phone,
                 "otp": otp,
-                "newPassword": newPassword,
-                token: get(userStore).token,
+                "newPassword": newPassword
             }
         );
         userStore.set(res.data);
-        return null;
+        pushPopup(
+            1, "Password Reset Successfully!",
+            () => goto('/login')
+        );
+        return true;
     } catch (err) {
-        return err?.response?.data?.errorMessage
-            || 'Connection Refused. Failed to update password. Please try again.';
+        const err_message = err?.response?.data?.errorMessage
+                            || 'Connection Refused. Failed to update user. Please try again.'
+        pushPopup(0, err_message);
+        return false;
     }
 };
 

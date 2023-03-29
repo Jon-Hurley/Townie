@@ -21,7 +21,9 @@
 	</div>
 {:else if summary === false}
 	<div class="h-full flex flex-col">
-		<h1 class="text-2xl mt-4 text-center text-gray-700">No game summary found.</h1>
+		<h1 class="text-2xl mt-4 text-center text-gray-700">
+			No game summary found.
+		</h1>
 	</div>
 {:else}
 	<Loading />

@@ -3,6 +3,7 @@ import { PUBLIC_BACKEND_API } from '$env/static/public';
 import { get } from 'svelte/store';
 import { updateAccessToken, userStore } from '../stores';
 
+// SILENT ERRORING
 export const getFriends = async() => {
     try {
         const body = {
@@ -37,8 +38,9 @@ export const sendFriendRequest = async(toKey) => {
         console.log("res: ", res.data)
         return res.data;
     } catch (err) {
-        console.log(err);
-        return {errorMessage: "Unable to send friend request. Please try again."};
+        const err_message = "Unable to send friend request. Please try again.";
+        pushPopup(0, err_message);
+        return false;
     }
 };
 
@@ -52,10 +54,12 @@ export const acceptFriend = async(friendshipKey) => {
             }
         );
         updateAccessToken(res);
-        return null;
+        return true;
     } catch (err) {
         console.log(err);
-        return "Unable to accept friend. Please try again.";
+        const err_message = "Unable to accept friend. Please try again.";
+        pushPopup(0, err_message);
+        return false;
     }
 };
 
@@ -75,10 +79,12 @@ export const rejectFriend = async(friendshipKey) => {
             body
         );
         updateAccessToken(res);
-        return null;
+        return true;
     } catch (err) {
         console.log(err);
-        return "Unable to remove or reject friend. Please try again.";
+        const err_message = "Unable to remove or reject friend. Please try again.";
+        pushPopup(0, err_message);
+        return false;
     }
 };
 
@@ -94,6 +100,7 @@ const processPending = (pendingRes) => {
     return pendingList;
 };
 
+// SILENT ERRORING
 export const loadNotifications = async() => {
     try {
         const [ pendingRes ] = await Promise.all([
@@ -105,11 +112,13 @@ export const loadNotifications = async() => {
                 }
             )
         ]);
-        updateAccessToken(res);
+        updateAccessToken(pendingRes);
+
         const notifs = [
             ...processPending(pendingRes)
         ];
         notifs.sort((a, b) => b.timestamp - a.timestamp);
+        
         return notifs;
     } catch (err) {
         console.log(err);

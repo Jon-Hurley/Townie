@@ -19,19 +19,15 @@
 		}
 
 		const res = await login(form.username, form.password, form.remember);
-		console.log({res})
 		if (res?.verifyToken) {
 			// 2FA. Need to verify
 			form.verifyToken = res.verifyToken;
 			return;
 		}
-		if (errorMessage) {
-			// Error
-			errorMessage = res;
-			return;
+		if (res) {
+			// SUCCESS
+			goto('/game');
 		}
-
-		goto('/game');
 	};
 
 	const verify = async () => {

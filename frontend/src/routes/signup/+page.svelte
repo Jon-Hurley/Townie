@@ -1,7 +1,6 @@
 <script>
-	import { goto } from '$app/navigation';
-	import Modal from '../../general-components/modal.svelte';
 	import { signup, verifySignup } from '../../requests/account';
+	import { pushPopup } from '../../stores';
 
 	let username = '';
 	let password = '';
@@ -9,38 +8,23 @@
 	let confirmPassword = '';
 	let otp = '';
 
-	let messageObj = {
-		status: 0,
-		message: null,
-		dest: null
-	};
-
 	let page = 0;
 	let confirmationPopup = false;
 
 	const confirm = async () => {
 		if (!password?.length || !username?.length || !phone?.length) {
-			messageObj = {
-				status: 0,
-				message: 'Missing inputs. Please try again.'
-			};
+			pushPopup(0, 'Missing inputs. Please try again.');
 			return;
 		}
 
 		if (password !== confirmPassword) {
-			messageObj = {
-				status: 0,
-				message: 'Your password inputs do not match.'
-			};
+			pushPopup(0, 'Your password inputs do not match.');
 			return;
 		}
 
 		const formattedPhone = '+1' + phone.replace(/\D/g, '');
 		if (formattedPhone.toString().length !== 12) {
-			messageObj = {
-				status: 0,
-				message: 'Invalid phone input.'
-			};
+			pushPopup(0, 'Please enter a valid phone number.');
 			return;
 		}
 
@@ -51,35 +35,17 @@
 		confirmationPopup = false;
 
 		const formattedPhone = '+1' + phone.replace(/\D/g, '');
-		const errorMessage = await signup(formattedPhone, username);
-		if (errorMessage) {
-			messageObj = {
-				status: 0,
-				message: errorMessage
-			};
-			return;
+		const success = await signup(formattedPhone, username);
+		if (success) {
+			page = 1;
 		}
-		page = 1;
 	};
 
 	const verify = async () => {
 		const formattedPhone = '+1' + phone.replace(/\D/g, '');
-		const errorMessage = await verifySignup(username, password, formattedPhone, otp);
-		if (errorMessage) {
-			messageObj = {
-				status: 0,
-				message: errorMessage
-			};
-		} else {
-			messageObj = {
-				status: 1,
-				message: 'You have successfully created your account!'
-			};
-		}
+		const success = await verifySignup(username, password, formattedPhone, otp);
 	};
 </script>
-
-<Modal {...messageObj} />
 
 {#if page === 0}
 	<div class="flex h-full w-full mx-auto items-center justify-center px-4 sm:px-6 lg:px-8">

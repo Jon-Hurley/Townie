@@ -11,8 +11,8 @@ dotenv.load_dotenv()
 def signup(request):
     print("Running")
     data = json.loads(request.body)
-    phone = data['phone']
-    username = data['username']
+    phone = data['newPhone']
+    username = data['newUsername']
 
     try:
         docs = queries.getUserFrom(phone, username).batch()
@@ -102,7 +102,7 @@ def verifyLogin(request):
     
     return util.returnUserPrivate(user)
 
-
+@csrf_exempt
 def loginWithToken(request):
     data = json.loads(request.body)
 
@@ -111,8 +111,6 @@ def loginWithToken(request):
         return util.returnError('Invalid token.', 401)
 
     username = user['username']
-    passwordHash = user['passwordHash']
-
     try:
         docs = queries.getUserByUsername(username).batch()
     except Exception as e:
@@ -121,42 +119,37 @@ def loginWithToken(request):
     if len(docs) == 0:
         return util.returnError('Invalid username.', 401)
 
-    userRes = docs[0]
-    if userRes['passwordHash'] != passwordHash:
-        return util.returnError('Invalid password.', 401)
-
-    return util.returnUserPrivate(userRes)
+    return util.returnUserPrivate(docs[0])
 
 
 @csrf_exempt
 def updateInfo(request):
     data = json.loads(request.body)
-    
+    newUsername = data['newUsername']
+    newLogin2FA = data['newLogin2FA']
+    newPhone = data['newPhone']
+    enteredPassword = data['password']
+
     user, newToken = util.getUserFromToken(data['token'])
     if user is None:
         return util.returnError('Invalid token.', 401)
-    
     key = user['key']
-    username = user['username']
-    password = user['password']
     passwordHash = user['passwordHash']
-    # login2FA = user['login2FA']
+    oldUsername = user['username']
 
-    expectedInputHash = util.getPasswordHash(password, username)
+    expectedInputHash = util.getPasswordHash(enteredPassword, oldUsername)
     if expectedInputHash != passwordHash:
         return util.returnError('Incorrect password entered.', 400)
 
     newUsername = data['newUsername']
     newPhone = data['newPhone']
     newLogin2FA = data['newLogin2FA']
-    newPasswordHash = passwordHash
-    if newUsername != username:
-        newPasswordHash = util.getPasswordHash(password, newUsername)
+    newPasswordHash = passwordHash if newUsername == oldUsername\
+                      else util.getPasswordHash(passwordHash, newUsername)
 
     try:
         docs = queries.updateInfo(
-            key, passwordHash,
-            newUsername, newPhone, newPasswordHash, newLogin2FA
+            key, newUsername, newPhone, newPasswordHash, newLogin2FA
         ).batch()
     except Exception as e:
         em = e.error_message
@@ -200,10 +193,6 @@ def initiatePasswordReset(request):
     data = json.loads(request.body)
     phone = data['phone']
 
-    user, newToken = util.getUserFromToken(data['token'])
-    if user is None:
-        return util.returnError('Invalid token.', 401)
-
     try:
         docs = queries.getUserFromPhone(phone).batch()
     except Exception as e:
@@ -215,9 +204,7 @@ def initiatePasswordReset(request):
     res = twilio_con.sendVerification(phone)
     print(res)
 
-    return JsonResponse({
-        "token": newToken
-    })
+    return JsonResponse({})
 
 
 @csrf_exempt
@@ -226,10 +213,6 @@ def completePasswordReset(request):
     phone = data['phone']
     otp = data['otp']
     newPassword = data['newPassword']
-
-    user, newToken = util.getUserFromToken(data['token'])
-    if user is None:
-        return util.returnError('Invalid token.', 401)
 
     res = twilio_con.testVerification(phone, otp)
     if not res:
@@ -255,6 +238,4 @@ def completePasswordReset(request):
         except Exception as e:
             return util.returnError("Invalid user key.", 500)
 
-    return JsonResponse({
-        "token": newToken
-    })
+    return JsonResponse({})

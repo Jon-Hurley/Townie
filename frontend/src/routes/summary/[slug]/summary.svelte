@@ -1,9 +1,6 @@
 <script>
-	import { acceptFriend, rejectFriend, sendFriendRequest } from '../../../requests/friend';
-	import { userStore } from '../../../stores';
-	import { buttonStyle, redStyle, greenStyle, blueStyle, indigoStyle } from '../../../css';
-	import Modal from '../../../general-components/modal.svelte';
 	import { onMount } from 'svelte';
+	import { pushPopup } from '../../../stores';
 	const title = 'text-gray-700 font-semibold text-lg mt-6';
 	const hr = 'my-2 bg-gray-100 h-[2px]';
 
@@ -39,11 +36,7 @@
 			link: 'link'
 		}
 	];
-	let messageObj = {
-		status: 0,
-		message: null,
-		dest: null
-	};
+
 	function amperoctoplus(s) {
 		s = s.replace(/&/g, '%26');
 		s = s.replace(/#/g, '%23');
@@ -69,8 +62,6 @@
         Copy Link:
     */
 </script>
-
-<Modal {...messageObj} />
 
 <div class="my-5 w-full">
 	<div class="text-gray-700 font-bold text-3xl text-center">
@@ -103,11 +94,7 @@
 			on:click={() => {
 				if (media.name === 'Copy Link') {
 					navigator.clipboard.writeText('link');
-					messageObj = {
-						status: 1,
-						message: 'Link copied to clipboard!',
-						dest: null
-					};
+					pushPopup(1, 'Link copied to clipboard!');
 				} else {
 					window.open(media.link, '_blank');
 				}

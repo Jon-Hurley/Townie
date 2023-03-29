@@ -23,25 +23,19 @@ def getUserByUsername(username):
     })
 
 
-def updateInfo(userKey, passwordHash,
-               newUsername, newPhone, newPasswordHash, newLogin2FA):
+def updateInfo(userKey, newUsername, newPhone, newPasswordHash, newLogin2FA):
     return arango_con.db.aql.execute(
         """
-            FOR user IN User
-            FILTER user._key == @userKey
-                && user.passwordHash == @passwordHash
-            UPDATE user WITH {
+            UPDATE {
                 _key: @userKey,
                 username: @newUsername,
                 phone: @newPhone,
                 passwordHash: @newPasswordHash,
                 login2FA: @newLogin2FA
             } IN User
-
             RETURN NEW
         """,
         bind_vars={
-            'passwordHash': passwordHash,
             'userKey': userKey,
             'newUsername': newUsername,
             'newPhone': newPhone,
@@ -58,17 +52,15 @@ def updatePassword(userKey, newPasswordHash):
     })
 
 
-def getUserFrom(phone, username):
+def getUserFromPhone(phone):
     return arango_con.db.aql.execute(
         """
             FOR user IN User
             FILTER user.phone == @phone
-            || user.username == @username
             RETURN user
         """,
         bind_vars={
-            'phone': phone,
-            'username': username
+            'phone': phone
         }
     )
 

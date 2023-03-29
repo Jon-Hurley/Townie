@@ -1,23 +1,12 @@
 <script>
 	import { gridItem, largeTitle } from "../../../css";
-	import Modal from "../../../general-components/modal.svelte";
 	import { Game } from "../../../classes/Game";
 	import Subnav from "../subnav.svelte";
     const title = "text-gray-700 font-semibold text-lg mt-2";
     const hr = "bg-gray-100 h-[2px] mt-4";
 
     const gameStore = Game.store;
-
-    let messageObj = {
-        status: 0,
-        message: null,
-        dest: null
-    };
 </script>
-
-<Modal
-    messageObj={messageObj}
-/>
 
 <div class="flex flex-col h-full">
     <div class="{largeTitle}">
