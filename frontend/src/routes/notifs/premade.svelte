@@ -15,28 +15,9 @@
 
     let yes = false;
 
-    const _updatePlayable = async() => {
-        updatePlayableGame(true, Math.floor(Date.now() / 1000))
-        const lobbyKey = await createGame();
-        if (!lobbyKey) return;
-        console.log("lobby created w/ key: ", lobbyKey);
-        const res = await Game.join(lobbyKey);
-        console.log("Err:", res);
-        Game.updateSettings(form);
-        console.log(Game.store)
-        //goto(Game.getPage()) // JON ADDED THIS
-    }
-
     onMount(() => {
-        Game.store.subscribe(gs => {
-            if (gs) {
-                form = { ...gs.game.settings };
-                form.otherCompletionTime = form.otherCompletionTime;
-                form.otherRadius = form.otherRadius;
-                form.otherBudget = form.otherBudget;
-            }
-        })
-        if (!playable || currentTime - prevTime < 604800) {
+        
+        if (!playable || currentTime - prevTime > 604800) {
             let transportation = Math.floor(Math.random() * 4);
             let desiredCompletionTime = Math.floor(Math.random() * 5);
             let theme = Math.floor(Math.random() * 4)
@@ -123,10 +104,19 @@
         }
     })
 
-
+    const _updatePlayable = async() => {
+        updatePlayableGame(true, Math.floor(Date.now() / 1000))
+        const lobbyKey = await createGame();
+        if (!lobbyKey) return;
+        
+        console.log("lobby created w/ key: ", lobbyKey);
+        const res = await Game.join(lobbyKey);
+        console.log("Err:", res);
+        await Game.updateSettings(form);
+    }
 
 </script>
-{#if (currentTime - prevTime < 604800)}
+{#if (currentTime - prevTime > 604800)}
 <div class="flex ">
     <button
         on:click={() => {
