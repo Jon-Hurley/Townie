@@ -279,3 +279,17 @@ def rejectFriendRequest(friendshipKey):
         """,
         bind_vars={'key': friendshipKey}
     )
+
+def getRating(theme):
+    return arango_con.db.aql.execute(
+        """
+    FOR theme IN Themes
+    FILTER theme.name == @theme
+    RETURN {
+        name: theme.name,
+        rating: theme.rating,
+        numRatings: theme.numRatings
+    }
+    """,
+        bind_vars={'theme': theme}
+    )

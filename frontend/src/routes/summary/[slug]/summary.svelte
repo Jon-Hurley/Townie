@@ -1,13 +1,41 @@
 <script>
+	import { buttonStyle, redStyle, greenStyle, blueStyle, indigoStyle } from '../../../css';
 	import { onMount } from 'svelte';
-	import { pushPopup } from '../../../stores';
 	const title = 'text-gray-700 font-semibold text-lg mt-6';
-	const hr = 'my-2 bg-gray-100 h-[2px]';
+	const hr = 'my-1 bg-gray-100 h-[2px]';
 
 	export let summary;
+	export let ratings;
+	export let userInGame;
+
+	let time;
 	onMount(async () => {
-		console.log(summary);
+		console.log(ratings);
+
+		let stars = '';
+		for (let i = 1; i <= 5; i++) {
+			if (i <= ratings.rating) {
+				stars += '<span class="fa fa-star" style="color:orange"></span>';
+			} else {
+				stars += '<span class="fa fa-star"></span>';
+			}
+		}
+		stars += ` (${ratings.numRatings})`;
+		document.getElementById('star-rating').innerHTML = stars;
 	});
+
+	function getTime(totalSeconds) {
+		let hours = Math.floor(totalSeconds / 3600);
+		totalSeconds %= 3600;
+		let minutes = Math.floor(totalSeconds / 60);
+		let seconds = totalSeconds % 60;
+		let tmpHour = hours == 1 ? 'hour' : 'hours';
+		let tmpMinute = minutes == 1 ? 'minute' : 'minutes';
+		let tmpSecond = seconds == 1 ? 'second' : 'seconds';
+		return `${hours} ${tmpHour} : ${minutes} ${tmpMinute} : ${seconds} ${tmpSecond}`;
+	}
+
+	function getStarRating(rating) {}
 
 	let media = [
 		{
@@ -63,12 +91,17 @@
     */
 </script>
 
+<link
+	rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+/>
+
 <div class="my-5 w-full">
 	<div class="text-gray-700 font-bold text-3xl text-center">
-		{summary.game._id}
+		Game #{summary.game._key}
 	</div>
 	<div class="text-gray-700 text-md text-center">
-		#{summary.game._key}
+		{new Date(summary.game.startTime).toLocaleString()}
 	</div>
 </div>
 
@@ -79,8 +112,9 @@
 	{#each media as media}
 		<!-- svelte-ignore a11y-click-events-have-key-events -->
 		<div
+			style="display: flex; justify-content: center;"
 			class="
-			border-gray-200 border-4 rounded-full
+			border-gray-400 border-2 rounded-full
 			p-3 m-0
 			text-indigo-500 font-semibold
 			w-24 h-24
@@ -94,7 +128,6 @@
 			on:click={() => {
 				if (media.name === 'Copy Link') {
 					navigator.clipboard.writeText('link');
-					pushPopup(1, 'Link copied to clipboard!');
 				} else {
 					window.open(media.link, '_blank');
 				}
@@ -114,17 +147,35 @@
 		</div>
 	{/each}
 </div>
+<hr class={hr} style="margin-top:10px;" />
 
-<div class={title}>Start Time:</div>
-<hr class={hr} />
-<div class="px-2 py-4 uppercase">
-	{new Date(summary.game.startTime * 1000).toLocaleString()}
+<div class={title} style="text-align:center;font-size:25px;margin-bottom:10px">
+	Perfect Time:
+	<button class="{buttonStyle}{greenStyle}" style="font-size:20px;margin-top:5px">
+		{getTime(summary.game.trueCompletionTime)}
+	</button>
 </div>
+
+<div class={title}>
+	Theme: <div class={indigoStyle} style="display:inline-block">
+		{summary.game.settings.theme}
+	</div>
+	<div
+		id="star-rating"
+		class="fa-pull-right {buttonStyle}"
+		style="display:inline-block;text-align:right;"
+	/>
+</div>
+<hr class={hr} />
+{#if userInGame}
+	<div />{/if}
 
 <div class={title}>How many finished?</div>
 <hr class={hr} />
 <div class="px-2 py-4 uppercase">
-	{summary.game.numFinished}/{summary.players.length}
+	{summary.players.filter(p => p.finished).length}
+	/
+	{summary.players.length}
 </div>
 
 <div class={title}>Destinations</div>
