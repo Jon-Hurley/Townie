@@ -142,7 +142,13 @@ def updatePlayerLocation(connectionId, lon, lat):
         FOR p IN Players
             FILTER p.connectionId == @connectionId
             
-            LET delta = p.lat ? DISTANCE(p.lat, p.lon, @lat, @lon) : 0
+            LET atPrevDest = (
+                FOR v, e IN 1..1 OUTBOUND p._to Itineraries
+                    FILTER e.index == p.destinationIndex - 1
+                    LET dist = DISTANCE(v.latitude, v.longitude, @lat, @lon)
+                    LET inc = (dist != NULL && dist < 20)
+                    RETURN inc
+            )[0] // WHETHER PLAYER IS STILL AT PREV DEST
             
             LET destDelta = (
                 FOR v, e IN 1..1 OUTBOUND p._to Itineraries
@@ -153,29 +159,40 @@ def updatePlayerLocation(connectionId, lon, lat):
                         inc,
                         points: e.points * inc
                     }
-            )[0]
-
+            )[0] // HAS PLAYER REACHED NEXT DEST
+            
+            // NO dt/dx UPDATES IF PAUSED, STILL AT PREV DEST, OR DONE
+            LET notQuiet = !(p.paused || atPrevDest || destDelta != NULL)
+            // RESET TIME AND DIST ON DESTINATION ARRIVAL
+            LET notArrived = !destDelta.inc
+            
             LET t = DATE_NOW()
-            LET dt = (1 - p.paused) * (t - p.prevTime)
-
+            LET dt = (t - p.prevTime) * notQuiet
+            LET dx = p.lat ? DISTANCE(p.lat, p.lon, @lat, @lon) * notQuiet : 0
+            
             UPDATE p
             WITH {
                 lon: @lon,
                 lat: @lat,
                 
-                dist: (p.dist + delta) * (1 - destDelta.inc),
-                totalDist: p.totalDist + delta,
+                dist: (p.dist + dx) * notArrived,
+                totalDist: p.totalDist + dx,
                 destinationIndex: p.destinationIndex + destDelta.inc,
                 points: p.points + destDelta.points,
                 
                 prevTime: t,
-                time: (p.time + dt) * (1 - destDelta.inc),
+                time: (p.time + dt) * notArrived,
                 totalTime: p.totalTime + dt
             }
             IN Players
             RETURN {
-                destinationIndex: NEW.destinationIndex,
-                time: OLD.time
+                destinationIndex: OLD.destinationIndex,
+                reached: destDelta.inc,
+                quiet: !notQuiet,
+                time: OLD.time,
+                dist: OLD.dist,
+                totalTime: OLD.totalTime,
+                totalDist: OLD.totalDist
             }
         """,
         bind_vars={

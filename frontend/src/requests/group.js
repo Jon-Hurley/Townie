@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { PUBLIC_BACKEND_API } from '$env/static/public';
 import { get } from 'svelte/store';
-import { updateAccessToken, userStore } from '../stores';
+import { pushPopup, updateAccessToken, userStore } from '../stores';
 
 export const createGame = async() => {
     try {

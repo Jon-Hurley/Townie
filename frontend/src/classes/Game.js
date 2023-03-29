@@ -22,8 +22,33 @@ export class Game {
                 switch (res.method) {
                     case 'get-game':
                     case 'update-game': {
+                        res.data.destinations.sort((a, b) => a.index - b.index);
                         Game.store.set(res.data);
                         return;
+                    }
+                    case 'update-location': {
+                        console.log(res.data);
+                        const {
+                            destinationIndex, reached, quiet,
+                            time,
+                            dist,
+                            totalTime,
+                            totalDist
+                        } = res.data;
+                        if (!quiet && reached) {
+                            const achievedDest = get(Game.store).destinations[destinationIndex];
+                            pushPopup(
+                                0,
+                                `You reached destination ${achievedDest.n}!\n
+                                You took ${time} minutes and traveled ${dist} miles.\n
+                                Total time: ${totalTime} minutes\n
+                                Total distance: ${totalDist} miles`
+                            );
+                            if (destinationIndex === get(Game.store).destinations.length - 1) {
+                                Game.leave();
+                                pushPopup(0, "You won!");
+                            }
+                        }
                     }
                     default: {
                         console.log("No response behavior")
