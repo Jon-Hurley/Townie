@@ -6,20 +6,20 @@
 
     const images = [
       {
-        url: "/Tutorial-Settings-1",
-        description: "Setings-1",
+        src: "/Tutorial-Settings-1",
+        description: "Settings-1",
       },
       {
         src: "%sveltekit.assets%/Tutorial-Settings-2",
-        description: "Setings-2",
+        description: "Settings-2",
       },
       {
         src: "%sveltekit.assets%/Tutorial-Settings-3",
-        description: "Setings-3",
+        description: "Settings-3",
       },
       {
         src: "%sveltekit.assets%/Tutorial-Settings-4",
-        description: "Setings-4",
+        description: "Settings-4",
       },
       {
         src: "%sveltekit.assets%/Tutorial-Settings-5",
