@@ -155,4 +155,8 @@ export class Game {
 
         return pps.find(pp => pp.username === username);
     }
+
+    static getPlayers() {
+        return get(Game.store)?.players;
+    }
 };

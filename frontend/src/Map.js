@@ -14,6 +14,12 @@ export class Map {
     static snapLocation = false;
     static snapInterval = undefined;
 
+    static playerMarkerList = undefined;
+    static nextDestination = undefined;
+    static userLocation = undefined;
+    static bounds = new google.maps.LatLngBounds();
+
+
     static async regenerate() {
         const mapLoc = Map.map?.getCenter();
         const mapZoom = Map.map?.getZoom();
@@ -21,7 +27,7 @@ export class Map {
         console.log({loc})
         Map.map = new google.maps.Map(Map.container, {
             zoom: 20,
-            center: { lat: 40.4251, lng: -86.9129 },
+            center: { lat: loc.coords.latitude, lng: loc.coords.longitude },
             mapId: Map.darkMode ? PUBLIC_GOOGLE_MAPS_DARK_MODE
                                  : PUBLIC_GOOGLE_MAPS_LIGHT_MODE,
             disableDefaultUI: true
@@ -42,6 +48,18 @@ export class Map {
         const center = new google.maps.LatLng(loc.lat, loc.lng);
         Map.map.panTo(center);
     };
+
+    static setZoom() {
+        Map.bounds = new google.maps.LatLngBounds();
+
+        let players = Game.getPlayers();
+
+        for (let player of players) {
+            Map.bounds.extend({ lat: player.lat, lng: player.lon });
+        }
+
+        Map.map.fitBounds(Map.bounds);
+    }
 
     static toggleSnapLocation() {
         if (Map.snapLocation) {
@@ -68,7 +86,6 @@ export class Map {
             Map.userLocation.setMap(null);
         }
         // Change user's marker color
-        console.log(latLng)
         Map.userLocation = new google.maps.Marker({
             position: { lat: latLng.coords.latitude, lng: latLng.coords.longitude },
             map: Map.map,
@@ -82,8 +99,11 @@ export class Map {
 
         console.log(player);
         const tempDest = get(Game.store)?.destinations[player.destinationIndex];
+        console.log("In Map.js generateDestinationCircle, this is game store destinations")
         console.log(get(Game.store).destinations);
-        const latLng = { lat: tempDest.latitude, lng: tempDest.longitude };
+        const latLng = { lat: tempDest.lat, lng: tempDest.lon };
+
+        console.log(latLng)
 
         if (!latLng) return;
         if (Map.nextDestination) {
@@ -98,7 +118,7 @@ export class Map {
             map: Map.map,
             center: Location.randomize(latLng.lat, latLng.lng),
             // center: randomizeLocation(40.423538, -86.921738, 20),
-            radius: 20,
+            radius: 50,
         })
     };
 
@@ -110,9 +130,11 @@ export class Map {
                 marker?.setMap(null);
             }
         }
+
         Map.playerMarkerList = players.map((player) => {
             if (player._key === get(userStore).key) return;
             if (player.hidingState) {
+                const latLng = Location.randomize(player.lat, player.lon);
                 // Circle, hidden exact loc.
                 // Go back and figure out names for circles
                 return new google.maps.Circle({
@@ -122,13 +144,14 @@ export class Map {
                     fillColor: "#FF0000",
                     fillOpacity: 0.35,
                     map: Map.map,
-                    center: Location.randomize(player.lat, player.lon),
+                    center: latLng,
                     radius: 20
                 })
             } else {
+                const latLng = { lat: player.lat, lng: player.lon };
                 // Marker, shown exact loc.
                 return new google.maps.Marker({
-                    position: { lat: player.lat, lng: player.lon },
+                    position: latLng,
                     map: Map.map,
                     title: player.username
                 })
