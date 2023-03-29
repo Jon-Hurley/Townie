@@ -12,6 +12,9 @@ def createUser(username, passwordHash, phoneNumber):
             'rank': 'beginner',
             'purchases': [],
             'login2FA': False,
+            'weekly_game_played': False,
+            'next_available_game': int(time.time()),
+            'hidingState': True
         },
         return_new=True
     )
@@ -22,8 +25,7 @@ def getUserByUsername(username):
         'username': username
     })
 
-
-def updateInfo(userKey, newUsername, newPhone, newPasswordHash, newLogin2FA):
+def updateInfo(userKey, newUsername, newPhone, newPasswordHash, newLogin2FA, newHidingState):
     return arango_con.db.aql.execute(
         """
             UPDATE {
@@ -32,6 +34,7 @@ def updateInfo(userKey, newUsername, newPhone, newPasswordHash, newLogin2FA):
                 phone: @newPhone,
                 passwordHash: @newPasswordHash,
                 login2FA: @newLogin2FA
+                hidingState: @newHidingState
             } IN User
             RETURN NEW
         """,
@@ -40,10 +43,32 @@ def updateInfo(userKey, newUsername, newPhone, newPasswordHash, newLogin2FA):
             'newUsername': newUsername,
             'newPhone': newPhone,
             'newPasswordHash': newPasswordHash,
-            'newLogin2FA': newLogin2FA
+            'newLogin2FA': newLogin2FA,
+            'newHidingState': newHidingState
         }
     )
 
+def UpdatePlayableInfo(userKey, passwordHash, weeklyGamePlayed, newTime):
+   return arango_con.db.aql.execute(
+        """
+        FOR user IN User
+            FILTER user._key == @userKey
+                && user.passwordHash == @passwordHash
+            UPDATE user WITH {
+                _key: @userKey,
+                weeklyGamePlayed: @weeklyGamePlayed,
+                next_available_game: @newTime
+            } IN User
+            
+            RETURN NEW
+        """,
+        bind_vars={
+            'passwordHash': passwordHash,
+            'userKey': userKey,
+            'weeklyGamePlayed': weeklyGamePlayed,
+            'newTime': newTime
+        }
+    ) 
 
 def updatePassword(userKey, newPasswordHash):
     return arango_con.userCollection.update({
@@ -283,13 +308,30 @@ def rejectFriendRequest(friendshipKey):
 def getRating(theme):
     return arango_con.db.aql.execute(
         """
-    FOR theme IN Themes
-    FILTER theme.name == @theme
-    RETURN {
-        name: theme.name,
-        rating: theme.rating,
-        numRatings: theme.numRatings
-    }
-    """,
+        FOR theme IN Themes
+        FILTER theme.name == @theme
+        RETURN {
+            name: theme.name,
+            rating: theme.rating,
+            numRatings: theme.numRatings
+        }
+        """,
         bind_vars={'theme': theme}
+    )
+
+def getGameLog(userKey):
+    print(userKey)
+    return arango_con.db.aql.execute(
+        """
+        FOR game IN PastGames
+        LET x = POSITION(game.playerKeys, @key, true)
+        FILTER x != -1
+        RETURN {
+            totalDestinations: game.totalDestinations,
+            destinationsCompleted: game.destinationsCompleted,
+            timeSpent: game.timeSpent,
+            points: game.points
+        }
+        """,
+        bind_vars={'key': int(userKey)}
     )

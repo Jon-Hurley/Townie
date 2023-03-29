@@ -16,10 +16,13 @@ urlpatterns = [
     path('search/', search.searchUsers),
     path('profile/<str:key>/', search.getUser),
     path('rating/', search.getRating),
+    path('gameLog/', search.getGameLog),
 
     path('friends/', friend.getFriends),
     path('pending-friends/', friend.getPendingFriends),
     path('accept-friend/', friend.acceptFriend),
     path('reject-friend/', friend.rejectFriend),
     path('request-friend/', friend.requestFriend),
+
+    path('updateTime', account.updatePlayableTime),
 ]

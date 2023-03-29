@@ -1,29 +1,31 @@
 <script>
 	import { onMount } from 'svelte';
-	import {
-		blueStyle,
-		buttonStyle,
-		grayStyle,
-		hr,
-		largeTitle
-	} from '../../css';
+	import { blueStyle, buttonStyle, grayStyle, hr, largeTitle, inputStyle } from '../../css';
 	import { Game } from '../../classes/Game';
+	import { getThemeList } from '../../requests/group';
 	import Autocomplete from './autocomplete.svelte';
 	const section = 'font-semibold text-lg text-center mb-3';
 
 	let form = {};
-	let otherCompletionTime = false;
-	let otherRadius = false;
-	let isOpen = false;
 
 	onMount(() => {
 		Game.store.subscribe((gs) => {
 			if (gs) {
 				form = { ...gs.game.settings };
 				form.otherCompletionTime = form.otherCompletionTime;
+				form.otherRadius = form.otherRadius;
+				form.otherBudget = form.otherBudget;
 			}
 		});
 	});
+
+	let otherCompletionTime = false;
+	let otherRadius = false;
+	let isOpen = true;
+	let otherBudget = false;
+	let randomThemeChosen = false;
+
+	let themeValue = '';
 
 	const _updateSettings = () => {
 		Game.updateSettings(form);
@@ -47,6 +49,19 @@
 			title: 'Public Transportation'
 		}
 	];
+
+	const _generateRandomTheme = async () => {
+		let themes = await getThemeList();
+		let realThemes = themes['themes'];
+		let index = Math.floor(2 * Math.random());
+		let theme;
+		if (realThemes[index] != undefined) {
+			theme = realThemes[index]['theme'];
+		} else {
+			theme = 'blank';
+		}
+		return theme;
+	};
 </script>
 
 <button type="button" class="{buttonStyle} {grayStyle} w-full" on:click={() => (isOpen = true)}>
@@ -109,11 +124,53 @@
             "
 		>
 			<div class="font-semibold">Theme</div>
-			<select bind:value={form.theme} class="w-40">
-				<option value="None">None</option>
+			<select
+				on:change={async (e) => {
+					const v = e.target.value;
+					randomThemeChosen = v === 'random';
+					if (!randomThemeChosen) {
+						console.log(v);
+						form.theme = v;
+						themeValue = v;
+					} else {
+						let v;
+						try {
+							v = await _generateRandomTheme();
+						} catch (err) {
+							console.log(err);
+							console.log('error with random theme generation');
+							v = 'Restaurants';
+						}
+						switch (v) {
+							case 'Tourism':
+								v = 'tourist-attraction';
+								break;
+							case 'Restaurants':
+								v = 'restaurant';
+								break;
+							case 'Shopping':
+								v = 'store';
+								break;
+							case 'Museums':
+								v = 'museum';
+								break;
+							default:
+								v = 'no_theme';
+								break;
+						}
+						form.theme = v;
+						console.log(v);
+						themeValue = 'random';
+					}
+				}}
+				value={themeValue}
+				class="w-40"
+			>
+				<option value="tourist_attraction">Tourism</option>
 				<option value="restaurant">Food</option>
-				<option value="park">Park</option>
+				<option value="store">Shopping</option>
 				<option value="museum">Museum</option>
+				<option value="random">Random</option>
 			</select>
 		</div>
 		<div
@@ -187,11 +244,12 @@
 				<option value={2}>2 miles</option>
 				<option value={5}>5 miles</option>
 				<option value={10}>10 miles</option>
+				<option value={15}>15 miles</option>
 				<option value={20}>20 miles</option>
-				<option value={50}>50 miles</option>
-				<option value={100}>Max: 100 miles</option>
+				<option value={25}>Max: 25 miles</option>
 				<option value="Other">Other</option>
 			</select>
+
 			{#if otherRadius}
 				<input
 					class="w-40"
@@ -207,12 +265,70 @@
 							v = 0;
 						}
 						form.radius = Math.abs(v);
-						if (form.radius > 100) {
-							form.radius = 100;
+						if (form.radius > 25) {
+							form.radius = 25;
 						}
 					}}
 				/>
-				<text>Nonnegative please :)</text>
+			{/if}
+		</div>
+		<div
+			class="
+            flex justify-between items-center
+            bg-white p-3
+            border-2 border-gray-200 rounded
+        "
+		>
+			<div class="font-semibold">Max Budget Per Attraction</div>
+			<select
+				on:change={(e) => {
+					const v = e.target.value;
+					otherBudget = v === 'Other';
+					console.log('OtherBudget ' + otherBudget);
+					if (!otherBudget) {
+						form.budget = parseInt(v);
+						form = form;
+					}
+				}}
+				value={form.budget}
+				class="w-40"
+			>
+				<option value={0}>Free</option>
+				<option value={1}>10 dollars</option>
+				<option value={2}>25 dollars</option>
+				<option value={3}>50 dollars</option>
+				<option value={4}>Splurge!</option>
+				<option value="Other">Other</option>
+			</select>
+
+			{#if otherBudget}
+				<input
+					class="w-40"
+					placeholder="Other"
+					type="number"
+					min="0"
+					value={form.budget}
+					on:input={(e) => {
+						let v;
+						try {
+							v = parseInt(e.target.value);
+						} catch (err) {
+							v = 0;
+						}
+						const budget1 = Math.abs(v);
+						if (budget1 == 0) {
+							form.budget = 0;
+						} else if (budget1 <= 10) {
+							form.budget = 1;
+						} else if (budget1 <= 25) {
+							form.budget = 2;
+						} else if (budget1 <= 50) {
+							form.budget = 3;
+						} else {
+							form.budget = 4;
+						}
+					}}
+				/>
 			{/if}
 		</div>
 

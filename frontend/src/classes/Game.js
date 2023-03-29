@@ -1,6 +1,8 @@
 import { writable, get } from 'svelte/store';
-import { pushPopup, userStore } from '../stores.js';
+import { userStore } from './stores.js';
 import { PUBLIC_BACKEND_WS } from '$env/static/public';
+import { Map } from './Map.js';
+import { Location } from './Location.js';
 
 export class Game {
     static store = writable();
@@ -16,14 +18,24 @@ export class Game {
     static setDefaultEvents() {
         Game.ws.onmessage = (m) => {
             try {
-                var res = JSON.parse(m.data);
+                const res = JSON.parse(m.data);
                 console.log("WS MESSAGE:", res);
-                
                 switch (res.method) {
                     case 'get-game':
                     case 'update-game': {
                         res.data.destinations.sort((a, b) => a.index - b.index);
                         Game.store.set(res.data);
+
+                        if (Map.map) {
+
+                            console.log("We zoomin")
+    
+                            Map.generateUserMarker();
+                            Map.generateDestinationCircle();
+                            Map.generatePlayerMarkers();
+    
+                            Map.setZoomAndCenter();
+                        }
                         return;
                     }
                     case 'update-location': {
@@ -53,13 +65,11 @@ export class Game {
                     default: {
                         console.log("No response behavior")
                     }
-                } 
-
-            } catch (err) {
-                console.log("WS ERROR:", m, err);
-                pushPopup(0, "Invalid response. Please try again later.");
-                return;
-            }        
+                }
+            } catch (e) {
+                console.log("WS ERROR:", e);
+                pushPopup(0, "Connections error. Please try again later.");
+            }           
         };
         Game.ws.onerror = (e) => {
             console.log("WS ERROR:", e);
@@ -93,11 +103,10 @@ export class Game {
         try {
             const userKey = get(userStore).key;
             Game.ws = new WebSocket(`${PUBLIC_BACKEND_WS}?gameKey=${gameKey}&userKey=${userKey}`);
-            const r = await new Promise((res, rej) => { 
+            await new Promise((res, rej) => { 
                 Game.ws.onerror = () => rej();
                 Game.ws.onopen = (e) => res(e);
             });
-            console.log(r);
     
             Game.send('get-game', { gameKey });
             const res = await new Promise((res, rej) => { 
@@ -178,7 +187,29 @@ export class Game {
         }
     }
 
+    static updateTime(form) {
+        try {
+            const gameKey = get(Game.store).game._key;
+            Game.send('update-time', { gameKey, settings: form});
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
     static getPage() {
         return get(Game.store)?.game?.page || 'join'
+    }
+
+    static getPlayer(username) {
+        console.log("This is the game store")
+        console.log(get(Game.store))
+        /** @type {Array} */
+        let pps = get(Game.store)?.players;
+
+        return pps.find(pp => pp.username === username);
+    }
+
+    static getPlayers() {
+        return get(Game.store)?.players;
     }
 };

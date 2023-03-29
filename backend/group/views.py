@@ -13,12 +13,16 @@ def onConnect(request):
     # load input
     body = json.loads(request.body)
     gameKey = body['gameKey']
-    userKey = body['userKey']
+    token = body['token']
     connectionId = body['connectionId']
-    print(gameKey, userKey, connectionId)
+    lat = body['lat']
+    lon = body['lon']
+    print(gameKey, connectionId, lat, lon)
+
+    userKey = "10010281"
 
     # add user to game, nulling their previous connection if left open
-    res = queries.addPlayer(gameKey, userKey, connectionId)
+    res = queries.addPlayer(gameKey, userKey, connectionId, lat, lon)
     oldConnectionIds = res.batch()[0]
     print(oldConnectionIds)
     for oldConnectionId in oldConnectionIds:
@@ -71,12 +75,24 @@ def onDefault(request):
     if method == 'update-settings':
         gameKey = body['gameKey']
         settings = body['settings']
+
         print(gameKey, settings)
         res = queries.updateGameSettings(gameKey, settings)
         print(res)
         propogateAllUpdates(gameKey)
         return JsonResponse({
             'method': 'update-settings'
+        })
+    
+    if method == 'update-time':
+        gameKey = body['gameKey']
+        settings = body['settings']
+        print(gameKey, settings)
+        res = queries.updateTrueTime(gameKey, settings)
+        print(res)
+        propogateAllUpdates(gameKey)
+        return JsonResponse({
+            'method': 'update-time'
         })
 
     if method == 'start-game':
@@ -130,3 +146,8 @@ def getGame(request):
     gameKey = data['gameKey']
     data = queries.getGame(gameKey).batch()[0]
     return JsonResponse(data)
+
+def getThemeList(request):
+    res = queries.getThemeList().batch()
+    print(res)
+    return JsonResponse({ 'themes': list(res) })

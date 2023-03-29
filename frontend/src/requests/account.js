@@ -152,7 +152,7 @@ export const verifySignup = async (username, password, phone, otp) => {
     }
 }
 
-export const updateAccount = async (password, newUsername, newPhone, newLogin2FA) => {
+export const updateAccount = async (password, newUsername, newPhone, newLogin2FA, newHidingState) => {
     try {
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'user/update/',
@@ -161,7 +161,8 @@ export const updateAccount = async (password, newUsername, newPhone, newLogin2FA
                 password,
                 newUsername,
                 newPhone,
-                newLogin2FA              
+                newLogin2FA,            
+                newHidingState
             }
         );
         updateAccessToken(res);
@@ -176,7 +177,29 @@ export const updateAccount = async (password, newUsername, newPhone, newLogin2FA
     }
 };
 
-export const initiatePasswordReset = async (phone) => {
+export const updatePlayableGame = async(weeklyGamePlayed, newTime) => {
+    try {
+        const user = get(userStore);
+        const res = await axios.post(
+            PUBLIC_BACKEND_API + 'user/updateTime', 
+            {
+                key: user.key,
+                username: user.username,
+                passwordHash: user.passwordHash,
+
+                weeklyGamePlayed,
+                newTime
+            }
+        );
+        userStore.set(res.data)
+        return null;
+    } catch (err) {
+        return err?.response?.data?.errorMessage 
+            || 'Connection Refused. Failed to update user. Please try again.';
+    }
+}
+
+export const initiatePasswordReset = async(phone) => {
     try {
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'user/initiate-password-reset/',

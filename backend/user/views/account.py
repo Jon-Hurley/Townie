@@ -146,10 +146,12 @@ def updateInfo(request):
     newLogin2FA = data['newLogin2FA']
     newPasswordHash = passwordHash if newUsername == oldUsername\
                       else util.getPasswordHash(passwordHash, newUsername)
+    newHidingState = data['newHidingState']
 
     try:
         docs = queries.updateInfo(
-            key, newUsername, newPhone, newPasswordHash, newLogin2FA
+            key, newUsername, newPhone, newPasswordHash, newLogin2FA,
+            newHidingState
         ).batch()
     except Exception as e:
         em = e.error_message
@@ -163,6 +165,17 @@ def updateInfo(request):
 
     return util.returnUserPrivate(docs[0])
 
+
+@csrf_exempt
+def updatePlayableTime(request):
+    data = json.loads(request.body)
+    key = data['key']
+    passwordHash = data['passwordHash']
+    weeklyGamePlayed = data['weeklyGamePlayed']
+    newTime = data['newTime']
+
+    docs = queries.UpdatePlayableInfo(key, passwordHash, weeklyGamePlayed, newTime).batch()
+    return util.returnUserPrivate(docs[0])
 
 @csrf_exempt
 def deleteUser(request):

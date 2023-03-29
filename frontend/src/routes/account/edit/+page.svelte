@@ -10,6 +10,11 @@
 		newUsername: $userStore?.username,
 		newPhone: $userStore?.phone,
 		newLogin2FA: $userStore?.login2FA,
+		newHidingState: $userStore?.hidingState
+	};
+
+	const _deleteUser = async () => {
+		const success = await deleteUser();
 	};
 
 	const _updateUser = async() => {
@@ -19,7 +24,10 @@
 		if (!form?.newPhone?.length) {
 			form.newPhone = $userStore.newPhone;
 		}
-		await updateAccount(form.password, form.newUsername, form.newPhone, form.newLogin2FA);
+		await updateAccount(
+			form.password, form.newUsername,
+			form.newPhone, form.newLogin2FA, form.newHidingState
+		);
 	};
 </script>
 
@@ -56,13 +64,20 @@
 	/>
 </div>
 
-<div class={title}>Login Security</div>
+<div class={title}>Security</div>
 <hr class={hr} />
 <div class="px-2 py-3 flex justify-between">
-	Require 2FA
+	Require 2FA on Login
 	<input
 		type="checkbox"
 		bind:checked={form.newLogin2FA}
+	/>
+</div>
+<div class="px-2 py-3 flex justify-between">
+	Hide My Location in Game
+	<input
+		type="checkbox"
+		bind:checked={form.newHidingState}
 	/>
 </div>
 

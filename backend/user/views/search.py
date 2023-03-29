@@ -10,19 +10,16 @@ def searchUsers(request):
     res = queries.getUsersBySubstring(substr).batch()
     return JsonResponse({'users': list(res)})
 
-
 @csrf_exempt
 def getUser(request, key):
     userKey = json.loads(request.body)['key']
     res = queries.getUserWithFriendship(userKey, targetKey=key).batch()[0]
     return JsonResponse(res)
 
-
 @csrf_exempt
 def getSummary(gameID):
     res = queries.getSummary(gameID).batch()[0]
     return JsonResponse(res)
-
 
 @csrf_exempt
 def getRating(request):
@@ -36,3 +33,10 @@ def getRating(request):
         "rating": res['rating'],
         "numRatings": res['numRatings'],
     })
+
+@csrf_exempt
+def getGameLog(request):
+    userKey = json.loads(request.body)['key']
+    res = queries.getGameLog(userKey).batch()
+    print(res)
+    return JsonResponse({ 'games': list(res) })

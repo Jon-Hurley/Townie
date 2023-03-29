@@ -70,3 +70,19 @@ export const rating = async (theme) => {
         return false;
     }
 }
+
+export const getGameLog = async() => {
+    try {
+        const res = await axios.post(
+            PUBLIC_BACKEND_API + 'user/gameLog/',
+            {
+                key: get(userStore).key
+            }
+        );
+        console.log(res.data);
+        return res.data.games;
+    } catch (err) {
+        console.log(err);
+        return null;
+    }
+}
