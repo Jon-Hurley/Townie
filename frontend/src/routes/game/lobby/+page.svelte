@@ -1,7 +1,7 @@
 <script>
 	import { buttonStyle, gridItem, indigoStyle, largeTitle } from "../../../css";
     import { goto } from "$app/navigation"
-	import Settings from "./settings.svelte";
+	import Settings from "../settings.svelte";
 	import Modal from "../../../general-components/modal.svelte";
 	import { Game } from "../../../classes/Game";
     const title = "text-gray-700 font-semibold text-lg mt-2";
