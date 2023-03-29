@@ -1,5 +1,6 @@
 <script>
 	import { goto } from '$app/navigation';
+	import { blueStyle, buttonStyle } from '../../../css';
 	import { updateAccount, deleteUser } from '../../../requests/account';
 	import { userStore } from '../../../stores';
 	const title = 'text-gray-700 font-semibold text-lg mt-6';
@@ -11,6 +12,8 @@
         phone: ''
 	};
 	let errorMessage = false;
+
+	let hidingState = $userStore['hidingState'] ? "Show my Exact Location" : "Hide my Exact Location";
 
 	const _deleteUser = async () => {
 		errorMessage = await deleteUser();
@@ -26,13 +29,15 @@
 		if (!form?.phone?.length) {
 			form.phone = $userStore.phone;
 		}
-
-		errorMessage = await updateAccount(form.password, form.username, form.phone);
+		if (form.showLocation == undefined) {
+			form.showLocation = $userStore.hidingState;
+		}
+		
+		errorMessage = await updateAccount(form.password, form.username, form.phone, form.showLocation);
 		if (errorMessage) {
 			return;
 		}
-
-		goto('/account');
+		goto('/account/');
 	};
 </script>
 
@@ -42,6 +47,30 @@
 	</div>
 	<div class="text-gray-700 text-md text-center">
 		#{$userStore.key}
+	</div>
+</div>
+
+<div class="my-5 w-full">
+	<div class="font-semibold text-lg text-center mb-3">
+	</div>
+	<div
+            class="flex justify-center gap-2"
+            style="max-height: 100%"
+    >
+	<button
+        class="{buttonStyle} {form['showLocation'] ? blueStyle : (blueStyle)}"
+        on:click={() => {
+			if (form['showLocation']) {
+				hidingState = "Hide my Exact Location";
+				form.showLocation = false;
+			} else {
+				hidingState = "Show my Exact Location";
+				form.showLocation = true;
+			}
+        }}
+    >
+    	{hidingState}
+    </button>
 	</div>
 </div>
 
