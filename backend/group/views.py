@@ -10,12 +10,16 @@ def onConnect(request):
     # load input
     body = json.loads(request.body)
     gameKey = body['gameKey']
-    userKey = body['userKey']
+    token = body['token']
     connectionId = body['connectionId']
-    print(gameKey, userKey, connectionId)
+    lat = body['lat']
+    lon = body['lon']
+    print(gameKey, connectionId, lat, lon)
+
+    userKey = "10010279"
 
     # add user to game, canceling their previous connection if left open
-    res = queries.addPlayer(gameKey, userKey, connectionId)
+    res = queries.addPlayer(gameKey, userKey, connectionId, lat, lon)
     oldDoc = res.batch()[0]['oldDoc']
     if oldDoc:
         forceDisconnect(oldDoc['connectionId'])
@@ -55,7 +59,6 @@ def onDefault(request):
     if method == 'get-game':
         gameKey = body['gameKey']
         data = queries.getGame(gameKey).batch()[0]
-        print("dest index: " + str(data['players'][0]['destinationIndex']))
         return JsonResponse({
             'method': 'get-game',
             'data': data

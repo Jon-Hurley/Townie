@@ -1,6 +1,8 @@
 import { writable, get } from 'svelte/store';
 import { userStore } from './stores.js';
 import { PUBLIC_BACKEND_WS } from '$env/static/public';
+import { Map } from './Map.js';
+import { Location } from './Location.js';
 
 export class Game {
     static store = writable();
@@ -23,6 +25,20 @@ export class Game {
                     console.log("In game.js update game")
                     console.log(res.data.players[0].destinationIndex)
                     Game.store.set(res.data);
+
+                    console.log(Map.map)
+
+                    if (Map.map) {
+
+                        console.log("We zoomin")
+
+                        Map.generateUserMarker();
+    	                Map.generateDestinationCircle();
+                        Map.generatePlayerMarkers();
+
+                        Map.setZoomAndCenter();
+                    }
+
                     console.log(get(Game.store));
                     return;
                 }
@@ -59,13 +75,17 @@ export class Game {
 
     static async join(gameKey) {
         try {
+            const userLocation = await Location.getCurrentLocation();
             const user = get(userStore);
             const userKey = user.key;
-            Game.ws = new WebSocket(`${PUBLIC_BACKEND_WS}?gameKey=${gameKey}&userKey=${userKey}`);
+            user.token = "123";
+            Game.ws = new WebSocket(`${PUBLIC_BACKEND_WS}?gameKey=${gameKey}&token=${user.token}
+                                    &lat=${userLocation.coords.latitude}&lon=${userLocation.coords.longitude}`);
             await new Promise((res, rej) => { 
                 Game.ws.onerror = () => rej();
                 Game.ws.onopen = () => res();
             });
+
     
             Game.send('get-game', { gameKey });
             const res = await new Promise((res, rej) => { 

@@ -17,7 +17,7 @@ export class Map {
     static playerMarkerList = undefined;
     static nextDestination = undefined;
     static userLocation = undefined;
-    static bounds = new google.maps.LatLngBounds();
+    static bounds = undefined;
 
 
     static async regenerate() {
@@ -33,10 +33,6 @@ export class Map {
             disableDefaultUI: true
         });
 
-        Map.generateUserMarker();
-    	Map.generateDestinationCircle();
-        Map.generatePlayerMarkers();
-
         if (mapLoc && mapZoom) {
             Map.map.setCenter(mapLoc);
             Map.map.setZoom(mapZoom);
@@ -49,7 +45,7 @@ export class Map {
         Map.map.panTo(center);
     };
 
-    static setZoom() {
+    static setZoomAndCenter() {
         Map.bounds = new google.maps.LatLngBounds();
 
         let players = Game.getPlayers();
@@ -58,7 +54,15 @@ export class Map {
             Map.bounds.extend({ lat: player.lat, lng: player.lon });
         }
 
+        Map.bounds.extend(Map.nextDestination.getCenter());
+
         Map.map.fitBounds(Map.bounds);
+
+        console.log(Map.bounds.getCenter());
+        console.log(Map.bounds.getCenter().lat());
+        console.log(Map.bounds.getCenter().lng());
+
+        Map.map.setCenter(Map.bounds.getCenter());
     }
 
     static toggleSnapLocation() {
@@ -80,14 +84,14 @@ export class Map {
 
     static async generateUserMarker() {
         if (!Map.map) return;
-        let latLng = await Location.getCurrentLocation()
-        if (!latLng) return;
+        let player = Game.getPlayer(get(userStore).username);
+        if (!player) return;
         if (Map.userLocation) {
             Map.userLocation.setMap(null);
         }
         // Change user's marker color
         Map.userLocation = new google.maps.Marker({
-            position: { lat: latLng.coords.latitude, lng: latLng.coords.longitude },
+            position: { lat: player.lat, lng: player.lon },
             map: Map.map,
             //title: get(userStore).username
         });
@@ -97,13 +101,8 @@ export class Map {
         const player = Game.getPlayer(get(userStore)?.username);
         if (!player) throw new Error("u don fuked up, no pp found :(");
 
-        console.log(player);
         const tempDest = get(Game.store)?.destinations[player.destinationIndex];
-        console.log("In Map.js generateDestinationCircle, this is game store destinations")
-        console.log(get(Game.store).destinations);
         const latLng = { lat: tempDest.lat, lng: tempDest.lon };
-
-        console.log(latLng)
 
         if (!latLng) return;
         if (Map.nextDestination) {
@@ -132,7 +131,7 @@ export class Map {
         }
 
         Map.playerMarkerList = players.map((player) => {
-            if (player._key === get(userStore).key) return;
+            if (player.key === get(userStore).key) return;
             if (player.hidingState) {
                 const latLng = Location.randomize(player.lat, player.lon);
                 // Circle, hidden exact loc.
