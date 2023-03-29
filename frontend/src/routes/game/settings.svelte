@@ -1,8 +1,8 @@
 <script>
 	import { onMount } from 'svelte';
-    import { blueStyle, buttonStyle, grayStyle, hr, largeTitle, inputStyle } from '../../../css';
-	import { Game } from '../../../classes/Game';
-	import { getThemeList } from '../../../requests/group';
+    import { blueStyle, buttonStyle, grayStyle, hr, largeTitle, inputStyle } from '../../css';
+	import { Game } from '../../classes/Game';
+	import { getThemeList } from '../../requests/group';
 	import Autocomplete from './autocomplete.svelte';
     const section = "font-semibold text-lg text-center mb-3";
 
