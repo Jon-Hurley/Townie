@@ -140,6 +140,17 @@ def updateInfo(request):
     return returnUserPrivate(docs[0])
 
 @csrf_exempt
+def updatePlayableTime(request):
+    data = json.loads(request.body)
+    key = data['key']
+    passwordHash = data['passwordHash']
+    weeklyGamePlayed = data['weeklyGamePlayed']
+    newTime = data['newTime']
+
+    docs = queries.UpdatePlayableInfo(key, passwordHash, weeklyGamePlayed, newTime).batch()
+    return returnUserPrivate(docs[0])
+
+@csrf_exempt
 def deleteUser(request):
     data = json.loads(request.body)
     key = data['key']

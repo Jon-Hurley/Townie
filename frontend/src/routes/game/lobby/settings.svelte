@@ -12,6 +12,8 @@
             if (gs) {
                 form = { ...gs.game.settings };
                 form.otherCompletionTime = form.otherCompletionTime;
+                form.otherRadius = form.otherRadius;
+                form.otherBudget = form.otherBudget;
             }
         })
     })

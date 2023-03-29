@@ -130,6 +130,28 @@ export const updateAccount = async(password, newUsername, newPhone) => {
     }
 };
 
+export const updatePlayableGame = async(weeklyGamePlayed, newTime) => {
+    try {
+        const user = get(userStore);
+        const res = await axios.post(
+            PUBLIC_BACKEND_API + 'user/updateTime', 
+            {
+                key: user.key,
+                username: user.username,
+                passwordHash: user.passwordHash,
+
+                weeklyGamePlayed,
+                newTime
+            }
+        );
+        userStore.set(res.data)
+        return null;
+    } catch (err) {
+        return err?.response?.data?.errorMessage 
+            || 'Connection Refused. Failed to update user. Please try again.';
+    }
+}
+
 export const initiatePasswordReset = async(phone) => {
     try {
         const res = await axios.post(

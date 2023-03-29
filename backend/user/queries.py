@@ -9,7 +9,9 @@ def createUser(username, passwordHash, phoneNumber):
             'phone': phoneNumber,
             'points': 0,
             'rank': 'beginner',
-            'purchases': []
+            'purchases': [],
+            'weekly_game_played': False,
+            'next_available_game': int(time.time())
         },
         return_new=True
     )
@@ -42,6 +44,28 @@ def updateInfo(userKey, passwordHash, newUsername, newPhone, newPasswordHash):
             'newPasswordHash': newPasswordHash
         }
     )
+
+def UpdatePlayableInfo(userKey, passwordHash, weeklyGamePlayed, newTime):
+   return arango_con.db.aql.execute(
+        """
+        FOR user IN User
+            FILTER user._key == @userKey
+                && user.passwordHash == @passwordHash
+            UPDATE user WITH {
+                _key: @userKey,
+                weeklyGamePlayed: @weeklyGamePlayed,
+                next_available_game: @newTime
+            } IN User
+            
+            RETURN NEW
+        """,
+        bind_vars={
+            'passwordHash': passwordHash,
+            'userKey': userKey,
+            'weeklyGamePlayed': weeklyGamePlayed,
+            'newTime': newTime
+        }
+    ) 
 
 def updatePassword(userKey, newPasswordHash):
     return arango_con.userCollection.update({
