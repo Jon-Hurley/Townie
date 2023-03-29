@@ -1,6 +1,6 @@
 <script>
 	import { onMount } from "svelte";
-	import { inputStyle } from "../../../css";
+	import { inputStyle } from "../../css";
     
     export let settings;
     let input;

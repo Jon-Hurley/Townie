@@ -5,13 +5,10 @@
 		buttonStyle,
 		grayStyle,
 		hr,
-		largeTitle,
-		inputStyle,
-		indigoStyle,
-		redStyle
+		largeTitle
 	} from '../../css';
 	import { Game } from '../../classes/Game';
-	import Autocomplete from './lobby/autocomplete.svelte';
+	import Autocomplete from './autocomplete.svelte';
 	const section = 'font-semibold text-lg text-center mb-3';
 
 	let form = {};
