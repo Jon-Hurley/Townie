@@ -5,8 +5,6 @@ export const userStore = writable();
 
 export const mapStore = writable();
 
-export const gamePage = writable('/game/join');
-
 export const updateAccessToken = (res) => {
     const token = res?.data?.token;
     if (!token) return;
@@ -26,8 +24,11 @@ export const pushPopup = (status, message, onOk) => {
                 const queue = [ ...get(popupQueue) ];
                 queue.shift(1);
                 popupQueue.set(queue);
-                console.log({queue});
+                
                 if (onOk) onOk();
+                if (message.includes('Invalid token')) {
+                    logout();
+                }
             }
         }
     ]);

@@ -17,11 +17,15 @@ def onConnect(request):
     connectionId = body['connectionId']
     print(gameKey, userKey, connectionId)
 
-    # add user to game, canceling their previous connection if left open
+    # add user to game, nulling their previous connection if left open
     res = queries.addPlayer(gameKey, userKey, connectionId)
-    oldDoc = res.batch()[0]['oldDoc']
-    if oldDoc:
-        forceDisconnect(oldDoc['connectionId'])
+    oldConnectionIds = res.batch()[0]
+    print(oldConnectionIds)
+    for oldConnectionId in oldConnectionIds:
+        try:
+            forceDisconnect(oldConnectionId)
+        except Exception as err:
+            print(err)
 
     # relay game all game data to all players (except the new one)
     data = queries.getGame(gameKey).batch()[0]
@@ -43,10 +47,9 @@ def onDisconnect(request):
     connectionId = body['connectionId']
     print(connectionId)
     res = queries.leaveGame(connectionId).batch()
-    if len(res):  # a player was removed from DB.
-        gameKey = res[0]['gameKey'][6:]  # [6:] = id -> key
+    if len(res):
+        gameKey = res[0]['gameId'][6:]  # [6:] = id -> key
         propogateAllUpdates(gameKey, {connectionId})
-    # else: connection was already updated, and no longer exists anyways.
     return JsonResponse({})
 
 @csrf_exempt
@@ -59,7 +62,7 @@ def onDefault(request):
 
     if method == 'get-game':
         gameKey = body['gameKey']
-        data = queries.getGame(gameKey).batch()[0]
+        data = queries.getGameForPlayer(gameKey, connectionId).batch()[0]
         return JsonResponse({
             'method': 'get-game',
             'data': data
@@ -99,8 +102,7 @@ def onDefault(request):
 def propogateAllUpdates(gameKey=None, conExcl={}, data=None):
     if data is None:
         data = queries.getGame(gameKey).batch()[0]
-    users = data['players']
-    propogateUpdates(users, data, conExcl)
+    propogateUpdates(data, conExcl)
 
 # GET REQUEST: CREATE A LOBBY/GAME
 

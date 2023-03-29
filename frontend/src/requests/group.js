@@ -13,7 +13,8 @@ export const createGame = async() => {
         updateAccessToken(res);
         return res.data.key;
     } catch (err) {
-        const err_message = "Unable to create game. Please try again.";
+        const err_message = err?.response?.data?.errorMessage
+                            || "Unable to create game. Please try again.";
         pushPopup(0, err_message);
         return false;
     }

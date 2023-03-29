@@ -3,6 +3,7 @@ import { PUBLIC_BACKEND_API } from '$env/static/public';
 import { get } from 'svelte/store';
 import { pushPopup, updateAccessToken, userStore } from './../stores';
 import { goto } from '$app/navigation';
+import { Game } from '../classes/Game';
 
 export const login = async(username, password, remember, silent) => {
     try {
@@ -104,7 +105,9 @@ export const localLogin = async() => {
 }
 
 export const logout = () => {
+    Game.leave();
     console.log("logging out")
+    sessionStorage.removeItem('token');
     userStore.set(null);
 };
 
@@ -227,9 +230,15 @@ export const deleteUser = async() => {
             body
         );
         userStore.set(null);
-        return null;
+        pushPopup(
+            1, 'Account Deleted Successfully!',
+            () => logout()
+        );
+        return true;
     } catch (err) {
-        return err?.response?.data?.errorMessage
-            || 'Connection Refused. Failed to delete user. Please try again.';
+        const err_message = err?.response?.data?.errorMessage
+                            || 'Connection Refused. Failed to delete user. Please try again.';
+        pushPopup(0, err_message);
+        return false;
     }
 }

@@ -43,7 +43,7 @@
 
 <nav
 	class="
-        w-full p-6 h-16
+        w-full p-4 h-[60px] min-h-[60px]
         flex items-center justify-between
         overflow-hidden
         border-b-2 border-gray-100 

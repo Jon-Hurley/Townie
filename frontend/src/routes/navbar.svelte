@@ -19,7 +19,7 @@
         bg-gray-800
         w-full
         px-2
-        h-[70px]
+        h-[60px] min-h-[60px]
         flex items-center justify-around
         overflow-hidden
         z-50

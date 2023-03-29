@@ -31,8 +31,18 @@ def createGame():
 def addPlayer(gameKey, userKey, connectionId):
     return arango_con.db.aql.execute(
         """
+            LET oldConnectionIds = (
+                FOR v, e
+                IN 1..1
+                ANY CONCAT("User/", @userKey)
+                GRAPH Playerships
+                    FILTER e.connectionId != null
+                    RETURN e.connectionId
+            )
+
             UPSERT {
-                _from: CONCAT("User/", @userKey)
+                _from: CONCAT("User/", @userKey),
+                _to: CONCAT("Games/", @gameKey)
             }
             INSERT {
                 _from: CONCAT("User/", @userKey),
@@ -45,24 +55,18 @@ def addPlayer(gameKey, userKey, connectionId):
                 dist: 0,
                 totalDist: 0,
                 totalTime: 0,
-                points: 0,                
-                finished: false
+                points: 0,
+                addedPoints: 0,
+                finished: false,
+                paused: false
             }
             UPDATE {
-                _to: CONCAT("Games/", @gameKey),
                 connectionId: @connectionId,
-                finished: false,
-                destinationIndex: 0,
-                time: 0,
-                dist: 0,
-                totalDist: 0,
-                totalTime: 0,
-                points: 0                
+                finished: false
             }
             IN Players
-            RETURN {
-                oldDoc: OLD
-            }
+
+            RETURN oldConnectionIds
         """,
         bind_vars={
             'gameKey': str(gameKey),
@@ -77,13 +81,28 @@ def leaveGame(connectionId):
         """
             FOR p IN Players
                 FILTER p.connectionId == @connectionId
+                    && p.connectionId != null
+
+                LET u = (
+                    FOR u in User
+                        FILTER u._id == p._from
+                        UPDATE u
+                        WITH {
+                            points: p.points - p.addedPoints
+                        }
+                        IN User
+                        RETURN NEW
+                )
+        
                 UPDATE p
                 WITH {
-                    finished: true
+                    finished: true,
+                    connectionId: null,
+                    addedPoints: p.points
                 }
                 IN Players
                 RETURN {
-                    playerId: OLD._to
+                    gameId: OLD._to
                 }
         """,
         bind_vars={
@@ -109,12 +128,10 @@ def startGame(gameKey, settings):
 
             FOR p IN Players
                 FILTER p._to == CONCAT('Games/', @gameKey)
+                    && p.connectionId != null
                 UPDATE p
                 WITH {
-                    prevTime: t,
-                    time: 0,
-                    totalTime: 0,
-                    paused: false
+                    prevTime: t
                 }
                 IN Players
 
@@ -149,6 +166,7 @@ def updatePlayerLocation(connectionId, lon, lat):
 
         FOR p IN Players
             FILTER p.connectionId == @connectionId
+                && p.connectionId != null
             
             LET atPrevDest = (
                 FOR v, e IN 1..1 OUTBOUND p._to Itineraries
@@ -217,6 +235,7 @@ def getGame(gameKey):
 
         LET players = (
             FOR v, e IN 1..1 INBOUND CONCAT("Games/", @key) Players
+                FILTER e.connectionId != null
                 RETURN {
                     key: v._key,
                     username: v.username,
@@ -249,6 +268,65 @@ def getGame(gameKey):
     """,
         bind_vars={
             'key': str(gameKey),
+        }
+    )
+
+def getGameForPlayer(gameKey, connectionId):
+    return arango_con.db.aql.execute(
+        """
+        WITH User, User, Destinations
+
+        LET players = (
+            FOR v, e IN 1..1 INBOUND CONCAT("Games/", @key) Players
+                FILTER e.connectionId != null
+                RETURN {
+                    key: v._key,
+                    username: v.username,
+                    connectionId: e.connectionId,
+                    lon: e.lon,
+                    lat: e.lat,
+                    destinationIndex: e.destinationIndex,
+                    points: e.points
+                }
+        )
+
+        LET player = (
+            FOR v, e IN 1..1 INBOUND CONCAT("Games/", @key) Players
+                FILTER e.connectionId == @connectionId
+                RETURN {
+                    key: v._key,
+                    username: v.username,
+                    connectionId: e.connectionId,
+                    lon: e.lon,
+                    lat: e.lat,
+                    destinationIndex: e.destinationIndex,
+                    points: e.points
+                }
+        )[0]
+
+        LET destinations = (
+            FOR v, e IN 1..1 OUTBOUND CONCAT("Games/", @key) Itineraries
+                RETURN {
+                    index: e.index,
+                    points: e.points,
+                    name: v.name,
+                    lon: v.longitude,
+                    lat: v.latitude
+                }
+        )
+
+        FOR game IN Games
+        FILTER game._key == @key
+        RETURN {
+            game,
+            players,
+            destinations,
+            player
+        }
+    """,
+        bind_vars={
+            'key': str(gameKey),
+            'connectionId': str(connectionId)
         }
     )
 

@@ -1,5 +1,5 @@
 <script>
-    import { buttonStyle, indigoStyle, redStyle } from '../../css';
+    import { buttonStyle, hr, indigoStyle, redStyle } from '../../css';
 	import { Game } from '../../classes/Game';
 	import Settings from './settings.svelte';
 	import Leaderboard from './leaderboard.svelte';
@@ -24,7 +24,14 @@
     }
 </script>
 
-<div class="flex w-full justify-between mt-4 gap-2">
+<hr class={hr}>
+<div
+    class="
+        flex
+        w-full justify-between
+        pt-4 gap-2
+    "
+>
     <!-- {#if gamePage === 'map'} -->
         <Leaderboard/>
     <!-- {/if} -->

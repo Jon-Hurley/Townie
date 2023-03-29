@@ -1,9 +1,8 @@
 import axios from 'axios';
 import { PUBLIC_BACKEND_API } from '$env/static/public';
 import { get } from 'svelte/store';
-import { updateAccessToken, userStore } from '../stores';
+import { pushPopup, updateAccessToken, userStore } from '../stores';
 
-// SILENT ERRORING
 export const getFriends = async() => {
     try {
         const body = {
@@ -19,7 +18,9 @@ export const getFriends = async() => {
         console.log(res);
         return res.data.friends || [];        
     } catch (err) {
-        console.log(err);
+        const err_message = err?.response?.data?.errorMessage
+                            || "Unable to remove or reject friend. Please try again.";
+        pushPopup(0, err_message);
         return [];
     }
 };
@@ -38,7 +39,8 @@ export const sendFriendRequest = async(toKey) => {
         console.log("res: ", res.data)
         return res.data;
     } catch (err) {
-        const err_message = "Unable to send friend request. Please try again.";
+        const err_message = err?.response?.data?.errorMessage
+                            || "Unable to send friend request. Please try again.";
         pushPopup(0, err_message);
         return false;
     }
@@ -57,7 +59,8 @@ export const acceptFriend = async(friendshipKey) => {
         return true;
     } catch (err) {
         console.log(err);
-        const err_message = "Unable to accept friend. Please try again.";
+        const err_message = err?.response?.data?.errorMessage
+                            || "Unable to accept friend. Please try again.";
         pushPopup(0, err_message);
         return false;
     }
@@ -82,7 +85,8 @@ export const rejectFriend = async(friendshipKey) => {
         return true;
     } catch (err) {
         console.log(err);
-        const err_message = "Unable to remove or reject friend. Please try again.";
+        const err_message = err?.response?.data?.errorMessage
+                            || "Unable to remove or reject friend. Please try again.";
         pushPopup(0, err_message);
         return false;
     }
@@ -100,7 +104,6 @@ const processPending = (pendingRes) => {
     return pendingList;
 };
 
-// SILENT ERRORING
 export const loadNotifications = async() => {
     try {
         const [ pendingRes ] = await Promise.all([
@@ -121,7 +124,9 @@ export const loadNotifications = async() => {
         
         return notifs;
     } catch (err) {
-        console.log(err);
+        const err_message = err?.response?.data?.errorMessage
+                            || "Unable to remove or reject friend. Please try again.";
+        pushPopup(0, err_message);
         return [];
     }
 };

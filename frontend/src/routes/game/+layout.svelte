@@ -4,27 +4,30 @@
     import Join from './join/join.svelte';
 	import Lobby from './lobby/lobby.svelte';
 	import Map from './map/map.svelte';
+	import Subnav from './subnav.svelte';
     
     let gameStore = Game.store;
     
     $: gamePage = $gameStore?.game?.page || 'join';
 </script>
 
-{#if gamePage === 'join'}
-    <slot name="join">
-        <Join/>
-    </slot>
-{:else if gamePage === 'lobby'}
-    <slot name="lobby">
-        <Lobby/>
-    </slot>
-{:else if gamePage === 'map'}
-    <slot name="map">
-        <Map/>
-    </slot>
-{:else if gamePage === 'summary'}
-    <slot name="summary">
-    </slot>
-{:else}
-    <Loading/>
-{/if}
+<div class="flex flex-col h-full">
+    {#if gamePage === 'join'}
+        <slot name="join">
+            <Join/>
+        </slot>
+    {:else if gamePage === 'lobby'}
+        <slot name="lobby">
+            <Lobby/>
+            <Subnav/>
+        </slot>
+    {:else if gamePage === 'map'}
+        <slot name="map">
+            <Map/>
+            <Subnav/>
+        </slot>
+    {:else if gamePage === 'summary'}
+        <slot name="summary">
+        </slot>
+    {/if}
+</div>

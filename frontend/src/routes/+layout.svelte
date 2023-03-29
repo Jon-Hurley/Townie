@@ -17,10 +17,12 @@
     let loaded = false;
 
 	onMount(async () => {
+        loaded = false;
+
 		// create a function for the GOOGLE API to call when done initializing
 		window.initMap = () => mapStore.set(true);
 		mounted = true;
-
+        
 		const res = await autoLogin();
 		if (!res) {
 			goto('/login');
@@ -31,6 +33,7 @@
 	// IF user goes valid to invalid, GOTO login.
 	let lastState = false;
 	$: {
+        loaded = false;
         console.log('NEW USER: ', $userStore);
         if (lastState && !$userStore) {
             goto('/login');
@@ -44,6 +47,7 @@
             }
         }
 		lastState = !!$userStore;
+        loaded = true;
 	}
     $: console.log({slots: $$slots})
 </script>
@@ -60,7 +64,7 @@
 </svelte:head>
 
 {#if loaded}
-    <div class="flex flex-col justify-between items-center h-screen w-screen">
+    <div class="flex flex-col justify-between items-center h-screen w-screen max-h-screen">
         {#if $userStore}
             <AccountBar/>
             <div class="m-0 w-full p-4 h-full">

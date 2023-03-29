@@ -17,16 +17,16 @@ client = boto3.client(
 # PROPOGATE CHANGES BACK TO USERS VIA WS API
 # FUCK DJANGO AND ITS BS CONCURRENCY REQS.
 
-def propogateUpdates(users, data, conExcl={}):
-    for user in users:
-        connectionId = user['connectionId']
-        if connectionId in conExcl:
-            continue
-        propogateUpdate(connectionId, user, data)
+def propogateUpdates(data, conExcl={}):
+    players = data['players']
+    for player in players:
+        connectionId = player['connectionId']
+        if connectionId not in conExcl:
+            propogateUpdate(connectionId, player, data=data)
     return True
 
-def propogateUpdate(connectionId, user, data):
-    data['player'] = user
+def propogateUpdate(connectionId, player, data):
+    data['player'] = player
     data = json.dumps({
         'method': 'update-game',
         'data': data,

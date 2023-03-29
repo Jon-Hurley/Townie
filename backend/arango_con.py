@@ -26,15 +26,13 @@ if not db.has_collection('User'):
     destinationCollection = db.collection('Destinations')
     itineraryCollection = db.collection('Itineraries')
 
-    userCollection.add_persistent_index(
+    userCollection.add_hash_index(
         fields=['username'],
-        unique=True,
-        sparse=True
+        unique=True
     )
     userCollection.add_persistent_index(
         fields=['phone'],
-        unique=True,
-        sparse=True
+        unique=True
     )
 
     destinationCollection.add_geo_index(
@@ -42,36 +40,38 @@ if not db.has_collection('User'):
     )
     destinationCollection.add_persistent_index(
         fields=['name'],
-        unique=True,
-        sparse=True
+        unique=True
     )
 
-    friendsCollection.add_persistent_index(
-        fields=['_from', '_to'],
-        unique=True,
-        sparse=True
-    )
-    
-    playerCollection.add_persistent_index(
-        fields=['_from'],
-        unique=True,
-        sparse=True
-    )
-    playerCollection.add_persistent_index(
+    playerCollection.add_hash_index(
         fields=['connectionId'],
         unique=True,
-        sparse=True
+        sparse=True,
+        name='connectionIdToPlayer',
+        in_background=True
     )
 
-    itineraryCollection.add_persistent_index(
-        fields=['_from', 'index'],
-        unique=True,
-        sparse=True
+    db.create_graph(
+        'Friendships',
+        edge_definitions={
+            'edge_collection': 'Friends',
+            'from_vertex_collections': ['User'],
+            'to_vertex_collections': ['User']
+        },
+        shard_count=1,
+        replication_factor=3,
+        write_concern=3
     )
-    itineraryCollection.add_persistent_index(
-        fields=['_from', '_to'],
-        unique=True,
-        sparse=True
+    db.create_graph(
+        'Playerships',
+        edge_definitions={
+            'edge_collection': 'Players',
+            'from_vertex_collections': ['User'],
+            'to_vertex_collections': ['Games']
+        },
+        shard_count=1,
+        replication_factor=3,
+        write_concern=3
     )
 
 userCollection = db.collection('User')

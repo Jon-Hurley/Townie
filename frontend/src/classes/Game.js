@@ -93,10 +93,11 @@ export class Game {
         try {
             const userKey = get(userStore).key;
             Game.ws = new WebSocket(`${PUBLIC_BACKEND_WS}?gameKey=${gameKey}&userKey=${userKey}`);
-            await new Promise((res, rej) => { 
+            const r = await new Promise((res, rej) => { 
                 Game.ws.onerror = () => rej();
-                Game.ws.onopen = () => res();
+                Game.ws.onopen = (e) => res(e);
             });
+            console.log(r);
     
             Game.send('get-game', { gameKey });
             const res = await new Promise((res, rej) => { 
@@ -109,6 +110,9 @@ export class Game {
                     res(data);
                 };
             });
+            console.log(res)
+            // res.player
+
             Game.store.set(res);
 
             Game.setDefaultEvents();

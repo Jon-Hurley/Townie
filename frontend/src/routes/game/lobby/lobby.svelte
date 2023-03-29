@@ -44,7 +44,4 @@
             </div>
         </div>
     </div>
-    <hr class={hr}>
-    
-    <Subnav/>
 </div>

@@ -1,10 +1,7 @@
 <script>
-	import { goto } from '$app/navigation';
-	import { onMount } from 'svelte';
-	import { get } from 'svelte/store';
 	import { blueStyle, buttonStyle, redStyle } from '../../../css';
-	import { updateAccount, deleteUser } from '../../../requests/account';
-	import { pushPopup, popupQueue, userStore } from '../../../stores';
+	import { updateAccount } from '../../../requests/account';
+	import { userStore } from '../../../stores';
 	const title = 'text-gray-700 font-semibold text-lg mt-6';
 	const hr = 'my-2 bg-gray-100 h-[2px]';
 

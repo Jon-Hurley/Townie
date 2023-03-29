@@ -70,7 +70,8 @@
 <style>
     .full-screen {
         width: 100vw;
-        height: calc(100vh - 120px);
+        height: calc(100vh - 194px);
         margin: -16px;
+        margin-bottom: 0;
     }
 </style>

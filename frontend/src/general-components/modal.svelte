@@ -55,11 +55,7 @@
 
 			<button
 				id="ok-btn"
-				on:click={() => {
-					console.log({ message });
-					onOk();
-					message = null;
-				}}
+				on:click={onOk}
 				class="w-full mt-6 {buttonStyle} {status === 1 ? greenStyle : redStyle}"
 			>
 				OK
