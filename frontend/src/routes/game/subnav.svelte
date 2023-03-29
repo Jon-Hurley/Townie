@@ -2,6 +2,7 @@
     import { buttonStyle, indigoStyle, redStyle } from '../../css';
 	import { Game } from '../../classes/Game';
 	import Settings from './settings.svelte';
+	import Leaderboard from './leaderboard.svelte';
 
     const gameStore = Game.store;
     $: gamePage = $gameStore?.game?.page || 'join';
@@ -24,6 +25,10 @@
 </script>
 
 <div class="flex w-full justify-between mt-4 gap-2">
+    <!-- {#if gamePage === 'map'} -->
+        <Leaderboard/>
+    <!-- {/if} -->
+
     <Settings/>
 
     <button

@@ -30,6 +30,10 @@ export const grayStyle = `
     border-gray-500
     text-gray-500
 `;
+export const amberStyle = `
+    border-amber-500
+    text-amber-500
+`;
 
 export const inputStyle = `
     m-0 w-full p-3 pl-8

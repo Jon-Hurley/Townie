@@ -39,17 +39,25 @@ def addPlayer(gameKey, userKey, connectionId):
                 _to: CONCAT("Games/", @gameKey),
                 connectionId: @connectionId,
                 destinationIndex: 0,
-                dist: 0,
-                points: 0,
                 lon: 0,
                 lat: 0,
+                time: 0,
+                dist: 0,
                 totalDist: 0,
+                totalTime: 0,
+                points: 0,                
                 finished: false
             }
             UPDATE {
                 _to: CONCAT("Games/", @gameKey),
                 connectionId: @connectionId,
-                finished: false
+                finished: false,
+                destinationIndex: 0,
+                time: 0,
+                dist: 0,
+                totalDist: 0,
+                totalTime: 0,
+                points: 0                
             }
             IN Players
             RETURN {
@@ -207,15 +215,17 @@ def getGame(gameKey):
         """
         WITH User, Destinations
 
-                    LET players = (
-        FOR v, e IN 1..1 INBOUND CONCAT("Games/", @key) Players
-            RETURN {
-                key: v._key,
-                username: v.username,
-                connectionId: e.connectionId,
-                lon: e.lon,
-                lat: e.lat
-            }
+        LET players = (
+            FOR v, e IN 1..1 INBOUND CONCAT("Games/", @key) Players
+                RETURN {
+                    key: v._key,
+                    username: v.username,
+                    connectionId: e.connectionId,
+                    lon: e.lon,
+                    lat: e.lat,
+                    destinationIndex: e.destinationIndex,
+                    points: e.points
+                }
         )
 
         LET destinations = (
