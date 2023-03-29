@@ -1,5 +1,5 @@
 import { writable, get } from 'svelte/store';
-import { userStore } from './stores.js';
+import { userStore } from '../stores.js';
 import { PUBLIC_BACKEND_WS } from '$env/static/public';
 import { Map } from './Map.js';
 import { Location } from './Location.js';

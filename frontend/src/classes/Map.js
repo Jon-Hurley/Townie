@@ -2,7 +2,7 @@ import {
     PUBLIC_GOOGLE_MAPS_DARK_MODE,
     PUBLIC_GOOGLE_MAPS_LIGHT_MODE
 } from '$env/static/public';
-import { userStore } from './stores';
+import { userStore } from '../stores';
 import { get } from 'svelte/store';
 import { Game } from './Game'
 import { Location } from './Location';

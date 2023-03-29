@@ -1,7 +1,7 @@
 <script>
     import { onMount } from 'svelte';
     import { blueStyle, buttonStyle, grayStyle, hr, largeTitle, inputStyle } from '../../../css';
-	import { Game } from '../../../Game';
+	import { Game } from '../../../classes/Game';
 
     let form = {};
 

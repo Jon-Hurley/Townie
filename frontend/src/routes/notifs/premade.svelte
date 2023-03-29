@@ -1,6 +1,6 @@
 <script>
     import { userStore } from "../../stores";
-    import { Game } from "../../Game";
+    import { Game } from "../../classes/Game";
     import { onMount } from 'svelte';
     import { updatePlayableGame } from "../../requests/account";
     import { createGame } from "../../requests/group";
