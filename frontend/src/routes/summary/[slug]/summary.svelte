@@ -4,7 +4,6 @@
 	import { buttonStyle, redStyle, greenStyle, blueStyle, indigoStyle } from '../../../css';
 	import Modal from '../../../components/modal.svelte';
 	import { onMount } from 'svelte';
-	import { rating } from '../../../requests/search';
 	const title = 'text-gray-700 font-semibold text-lg mt-6';
 	const hr = 'my-1 bg-gray-100 h-[2px]';
 
@@ -38,8 +37,6 @@
 		let tmpSecond = seconds == 1 ? 'second' : 'seconds';
 		return `${hours} ${tmpHour} : ${minutes} ${tmpMinute} : ${seconds} ${tmpSecond}`;
 	}
-
-	function getStarRating(rating) {}
 
 	let media = [
 		{
@@ -181,9 +178,10 @@
 		class="fa-pull-right {buttonStyle}"
 		style="display:inline-block;text-align:right;"
 	/>
-
-	<hr class={hr} />
 </div>
+<hr class={hr} />
+{#if userInGame}
+	<div />{/if}
 
 <div class={title}>How many finished?</div>
 <hr class={hr} />
