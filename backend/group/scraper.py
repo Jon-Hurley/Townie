@@ -33,7 +33,9 @@ def generate(settings, gameKey):
     elif settings['transitAllowed']:
         mode = "transit"
     print(int(settings['radius']/0.000621371))
-    place_info = json.dumps(gmaps.places(None, (settings['lat'], settings['lon']),  int(settings['radius']/0.000621371), None, None, settings['budget'], False, settings['theme'], None, None))
+    #place_info = json.dumps(gmaps.places(None, (settings['lat'], settings['lon']),  int(settings['radius']/0.000621371), None, None, settings['budget'], False, settings['theme'], None, None))
+    place_info = json.dumps(gmaps.places_nearby((settings['lat'], settings['lon']),  int(settings['radius']/0.000621371), None, None, None, settings['budget'], None, False, None, settings['theme'], None))
+    print(place_info)
     place3 = json.loads(place_info)
     for i in range(len(place3['results'])): #used to be len(place3['results'])
         name_dest = place3['results'][i]['name']
@@ -78,6 +80,7 @@ def generate(settings, gameKey):
     if lengthToUse > 10:
         lengthToUse = 10
     unusedList = []
+    print(locationList)
     for i in range(len(locationList) - lengthToUse):
         locationList.pop()
         unusedList.append(list_copy.pop())

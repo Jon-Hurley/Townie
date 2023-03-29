@@ -16,7 +16,7 @@ def onConnect(request):
     lon = body['lon']
     print(gameKey, connectionId, lat, lon)
 
-    userKey = "10010279"
+    userKey = "10010281"
 
     # add user to game, canceling their previous connection if left open
     res = queries.addPlayer(gameKey, userKey, connectionId, lat, lon)
