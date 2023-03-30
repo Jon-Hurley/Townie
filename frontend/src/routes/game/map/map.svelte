@@ -6,3 +6,4 @@
 {#if $mapStore}
     <GameMap/>
 {/if}
+

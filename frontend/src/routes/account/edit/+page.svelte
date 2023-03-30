@@ -2,8 +2,10 @@
 	import { blueStyle, buttonStyle, redStyle } from '../../../css';
 	import { updateAccount } from '../../../requests/account';
 	import { userStore } from '../../../stores';
+	import { buttonStyle, blueStyle, grayStyle } from '../../../css';
 	const title = 'text-gray-700 font-semibold text-lg mt-6';
 	const hr = 'my-2 bg-gray-100 h-[2px]';
+	let hidingState = "Show my Exact Location";
 
 	const form = {
 		password: '',
