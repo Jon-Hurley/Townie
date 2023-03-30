@@ -17,7 +17,9 @@
 		console.log({ gameKey });
 		summary = await getSummary(gameKey);
 
-		summary.numFinished = summary.players.filter((player) => player.finished).length;
+		summary.numFinished = summary.players.filter(
+			(player) => player.destinationIndex === summary.destinations.length - 1
+		).length;
 		console.log(summary);
 
 		let theme = 'error';

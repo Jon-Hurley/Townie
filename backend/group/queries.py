@@ -127,7 +127,8 @@ def getGame(gameKey):
                 connectionId: e.connectionId,
                 lon: e.lon,
                 lat: e.lat,
-                finished: e.finished
+                finished: e.finished,
+                destinationIndex: e.destinationIndex
             }
         )
 

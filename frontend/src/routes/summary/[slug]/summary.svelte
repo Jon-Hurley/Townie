@@ -303,7 +303,7 @@
 			<div>No participants to display.</div>
 		{/if}
 		{#each summary.players as r}
-			{#if r.finished}
+			{#if r.destinationIndex === summary.destinations.length - 1}
 				<li
 					class="
                             w-full
