@@ -17,7 +17,7 @@
 
     onMount(() => {
         
-        if (!playable || currentTime - prevTime > 604800) {
+        if (!playable || currentTime - prevTime < 604800) {
             let transportation = Math.floor(Math.random() * 4);
             let desiredCompletionTime = Math.floor(Math.random() * 5);
             let theme = Math.floor(Math.random() * 4)
@@ -116,7 +116,7 @@
     }
 
 </script>
-{#if (currentTime - prevTime > 604800)}
+{#if (currentTime - prevTime < 604800)}
 <div class="flex ">
     <button
         on:click={() => {

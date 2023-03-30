@@ -1,8 +1,8 @@
 <script>
 	import { onDestroy, onMount } from 'svelte';
-	import { Location } from '../../../Location';
-    import { Map } from '../../../Map';
-	import Settings from '../lobby/settings.svelte';
+	import { Location }  from '../../../classes/Location'
+    import { Map } from '../../../classes/Map'
+
 	import Newtime from './newtime.svelte';
 
     onMount(async() => {
