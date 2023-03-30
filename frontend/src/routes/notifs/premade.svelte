@@ -12,8 +12,12 @@
     let prevTime = user.next_available_game;
     let playable = user.weekly_game_played;
     let form = {};
+    let display = {};
+    const theme_options = ["Tourism", "Food", "Shoppping", "Museum"];
+    const budget_options = ["Free", "10", "25", "50", "Splurge!"]
 
     let yes = false;
+    let click = false;
 
     onMount(() => {
         if (!playable || currentTime - prevTime > 604800) {
@@ -28,36 +32,44 @@
                 form['walkingAllowed'] = false;
                 form['transitAllowed'] = false;
                 form['bicyclingAllowed'] = false;
+                display.transportation = "Driving";
             }
             else if (transportation == 1) {
                 form['drivingAllowed'] = false;
                 form['walkingAllowed'] = true;
                 form['transitAllowed'] = false;
                 form['bicyclingAllowed'] = false;
+                display.transportation = "Walking";
             }
             else if (transportation == 2) {
                 form['drivingAllowed'] = false;
                 form['walkingAllowed'] = false;
                 form['transitAllowed'] = true;
                 form['bicyclingAllowed'] = false;
+                display.transportation = "Transit";
             }
             else if (transportation == 3) {
                 form['drivingAllowed'] = false;
                 form['walkingAllowed'] = false;
                 form['transitAllowed'] = false;
                 form['bicyclingAllowed'] = true;
+                display.transportation = "Bicycling";
             }
 
             const desiredCompletionTimeMap = [ 30, 60, 90, 120, 180 ];
             form.desiredCompletionTime = desiredCompletionTimeMap[desiredCompletionTime];
+            display.desiredCompletionTime = desiredCompletionTimeMap[desiredCompletionTime]; 
                         
-            const themeMap = [ "tourist_attraction", "restaurant", "store", "museum" ]
+            const themeMap = [ "tourist_attraction", "restaurant", "store", "museum" ];
             form.theme = themeMap[theme];
+            display.theme = theme_options[theme]; 
 
             const radiusMap = [ 1, 2, 5, 10, 15, 20, 25 ];
             form.radius = radiusMap[radius];
+            display.radius = radiusMap[radius];
 
             form.budget = budget;
+            display.budget = budget_options[budget];
             console.log(form)
         }
     })
@@ -75,6 +87,18 @@
 </script>
 
 {#if (currentTime - prevTime > 604800)}
+    <div class="flex">
+        <ul bind:this={display}
+            class=" {buttonStyle} {blueStyle} w-full"
+        >
+            <li>Theme: {display.theme}</li>
+            <li>Length: {display.desiredCompletionTime} minutes</li>
+            <li>Radius: {display.radius}</li>
+            <li>Transportation: {display.transportation}</li>
+            <li>Budget Per Attraction: {display.budget} </li>
+            
+        </ul>
+    </div>
     <div class="flex ">
         <button
             on:click={() => {
