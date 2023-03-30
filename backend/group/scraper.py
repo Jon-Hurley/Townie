@@ -5,7 +5,7 @@ from . import queries
 import dotenv
 dotenv.load_dotenv()
 
-@csrf_exempt
+
 def generate(settings, gameKey):
     # Allows inputs for the settings:
     # settings['theme']
@@ -113,7 +113,7 @@ def generate(settings, gameKey):
     queries.insertIntoItinerary(listDict, gameKey)
     return total_time
 
-@csrf_exempt
+
 def extendGame(settings, gameKey):
     mode = ""
     if settings['drivingAllowed']:
@@ -179,8 +179,8 @@ def extendGame(settings, gameKey):
     queries.insertIntoNewItinerary(listDict, gameKey, index)
     return total_time
     
-# could be errors here
-@csrf_exempt
+
+
 def truncateGame(settings, gameKey):
     game = queries.getGame(gameKey)
     game1 = [doc for doc in game]

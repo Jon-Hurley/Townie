@@ -8,5 +8,4 @@ urlpatterns = [
     path('on-default/', views.onDefault),
     path('get-game/', views.getGame),
     path('get-theme-list/', views.getThemeList),
-    path('get-summary/', views.getSummary),
 ]
