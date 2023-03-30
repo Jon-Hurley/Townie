@@ -3,17 +3,24 @@
 
     let locationMessage = true;
 
-    $: hours = `00${Math.floor((elapsedTime/1000/60/60)%60)}`.slice(-2);
-    $: minutes = `00${Math.floor((elapsedTime/1000/60)%60)}`.slice(-2);
-    $: seconds = `00${Math.floor((elapsedTime/1000)%60)}`.slice(-2);
-    $: formattedTime = `${hours}:${minutes}:${seconds}`;
+    $: lHours = `00${Math.floor((locationTime/1000/60/60)%60)}`.slice(-2);
+    $: lMinutes = `00${Math.floor((locationTime/1000/60)%60)}`.slice(-2);
+    $: lSeconds = `00${Math.floor((locationTime/1000)%60)}`.slice(-2);
+    $: formattedLocationTime = `${lHours}:${lMinutes}:${lSeconds}`;
+
+    $: gHours = `00${Math.floor((gameTime/1000/60/60)%60)}`.slice(-2);
+    $: gMinutes = `00${Math.floor((gameTime/1000/60)%60)}`.slice(-2);
+    $: gSeconds = `00${Math.floor((gameTime/1000)%60)}`.slice(-2);
+    $: formattedGameTime = `${gHours}:${gMinutes}:${gSeconds}`;
 
     let startTime = 0;
-    let elapsedTime = 0;
+    let locationTime = 0;
+    let gameTime = 0;
     let oldGameTime = 0;
     let oldLocationTime = 0;
     let interval;
     let state = 1; // 1 for Game, 2 for Location
+    let gameTimer = true;
 
 
     const startGame = () => {
@@ -23,25 +30,28 @@
         interval = setInterval(() => {
             if (state === 1) {
                 const endTime = Date.now();
-                elapsedTime = endTime - startTime + oldGameTime;
+                gameTime = endTime - startTime + oldGameTime;
             } if (state === 2) {
                 const endTime = Date.now();
-                elapsedTime = endTime - startTime + oldLocationTime;
+                locationTime = endTime - startTime;
             }
         });
     }
 
 
     const pause = () => {
+        if (state === 1) {
+            startTime = Date.now();
+        }
         state = 2; // 2 represents paused
-        oldGameTime = elapsedTime;
-        startTime = Date.now();
+        gameTimer = false;
+        oldGameTime = gameTime;
     }
 
     const resume = () => {
         startTime = Date.now();
         state = 1; // 1 represents running
-        oldLocationTime = elapsedTime;
+        gameTimer = true;
     }
 </script>
 
@@ -62,7 +72,7 @@
 {/if}
 
 <!-- TIMER FEATURE -->
-{#if state === 1}
+{#if gameTimer}
     <button class="absolute top-[5rem] right-4 z-10
         bg-gray-800 rounded
         px-2 py-1
@@ -71,22 +81,22 @@
         <h1 class="border-b border-gray-400">
             Total Time:
         </h1>
-        {formattedTime}
+        {formattedGameTime}
     </button> 
 {:else}
     <button class="absolute top-[5rem] right-4 z-10
         bg-gray-800 rounded
         px-2 py-1
         opacity-50 text-gray-400"
-        on:click={resume}>
+        on:click={(() => gameTimer = true)}>
         <h1 class="border-b border-gray-400">
             Location Time:
         </h1>
-        {formattedTime}
+        {formattedLocationTime}
     </button> 
 {/if}
 
-{#if locationMessage}
+{#if !locationMessage}
     <!--Location popup-->
     <div class="z-50 fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full" id="location-popup">
         <div class="relative top-60 mx-auto p-3 border w-80 shadow-lg rounded-lg bg-white border-gray-700">
