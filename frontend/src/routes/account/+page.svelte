@@ -1,5 +1,5 @@
 <script>
-	import { buttonStyle, greenStyle, redStyle } from '../../css';
+	import { buttonStyle, greenStyle, redStyle, blueStyle } from '../../css';
 	import { deleteUser } from '../../requests/account';
 	import { userStore } from '../../stores';
 	const title = 'text-gray-700 font-semibold text-lg mt-6';
@@ -93,6 +93,14 @@
 <hr class={hr} />
 <div class="px-2 py-4 uppercase">
 	{$userStore?.rank}
+</div>
+
+<div>
+	<a href='/account/game_log'>
+		<button class="{buttonStyle} {blueStyle}">
+			Go to Game Logs  
+		</button>
+	</a>
 </div>
 
 {#if popupOpen}

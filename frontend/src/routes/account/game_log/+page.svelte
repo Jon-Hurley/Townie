@@ -1,7 +1,7 @@
 <script>
 	import { onMount } from "svelte";
 	//import AccountBar from "../../../components/account-bar.svelte";
-	import Loading from "../../../components/loading.svelte";
+	import Loading from "../../../general-components/loading.svelte";
     import { buttonStyle, gridItem, indigoStyle, redStyle, greenStyle, largeTitle, listItem } from "../../../css";
 	import { getGameLog } from "../../../requests/search";
     const title = "text-gray-700 font-semibold text-lg mt-2";
