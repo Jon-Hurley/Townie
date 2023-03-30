@@ -1,6 +1,4 @@
 <script>
-    import Tutorial from "../../components/tutorial.svelte";
-
     let locationMessage = true;
 
     $: lHours = `00${Math.floor((locationTime/1000/60/60)%60)}`.slice(-2);
@@ -17,7 +15,6 @@
     let locationTime = 0;
     let gameTime = 0;
     let oldGameTime = 0;
-    let oldLocationTime = 0;
     let interval;
     let state = 1; // 1 for Game, 2 for Location
     let gameTimer = true;
