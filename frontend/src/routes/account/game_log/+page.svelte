@@ -56,6 +56,9 @@
                         <div>
                             Number of Destinations Completed: {game['destinationsCompleted']} / {game['totalDestinations']}
                         </div>
+                        <div>
+                            Theme: {game['theme']} (Rating: {game['themeRating']} / 5)
+                        </div>
                     </div>
                 {/each}
             </div>

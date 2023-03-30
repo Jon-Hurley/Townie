@@ -329,7 +329,9 @@ def getGameLog(userKey):
             totalDestinations: game.totalDestinations,
             destinationsCompleted: game.destinationsCompleted,
             timeSpent: game.timeSpent,
-            points: game.points
+            points: game.points,
+            theme: game.theme,
+            themeRating: game.themeRating 
         }
         """,
         bind_vars={'key': int(userKey)}
