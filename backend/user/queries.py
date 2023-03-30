@@ -49,12 +49,11 @@ def updateInfo(userKey, newUsername, newPhone, newPasswordHash,
         }
     )
 
-def UpdatePlayableInfo(userKey, passwordHash, weeklyGamePlayed, newTime):
+def UpdatePlayableInfo(userKey, weeklyGamePlayed, newTime):
     return arango_con.db.aql.execute(
         """
         FOR user IN User
             FILTER user._key == @userKey
-                && user.passwordHash == @passwordHash
             UPDATE user WITH {
                 _key: @userKey,
                 weeklyGamePlayed: @weeklyGamePlayed,
@@ -64,7 +63,6 @@ def UpdatePlayableInfo(userKey, passwordHash, weeklyGamePlayed, newTime):
             RETURN NEW
         """,
         bind_vars={
-            'passwordHash': passwordHash,
             'userKey': userKey,
             'weeklyGamePlayed': weeklyGamePlayed,
             'newTime': newTime
