@@ -2,13 +2,14 @@
 	import { onMount } from 'svelte';
     import { userStore } from '../../stores';
     import { getFriends } from '../../requests/friend';
-	import Loading from '../../components/loading.svelte';
+	import Loading from '../../general-components/loading.svelte';
 	import { gridItem, largeTitle, listItem } from '../../css';
 
     let friends = [];
     let loading = true;
     
     onMount(async() => {
+        if (!$userStore) return;
         friends = await getFriends($userStore.key);
         loading = false;
     });

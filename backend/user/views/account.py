@@ -3,57 +3,29 @@ from django.views.decorators.csrf import csrf_exempt
 import twilio_con
 import user.queries as queries
 import json
-from hashlib import sha256
-from arango import DocumentInsertError
+import dotenv
+import util
+dotenv.load_dotenv()
 
-def returnError(errorMessage, errCode):
-    return JsonResponse(
-        {
-            'errorMessage': errorMessage
-        },
-        status=errCode
-    )
-
-def returnUserPrivate(user):
-    del user['_id']
-    del user['_rev']
-    user['key'] = user['_key']
-    del user['_key']
-    return JsonResponse(user)
-
-def returnUserPublic(user):
-    del user['_id']
-    del user['_rev']
-    del user['passwordHash']
-    user['key'] = user['_key']
-    del user['_key']
-    return JsonResponse(user)
-
-def getPasswordHash(password, username):
-    saltedPassword = f'{password}:{username}:hJ)R-PQ*CS'
-    encodedPassword = saltedPassword.encode('utf-8')
-    h = sha256()
-    h.update(encodedPassword)
-    hash = h.hexdigest()
-    return hash
-
-@csrf_exempt # note csrf is being wonky, add this to POST/PUT/DELETE reqs for now
+@csrf_exempt  # note csrf is being wonky, add this to POST/PUT/DELETE reqs for now
 def signup(request):
     print("Running")
     data = json.loads(request.body)
-    phone = data['phone']
+    phone = data['newPhone']
+    username = data['newUsername']
 
     try:
-        docs = queries.getUserFromPhone(phone).batch()
+        docs = queries.getUserFrom(phone, username).batch()
     except Exception as e:
-        return returnError(e.error_message, e.http_code)
-    
+        return util.returnError(e.error_message, e.http_code)
+
     if len(docs) != 0:
-        return returnError('There already exists an account with this phone number.', 401)
+        return util.returnError('There already exists an account with this phone number or username.', 401)
 
     res = twilio_con.sendVerification(phone)
     print(res)
     return JsonResponse({})
+
 
 @csrf_exempt
 def verifySignup(request):
@@ -64,103 +36,156 @@ def verifySignup(request):
     otp = data['otp']
 
     if password.find(':') != -1:
-        return returnError("Passwords must not contain colons.", 400)
-    
+        return util.returnError("Passwords may not contain colons.", 400)
+
     res = twilio_con.testVerification(phone, otp)
     if not res:
-        return returnError('Invalid OTP.', 401)
-    
+        return util.returnError('Invalid OTP.', 401)
+
     # ADD ANY OTHER PASSWORD RESTRICTIONS
 
-    passwordHash = getPasswordHash(password, username)
-    
+    passwordHash = util.getPasswordHash(password, username)
+
     try:
         doc = queries.createUser(username, passwordHash, phone)
     except Exception as e:
         em = e.error_message
         if em.find('unique constraint violated') != -1:
-            return returnError('This username or phone number is already taken.', e.http_code)
-        return returnError(em, e.http_code)
+            return util.returnError('This username or phone number is already taken.', e.http_code)
+        return util.returnError(em, e.http_code)
 
-    return returnUserPrivate(doc['new'])
+    return util.returnUserPrivate(doc['new'])
 
-@csrf_exempt # note csrf is being wonky, add this to POST/PUT/DELETE reqs for now
+
+@csrf_exempt  # note csrf is being wonky, add this to POST/PUT/DELETE reqs for now
 def login(request):
     data = json.loads(request.body)
     username = data['username']
     password = data['password']
 
+    if password.find(':') != -1:
+        return util.returnError("Passwords may not contain colons.", 400)
+
     try:
         docs = queries.getUserByUsername(username).batch()
     except Exception as e:
-        return returnError(e.error_message, e.http_code)
+        return util.returnError(e.error_message, e.http_code)
     
     if len(docs) == 0:
-        return returnError('Invalid username.', 401)
-    
-    user = docs[0]
-    passwordHash = getPasswordHash(password, username)
-    if user['passwordHash'] != passwordHash:
-        return returnError('Invalid password.', 401)
+        return util.returnError('Invalid username.', 401)
 
-    return returnUserPrivate(user)
+    user = docs[0]
+    passwordHash = util.getPasswordHash(password, username)
+    if user['passwordHash'] != passwordHash:
+        return util.returnError('Invalid password.', 401)
+
+    if user['login2FA']:
+        # res = twilio_con.sendVerification(user['phone'])
+        return JsonResponse({
+            'verifyToken': util.getVerifyJWT(user)
+        })
+    
+    return util.returnUserPrivate(user)
+
+@csrf_exempt
+def verifyLogin(request):
+    data = json.loads(request.body)
+    otp = data['otp']
+
+    verifyToken = data['verifyToken']
+    user = util.getVerifyJWTData(verifyToken)
+    phone = user['phone']
+
+    # res = twilio_con.testVerification(phone, otp)
+    if False:
+        return util.returnError('Invalid OTP.', 401)
+    
+    return util.returnUserPrivate(user)
+
+@csrf_exempt
+def loginWithToken(request):
+    data = json.loads(request.body)
+
+    user, newToken = util.getUserFromToken(data['token'])
+    if user is None:
+        return util.returnError('Invalid token.', 401)
+
+    username = user['username']
+    try:
+        docs = queries.getUserByUsername(username).batch()
+    except Exception as e:
+        return util.returnError(e.error_message, e.http_code)
+
+    if len(docs) == 0:
+        return util.returnError('Invalid username.', 401)
+
+    return util.returnUserPrivate(docs[0])
+
 
 @csrf_exempt
 def updateInfo(request):
     data = json.loads(request.body)
-    key = data['key']
-    username = data['username']
-    password = data['password']
-    passwordHash = data['passwordHash']
+    newUsername = data['newUsername']
+    newLogin2FA = data['newLogin2FA']
+    newPhone = data['newPhone']
+    enteredPassword = data['password']
 
-    expectedInputHash = getPasswordHash(password, username)
+    user, newToken = util.getUserFromToken(data['token'])
+    if user is None:
+        return util.returnError('Invalid token.', 401)
+    key = user['key']
+    passwordHash = user['passwordHash']
+    oldUsername = user['username']
+
+    expectedInputHash = util.getPasswordHash(enteredPassword, oldUsername)
     if expectedInputHash != passwordHash:
-        return returnError('Incorrect password entered.', 400)
+        return util.returnError('Incorrect password entered.', 400)
 
     newUsername = data['newUsername']
     newPhone = data['newPhone']
+    newLogin2FA = data['newLogin2FA']
+    newPasswordHash = passwordHash if newUsername == oldUsername\
+                      else util.getPasswordHash(passwordHash, newUsername)
 
-    newPasswordHash = passwordHash
-    if newUsername != username:
-        newPasswordHash = getPasswordHash(password, newUsername)
-    
     try:
         docs = queries.updateInfo(
-            key, passwordHash,
-            newUsername, newPhone, newPasswordHash
+            key, newUsername, newPhone, newPasswordHash, newLogin2FA
         ).batch()
     except Exception as e:
         em = e.error_message
         if em.find('unique constraint violated') != -1:
-            return returnError('This username or phone number is already taken.', e.http_code)
-        return returnError(em, e.http_code)
-    
-    if len(docs) == 0:
-        return returnError('Invalid password.', 401) # NOTE: could also be invalid key, but I trust not
+            return util.returnError('This username or phone number is already taken.', e.http_code)
+        return util.returnError(em, e.http_code)
 
-    return returnUserPrivate(docs[0])
+    if len(docs) == 0:
+        # NOTE: could also be invalid key, but I trust not
+        return util.returnError('Invalid password.', 401)
+
+    return util.returnUserPrivate(docs[0])
+
 
 @csrf_exempt
 def deleteUser(request):
     data = json.loads(request.body)
     key = data['key']
     passwordHash = data['passwordHash']
+    print(key, passwordHash)
+
+    user, newToken = util.getUserFromToken(data['token'])
+    if user is None:
+        return util.returnError('Invalid token.', 401)
 
     try:
         docs = queries.deleteUser(key, passwordHash).batch()
     except Exception as e:
-        return returnError(e.error_message, e.http_code)
+        print(e.error_message, e.http_code)
+        return util.returnError(e.error_message, e.http_code)
 
     if len(docs) == 0:
-        return returnError('Unauthorized.', 401) # invalid passwordHash or key
+        return util.returnError('Unauthorized.', 401)  # invalid passwordHash or key
 
-    return JsonResponse({'success': True})
-
-# TO-DO:
-
-def loginWithToken(request):
     return JsonResponse({
-        ":)": ":)"
+        "token": newToken
     })
 
 @csrf_exempt
@@ -171,13 +196,14 @@ def initiatePasswordReset(request):
     try:
         docs = queries.getUserFromPhone(phone).batch()
     except Exception as e:
-        return returnError(e.error_message, e.http_code)
-    
+        return util.returnError(e.error_message, e.http_code)
+
     if len(docs) != 1:
-        return returnError('Invalid phone.', 401)
+        return util.returnError('Invalid phone.', 401)
 
     res = twilio_con.sendVerification(phone)
     print(res)
+
     return JsonResponse({})
 
 
@@ -190,28 +216,26 @@ def completePasswordReset(request):
 
     res = twilio_con.testVerification(phone, otp)
     if not res:
-        return returnError('Invalid OTP.', 401)
+        return util.returnError('Invalid OTP.', 401)
 
     try:
         docs = queries.getUserFromPhone(phone).batch()
     except Exception as e:
-        return returnError(e.error_message, e.http_code)
-    
+        return util.returnError(e.error_message, e.http_code)
+
     if len(docs) != 1:
-        return returnError('Invalid phone.', 401)
+        return util.returnError('Invalid phone.', 401)
 
     user = docs[0]
     passwordHash = user['passwordHash']
     username = user['username']
     userKey = user['_key']
 
-    newPasswordHash = getPasswordHash(newPassword, username)
-    if newPasswordHash == passwordHash:
-        return JsonResponse({})
+    newPasswordHash = util.getPasswordHash(newPassword, username)
+    if newPasswordHash != passwordHash:
+        try:
+            doc = queries.updatePassword(userKey, newPasswordHash)
+        except Exception as e:
+            return util.returnError("Invalid user key.", 500)
 
-    try:
-        doc = queries.updatePassword(userKey, newPasswordHash)
-    except Exception as e:
-        return returnError("Invalid user key.", 500)
-    
     return JsonResponse({})

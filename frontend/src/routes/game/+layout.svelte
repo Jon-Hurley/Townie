@@ -1,20 +1,33 @@
 <script>
-	import { onMount, onDestroy } from 'svelte';
-    import { goto } from '$app/navigation';
-	import { gameStore } from '../../stores';
-    import { page } from '$app/stores';
+    import { Game } from '../../classes/Game';
+	import Loading from '../../general-components/loading.svelte';
+    import Join from './join/join.svelte';
+	import Lobby from './lobby/lobby.svelte';
+	import Map from './map/map.svelte';
+	import Subnav from './subnav.svelte';
     
-    $: if ($gameStore) {
-        console.log("UPDATING PAGE")
-
-        const currPage = $page.path;
-        const targetPage = `/game/${$gameStore?.game?.page || 'join'}/`;
-        if (currPage !== targetPage) {
-            console.log("Going to: ", targetPage)
-            goto(targetPage);
-        }
-        console.log($gameStore);
-    }
+    let gameStore = Game.store;
+    
+    $: gamePage = $gameStore?.game?.page || 'join';
 </script>
 
-<slot/>
+<div class="flex flex-col h-full">
+    {#if gamePage === 'join'}
+        <slot name="join">
+            <Join/>
+        </slot>
+    {:else if gamePage === 'lobby'}
+        <slot name="lobby">
+            <Lobby/>
+            <Subnav/>
+        </slot>
+    {:else if gamePage === 'map'}
+        <slot name="map">
+            <Map/>
+            <Subnav/>
+        </slot>
+    {:else if gamePage === 'summary'}
+        <slot name="summary">
+        </slot>
+    {/if}
+</div>

@@ -2,15 +2,17 @@
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
 	import { getUser } from '../../../requests/search';
-    import Loading from '../../../components/loading.svelte';
+    import Loading from '../../../general-components/loading.svelte';
 	import User from './user.svelte';
 
     let user;
 
-    onMount(async() => {
+    const loadUser = async() => {
         const key = $page.params.slug;
         user = await getUser(key);
-    });
+    }
+
+    onMount(loadUser);
 </script>
 
 {#if user}
@@ -19,6 +21,7 @@
     >
         <User
             user={user}
+            reloadUser={loadUser}
         />
     </div>
 {:else}

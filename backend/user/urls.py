@@ -3,9 +3,10 @@ from .views import friend, account, search
 
 urlpatterns = [
     path('login/', account.login),
+    path('verify-login/', account.verifyLogin),
     path('signup/', account.signup),
     path('verify-signup/', account.verifySignup),
-    
+
     path('token-login/', account.loginWithToken),
     path('initiate-password-reset/', account.initiatePasswordReset),
     path('complete-password-reset/', account.completePasswordReset),
@@ -14,6 +15,7 @@ urlpatterns = [
 
     path('search/', search.searchUsers),
     path('profile/<str:key>/', search.getUser),
+    path('rating/', search.getRating),
 
     path('friends/', friend.getFriends),
     path('pending-friends/', friend.getPendingFriends),

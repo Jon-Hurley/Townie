@@ -3,8 +3,11 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 import group.queries as queries
 from ws_con import propogateUpdates, forceDisconnect
+import util
 
 # CONNECT: JOIN GAME
+
+
 @csrf_exempt
 def onConnect(request):
     # load input
@@ -14,17 +17,21 @@ def onConnect(request):
     connectionId = body['connectionId']
     print(gameKey, userKey, connectionId)
 
-    # add user to game, canceling their previous connection if left open
+    # add user to game, nulling their previous connection if left open
     res = queries.addPlayer(gameKey, userKey, connectionId)
-    oldDoc = res.batch()[0]['oldDoc']
-    if oldDoc:
-        forceDisconnect(oldDoc['connectionId'])
-    
+    oldConnectionIds = res.batch()[0]
+    print(oldConnectionIds)
+    for oldConnectionId in oldConnectionIds:
+        try:
+            forceDisconnect(oldConnectionId)
+        except Exception as err:
+            print(err)
+
     # relay game all game data to all players (except the new one)
     data = queries.getGame(gameKey).batch()[0]
     print(data)
     propogateAllUpdates(
-        conExcl={ connectionId },
+        conExcl={connectionId},
         data=data
     )
 
@@ -32,22 +39,19 @@ def onConnect(request):
     return JsonResponse(data)
 
 # DISCONNECT: LEAVE GAME
+
+
 @csrf_exempt
 def onDisconnect(request):
     body = json.loads(request.body)
     connectionId = body['connectionId']
     print(connectionId)
     res = queries.leaveGame(connectionId).batch()
-    if len(res): # a player was removed from DB.
-        gameKey = res[0]['gameKey'][6:] # [6:] = id -> key
-        propogateAllUpdates(gameKey, { connectionId })
-    # else: connection was already updated, and no longer exists anyways.
+    if len(res):
+        gameKey = res[0]['gameId'][6:]  # [6:] = id -> key
+        propogateAllUpdates(gameKey, {connectionId})
     return JsonResponse({})
 
-# DEFAULT: (right now will be done in http requests lol)
-#       1. Update Game Settings
-#       2. Start Game
-#       3. Update Location
 @csrf_exempt
 def onDefault(request):
     data = json.loads(request.body)
@@ -58,8 +62,11 @@ def onDefault(request):
 
     if method == 'get-game':
         gameKey = body['gameKey']
-        data = queries.getGame(gameKey).batch()[0]
-        return JsonResponse(data)
+        data = queries.getGameForPlayer(gameKey, connectionId).batch()[0]
+        return JsonResponse({
+            'method': 'get-game',
+            'data': data
+        })
     
     if method == 'update-settings':
         gameKey = body['gameKey']
@@ -68,62 +75,58 @@ def onDefault(request):
         res = queries.updateGameSettings(gameKey, settings)
         print(res)
         propogateAllUpdates(gameKey)
-        return JsonResponse({})
+        return JsonResponse({
+            'method': 'update-settings'
+        })
 
     if method == 'start-game':
         gameKey = body['gameKey']
         settings = body['settings']
-        res = queries.startGame(gameKey, settings)
-        return(res)
-        # print("HELLO", gameKey)
-    # print(data)
-    # propogateAllUpdates(
-    #     conExcl={ connectionId },
-    #     data=data
-    # )
+        res = queries.startGame(gameKey, settings).batch()[0]
+        propogateAllUpdates(gameKey)
+        return JsonResponse({
+            'method': 'start-game'
+        })
     
-    # body = json.loads(request.body)
-    # print(request.POST)
-    # print(request.GET)
-    # if body['action'] == 'update-game-settings':
-    #     return updateGameSettings(body)
-    # if body['action'] == 'start-game':
-    #     return startGame(body)
-    # if body['action'] == 'update-location':
-    #     return updatePlayerLocation(body)
+    if method == 'update-location':
+        lon = body['lon']
+        lat = body['lat']
+        res = queries.updatePlayerLocation(connectionId, lon, lat).batch()[0]
+        return JsonResponse({
+            'method': 'update-location',
+            'data': res
+        })
     return JsonResponse({})
 
-def updatePlayerLocation(body):
-    playerKey = body['key']
-    lon = body['lon']
-    lat = body['lat']
-    res = queries.updatePlayerLocation(playerKey, lon, lat)
-    return JsonResponse(res)
-
-def updateGameSettings(body):
-    playerKey = body['key']
-    field = body['field']
-    value = body['value']
-
-    res = queries.updatePlayerLocation(playerKey, field, value)
-    return JsonResponse(res)
-
-def startGame(body):
-    gameKey = body['gameKey']
-    settings = body['settings']
-    res = queries.startGame(gameKey, settings)
-    propogateAllUpdates(gameKey)
-    return JsonResponse(res)
 
 def propogateAllUpdates(gameKey=None, conExcl={}, data=None):
     if data is None:
         data = queries.getGame(gameKey).batch()[0]
-    users = data['players']
-    propogateUpdates(users, data, conExcl)
+    propogateUpdates(data, conExcl)
 
 # GET REQUEST: CREATE A LOBBY/GAME
 
+@csrf_exempt
 def createGame(request):
-    res = queries.createGame()
+    data = json.loads(request.body)
+
+    user, newToken = util.getUserFromToken(data['token'])
+    if user is None:
+        return util.returnError('Invalid token', 401)
+    
+    res = queries.createGame().batch()[0]
     print(res)
-    return JsonResponse({'key': res['_key']})
+    return JsonResponse({
+        'key': res['_key'],
+        'token': newToken
+    })
+
+# GET REQUEST: GET GAME DATA
+
+@csrf_exempt
+def getGame(request):
+    data = json.loads(request.body)
+    print(data)
+    gameKey = data['gameKey']
+    data = queries.getGame(gameKey).batch()[0]
+    return JsonResponse(data)
