@@ -9,7 +9,7 @@
     };
 
 	let otherCompletionTime = false;
-	let isOpen = true;
+	let isOpen = false;
 
 	const _updateSettings = () => {
 		Game.updateTime(form);
