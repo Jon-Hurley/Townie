@@ -4,6 +4,7 @@ import { PUBLIC_BACKEND_WS } from '$env/static/public';
 import { Map } from './Map.js';
 import { Location } from './Location.js';
 import { goto } from '$app/navigation';
+import { logout } from '../requests/account.js';
 
 export class Game {
     static store = writable();
@@ -19,19 +20,16 @@ export class Game {
 
     static handleGameUpdate(data) {
         if (!data) return;
-        data.destinations.sort((a, b) => a.index - b.index);
+        data.destinations.sort((a, b) => a.index - b.index);    
         Game.store.set(data);
         if (Map.map) {
             console.log("We zoomin");
-            Map.generateUserMarker();
-            Map.generateDestinationCircle();
             Map.generatePlayerMarkers();
             Map.setZoomAndCenter();
         }
     }
 
     static handleLocationUpdate(data) {
-        console.log(data);
         const {
             time, dist,
             totalTime, totalDist,
@@ -55,7 +53,11 @@ export class Game {
                 You took ${displayTime} minutes and traveled ${displayDist} meters.\n
                 Total time: ${displayTotalTime} minutes.\n
                 Total distance: ${displayTotalDist} miles.\n
-                Your total time has been paused and will resume once you leave destination.`
+                Your total time has been paused and will resume once you leave destination.`,
+                () => {
+                    Map.generateDestinationCircle();
+                    Map.setZoomAndCenter();
+                }
             );
             if (achievedDest.index === Game.destinations.length - 1) {
                 const gameKey = Game.game._key;
@@ -149,7 +151,10 @@ export class Game {
                 };
             });
             if (res.player === null) {
-                throw new Error("Unable to connect to game.")
+                throw {
+                    message: "Unable to connect to game. Your session token may be expired.",
+                    func: () => logout()
+                }
             }
 
             Game.store.set(res);
@@ -159,7 +164,12 @@ export class Game {
             Game.ws?.close();
             Game.ws = undefined;
             Game.store.set(null);
-            pushPopup(0, err?.message || "Unable to connect to lobby. Please try again.");
+            pushPopup(0,
+                err?.message || "Unable to connect to lobby. Please try again.",
+                () => {
+                    if (err?.func) err.func();
+                }
+            );
         }
     }
 

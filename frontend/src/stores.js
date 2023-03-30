@@ -3,7 +3,7 @@ import { logout } from './requests/account';
 
 export const userStore = writable();
 
-export const mapStore = writable();
+export const mapStore = writable(false);
 
 export const updateAccessToken = (res) => {
     const token = res?.data?.token;

@@ -13,20 +13,23 @@
 	import Modal from '../general-components/modal.svelte';
 
 	let mounted = false;
-	mapStore.set(false);
     let loaded = false;
+
+    $: console.log({MAP: $mapStore})
 
 	onMount(async () => {
         loaded = false;
-
-		// create a function for the GOOGLE API to call when done initializing
-		window.initMap = () => mapStore.set(true);
-		mounted = true;
-        
-		const res = await autoLogin();
-		if (!res) {
-			goto('/login');
-		}
+        if (!$mapStore) {
+            // create a function for the GOOGLE API to call when done initializing
+            window.initMap = () => mapStore.set(true);
+            mounted = true;
+        }
+        if (!$userStore) {
+            const res = await autoLogin();
+            if (!res) {
+                goto('/login');
+            }
+        }
         loaded = true;
 	});
 
