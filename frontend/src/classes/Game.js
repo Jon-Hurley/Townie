@@ -10,11 +10,7 @@ export class Game {
     /** @type {WebSocket} */
     static ws = undefined;
     static interval = undefined;
-
-    static timeStore = writable({
-        atPrevDest: false,
-        timeSinceLastDest: 0
-    });
+    static timeStore = writable(null);
 
     static send(method, data) {
         const objStr = JSON.stringify({ method, ...data });
@@ -42,10 +38,9 @@ export class Game {
             quiet, arrived, atPrevDest
         } = data;
         
-        Game.timeStore.set({
-            atPrevDest,
-            timeSinceLastDest: time
-        })
+        if (get(Game.timeStore) != atPrevDest) {
+            Game.timeStore.set(atPrevDest)
+        }
 
         if (arrived) {
             const achievedDest = Game.nextDestination;
@@ -59,7 +54,8 @@ export class Game {
                 `You reached destination ${achievedDest.name}!\n
                 You took ${displayTime} minutes and traveled ${displayDist} meters.\n
                 Total time: ${displayTotalTime} minutes.\n
-                Total distance: ${displayTotalDist} miles.`
+                Total distance: ${displayTotalDist} miles.\n
+                Your total time has been paused and will resume once you leave destination.`
             );
             if (achievedDest.index === Game.destinations.length - 1) {
                 const gameKey = Game.game._key;

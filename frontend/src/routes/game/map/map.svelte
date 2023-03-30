@@ -2,10 +2,13 @@
 	import { onDestroy, onMount } from 'svelte';
 	import { Location } from '../../../classes/Location';
     import { Map } from '../../../classes/Map';
+	import Timer from './timer.svelte';
+
 
     onMount(async() => {
         await Location.subscribe();
 		await Map.regenerate();
+
     });
 
     onDestroy(() => {
@@ -26,6 +29,9 @@
         }
     ]
 </script>
+
+<Timer/>
+
 
 <!-- <div
     class="
