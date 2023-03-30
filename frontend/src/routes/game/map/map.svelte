@@ -5,13 +5,39 @@
     import { gameStore } from '../../../stores';
 	import { get } from 'svelte/store';
 	import { each } from 'svelte/internal';
-    import Tutorial from "../../../components/tutorial.svelte";
 
-    let totalTime = Date.now() - Date.now();
-    $: hours = `00${((totalTime/1000/60/60)%60)}`.slice(-2);
-    $: minutes = `00${((totalTime/1000/60)%60)}`.slice(-2);
-    $: seconds = `00${((totalTime/1000)%60)}`.slice(-2);
+    $: hours = `00${((elapsedTime/1000/60/60)%60)}`.slice(-2);
+    $: minutes = `00${((elapsedTime/1000/60)%60)}`.slice(-2);
+    $: seconds = `00${((elapsedTime/1000)%60)}`.slice(-2);
     $: formattedTime = `${hours}:${minutes}:${seconds}`;
+
+    let startTime = 0;
+    let elapsedTime = 0;
+    let oldElapsedTime = 0;
+    let interval;
+    let state = 0; // 1 for running, 2 for paused
+
+    const start = () => {
+        startTime = Date.now();
+        state = 1;
+        interval = setInterval(() => {
+            if (state === 1) {
+                const endTime = Date.now();
+                elapsedTime = endTime - startTime + oldElapsedTime;
+            }
+        });
+        // AUTOPAUSE: IF AT A LOCATION
+    }
+
+    const pause = () => {
+        state = 2; // 2 represents paused
+        oldElapsedTime = elapsedTime;
+    }
+
+    const resume = () => {
+        startTime = Date.now();
+        state = 1; // 1 represents running
+    }
 
 	let mapState = {
         container: undefined,
@@ -171,6 +197,7 @@
 
         regenerateMap(mapState);
         subscribeToLocation(mapState);
+        start();
     });
 
     onDestroy(() => {

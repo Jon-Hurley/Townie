@@ -1,32 +1,45 @@
 <script>
     import {slide, fade} from 'svelte/transition'; 
     import {elasticInOut} from 'svelte/easing';
+    
+    import Join from '$lib/assets/Tutorial-join.jpg';
+    import Settings1 from '$lib/assets/Tutorial-Settings-1.jpg';
+    import Settings2 from '$lib/assets/Tutorial-Settings-2.jpg';
+    import Settings3 from '$lib/assets/Tutorial-Settings-3.jpg';
+    import Settings4 from '$lib/assets/Tutorial-Settings-4.jpg';
+    import Settings5 from '$lib/assets/Tutorial-Settings-5.jpg';
+    import Map from '$lib/assets/Tutorial-Map.jpg';
 
-    let tutorial = false;
+
+    let tutorial = true;
 
     const images = [
       {
-        src: "/Tutorial-Settings-1",
+        src: Join,
+        description: "Join-1",
+      },
+      {
+        src: Settings1,
         description: "Settings-1",
       },
       {
-        src: "%sveltekit.assets%/Tutorial-Settings-2",
+        src: Settings2,
         description: "Settings-2",
       },
       {
-        src: "%sveltekit.assets%/Tutorial-Settings-3",
+        src: Settings3,
         description: "Settings-3",
       },
       {
-        src: "%sveltekit.assets%/Tutorial-Settings-4",
+        src: Settings4,
         description: "Settings-4",
       },
       {
-        src: "%sveltekit.assets%/Tutorial-Settings-5",
-        description: "Setings-5",
+        src: Settings5,
+        description: "Settings-5",
       },
       {
-        src: "/Tutorial-Map",
+        src: Map,
         description: "Map-1",
       },
     ];
@@ -45,12 +58,19 @@
 </script>
   
 {#if tutorial}
+  <div class = "flex justify-center content-center container mx-auto xl:max-w-[20%] lg:max-w-[30%] md:max-w-[40%] sm:max-w-[50%] max-w-[95%]">
       {#each [images[currentSlideItem]] as item (currentSlideItem)}
-        <img in:slide="{{ duration: 1000, easing: elasticInOut}}" out:fade src={item.url} alt={item.description} height="full"/>
+        <img 
+          in:slide="{{ duration: 1000, easing: elasticInOut}}"
+          out:fade
+          src={item.src}
+          alt={item.description}
+          height="75%"
+        />
       {/each}
       <div class="carousel-buttons">
         <!-- Previous Button -->
-        <button class="absolute bottom-[5rem] left-4 z-10
+        <button class="absolute bottom-[5rem] left-4 md:left-40  lg:left-96 z-10
             bg-gray-800 rounded-full
             px-1 py-1
             opacity-50 text-gray-400"
@@ -61,7 +81,7 @@
         </button> 
 
         <!-- Next Button -->
-        <button class="absolute bottom-[5rem] right-4 z-10
+        <button class="absolute bottom-[5rem] right-4 md:right-40 lg:right-96 z-10
             bg-gray-800 rounded-full
             px-1 py-1
             opacity-50 text-gray-400"
@@ -72,7 +92,7 @@
         </button> 
 
         <!-- Close Button -->
-        <button class="absolute top-[5rem] right-4 z-10
+        <button class="absolute top-[5rem] right-4 md:right-40 lg:right-96 z-10
             bg-red-100 rounded-full
             opacity-80 text-red-600"
             on:click={() => tutorial = false}>
@@ -81,6 +101,7 @@
             </svg>               
         </button> 
       </div>
+    </div>
 
 {:else}
     <button class="absolute bottom-[5rem] right-4 z-10
