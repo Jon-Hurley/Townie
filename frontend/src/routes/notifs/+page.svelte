@@ -6,8 +6,5 @@ import Notifs from "./notifs.svelte";
 
 <div class="flex flex-col justify-between h-full">
     <Notifs/>
-</div>
-
-<div class="flex flex-col justify-between h-full">
     <Premade/>
 </div>

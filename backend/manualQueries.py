@@ -1,5 +1,5 @@
 import user.queries as queries
-import user.views.account as accUtil
+import util as accUtil
 import arango_con
 import datetime
 
@@ -9,26 +9,26 @@ usersToCreate = [
         "password": "123",
         "phone": "+13176909263"
     },
-    {
-        "username": "Jack",
-        "password": "123",
-        "phone": "+17654121446"
-    },
-    {
-        "username": "Sai",
-        "password": "123",
-        "phone": "+16309779653"
-    },
-    {
-        "username": "Lexie",
-        "password": "123",
-        "phone": "+13178288301"
-    },
-    {
-        "username": "Jon",
-        "password": "123",
-        "phone": "+18124066193"
-    }
+    # {
+    #     "username": "Jack",
+    #     "password": "123",
+    #     "phone": "+17654121446"
+    # },
+    # {
+    #     "username": "Sai",
+    #     "password": "123",
+    #     "phone": "+16309779653"
+    # },
+    # {
+    #     "username": "Lexie",
+    #     "password": "123",
+    #     "phone": "+13178288301"
+    # },
+    # {
+    #     "username": "Jon",
+    #     "password": "123",
+    #     "phone": "+18124066193"
+    # }
 ]
 
 friendsToCreate = [
@@ -54,16 +54,16 @@ friendsToCreate = [
     }
 ]
 
-# for user in usersToCreate:
-#     username = user['username']
-#     password = user['password']
-#     phone = user['phone']
-#     res = queries.createUser(
-#         username,
-#         passwordHash=accUtil.getPasswordHash(password, username),
-#         phoneNumber=phone
-#     )
-#     user['_key'] = res['new']['_key']
+for user in usersToCreate:
+    username = user['username']
+    password = user['password']
+    phone = user['phone']
+    res = queries.createUser(
+        username,
+        passwordHash=accUtil.getPasswordHash(password, username),
+        phoneNumber=phone
+    )
+    user['_key'] = res['new']['_key']
 
 # for friend in friendsToCreate:
 #     fromKey = friend['_from']

@@ -1,16 +1,15 @@
 <script>
 	import { onMount } from "svelte";
+	import { Location } from "../../classes/Location";
 	import { inputStyle } from "../../css";
     
     export let settings;
     let input;
 
     onMount(async() => {
-        const res = await new Promise((res, rej) => {
-            navigator.geolocation.getCurrentPosition(res);
-        });
-        settings.lat = res.coords.latitude;
-        settings.lon = res.coords.longitude;
+        const res = await Location.getCurrentLocation();
+        settings.lat = res.lat;
+        settings.lon = res.lng;
         
         const autocomplete = new google.maps.places.Autocomplete(input);
         google.maps.event.addListener(autocomplete, 'place_changed', function () {

@@ -1,9 +1,9 @@
 import { writable, get } from 'svelte/store';
-import { Map } from './Map.js';
-import { Game } from './Game.js';
+import { Map } from './Map';
+import { Game } from './Game';
 
 export class Location {
-	static store = writable();
+	static store = writable({ lat: null, lng: null });
     static interval = undefined;
 
     static getLocation() {
@@ -12,46 +12,46 @@ export class Location {
     
     static async getCurrentLocation() {
         return await new Promise((res, rej) => {
-            navigator.geolocation.getCurrentPosition(res, rej);
+            navigator.geolocation.getCurrentPosition(
+                loc => res({
+                    lat: loc.coords.latitude,
+                    lng: loc.coords.longitude
+                }),
+                rej
+            );
         });
     }
 
-    static updateLocation(loc) {
-        const { latitude: lat, longitude: lng } = loc.coords;
-        const oldLoc = Location.getLocation();
-        console.log("Location interval...", {lat, lng});
-
-        Map.generateUserMarker();
-        
-        if (oldLoc && lat === oldLoc.lat && lng === oldLoc.lng) {
-            return;
-        }
-
-        Location.store.set({ lat, lng });
+    static updateLocation(lat, lng) {
         console.log('Location updated');
-        Game.updateLocation(lng, lat);
+        Map.generateUserMarker();
+        Location.store.set({ lat, lng });
+        Game.updateLocation(lat, lng);
     }
 
 	static async subscribe() {
         if (Location.interval) return;
 
         const loc = await Location.getCurrentLocation();
-        Location.updateLocation(loc);
+        Location.updateLocation(loc.lat, loc.lng);
 
-		Location.interval = setInterval(() => {
-            navigator.geolocation.getCurrentPosition(
-                Location.updateLocation,
-                (err) => {        
-                    console.log("Location error:", err);
-                    clearInterval(Location.interval);
-                    Location.interval = undefined;
-                }
-            );
-        }, 5000);       
+		Location.interval = navigator.geolocation.watchPosition(
+            (loc) => {
+                Location.updateLocation(
+                    loc.coords.latitude,
+                    loc.coords.longitude
+                )
+            },
+            (err) => {
+                console.log("Location error:", err);
+                clearInterval(Location.interval);
+                Location.interval = undefined;
+            }
+        );
 	}
 
 	static unsubscribe() {
-		clearInterval(Location.interval);
+		navigator.geolocation.clearWatch(Location.interval);
 	}
 
     static randomize(lat, lng) {

@@ -64,10 +64,18 @@
 </svelte:head>
 
 {#if loaded}
-    <div class="flex flex-col justify-between items-center h-screen w-screen max-h-screen">
+    <div class="
+        flex flex-col justify-between items-center
+        h-screen w-screen max-h-screen max-w-screen
+    ">
         {#if $userStore}
             <AccountBar/>
-            <div class="m-0 w-full p-4 h-full">
+            <div
+                class="
+                    m-0 p-4 h-full
+                    h-screen w-screen max-h-screen max-w-screen
+                "
+            >
                 <slot/>
             </div>
             <Navbar/>

@@ -6,28 +6,35 @@
 	import Map from './map/map.svelte';
 	import Subnav from './subnav.svelte';
     
-    let gameStore = Game.store;
-    
+    let gameStore = Game.store;    
     $: gamePage = $gameStore?.game?.page || 'join';
+    let loading = false;
+
+    const _leaveGame = async () => {
+		let res = Game.leave();
+	};
+    const _startGame = async() => {
+        loading = true;
+        const success = await Game.start();
+        loading = false;
+    }
 </script>
 
-<div class="flex flex-col h-full">
-    {#if gamePage === 'join'}
-        <slot name="join">
+{#if loading}
+    <Loading/>
+{:else}
+    <div class="flex flex-col h-full">
+        {#if gamePage === 'join'}
             <Join/>
-        </slot>
-    {:else if gamePage === 'lobby'}
-        <slot name="lobby">
+        {:else if gamePage === 'lobby'}
             <Lobby/>
-            <Subnav/>
-        </slot>
-    {:else if gamePage === 'map'}
-        <slot name="map">
+        {:else if gamePage === 'map'}
             <Map/>
-            <Subnav/>
-        </slot>
-    {:else if gamePage === 'summary'}
-        <slot name="summary">
-        </slot>
-    {/if}
-</div>
+        {/if}
+        <Subnav
+            startGame={_startGame}
+            leaveGame={_leaveGame}
+            gamePage={gamePage}
+        />
+    </div>
+{/if}

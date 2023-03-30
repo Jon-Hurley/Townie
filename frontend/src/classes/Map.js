@@ -3,6 +3,9 @@ import {
     PUBLIC_GOOGLE_MAPS_LIGHT_MODE
 } from '$env/static/public';
 import { Location } from './Location';
+import { Game } from './Game';
+import { get } from 'svelte/store';
+import { userStore } from '../stores';
 
 export class Map {
     static container = undefined;
@@ -13,20 +16,19 @@ export class Map {
 
     static playerMarkerList = undefined;
     static nextDestination = undefined;
-    static userLocation = undefined;
+    static userMarker = undefined;
     static bounds = undefined;
-
 
     static async regenerate() {
         const mapLoc = Map.map?.getCenter();
         const mapZoom = Map.map?.getZoom();
         const loc = await Location.getCurrentLocation();
-        console.log({loc})
+        
         Map.map = new google.maps.Map(Map.container, {
             zoom: 20,
-            center: { lat: loc.coords.latitude, lng: loc.coords.longitude },
+            center: loc,
             mapId: Map.darkMode ? PUBLIC_GOOGLE_MAPS_DARK_MODE
-                                 : PUBLIC_GOOGLE_MAPS_LIGHT_MODE,
+                                : PUBLIC_GOOGLE_MAPS_LIGHT_MODE,
             disableDefaultUI: true
         });
         if (mapLoc && mapZoom) {
@@ -44,20 +46,14 @@ export class Map {
     static setZoomAndCenter() {
         Map.bounds = new google.maps.LatLngBounds();
 
-        let players = Game.getPlayers();
-
-        for (let player of players) {
+        for (let player of Game.players) {
             Map.bounds.extend({ lat: player.lat, lng: player.lon });
         }
-
-        Map.bounds.extend(Map.nextDestination.getCenter());
-
+        if (Map.nextDestination) {
+            Map.bounds.extend(Map.nextDestination.getCenter());
+        }
+        
         Map.map.fitBounds(Map.bounds);
-
-        console.log(Map.bounds.getCenter());
-        console.log(Map.bounds.getCenter().lat());
-        console.log(Map.bounds.getCenter().lng());
-
         Map.map.setCenter(Map.bounds.getCenter());
     }
 
@@ -73,6 +69,7 @@ export class Map {
 
     static cancelSnapLocation() {
         if (!Map.snapInterval) return;
+
         Map.snapLocation = false;
         clearInterval(Map.snapInterval);
         Map.snapInterval = undefined;
@@ -80,30 +77,40 @@ export class Map {
 
     static async generateUserMarker() {
         if (!Map.map) return;
-        let player = Game.getPlayer(get(userStore).username);
-        if (!player) return;
-        if (Map.userLocation) {
-            Map.userLocation.setMap(null);
+        if (!Game.player) return;
+
+        if (Map.userMarker) {
+            Map.userMarker.setMap(null);
         }
-        // Change user's marker color
-        Map.userLocation = new google.maps.Marker({
-            position: { lat: player.lat, lng: player.lon },
+        Map.userMarker = new google.maps.Marker({
+            position: { lat: Game.player.lat, lng: Game.player.lon },
             map: Map.map,
-            //title: get(userStore).username
+            // icon: {
+            //     path: "M79.428,323.02l0.902,0.722l400,259.455c6.787,5.189,13.406,7.714,20.202,7.714c8.269,0,16.004-3.996,20.695-10.688 c5.548-7.923,6.236-17.791,2.041-29.33l-0.958-2.638l-166.234-247.27c-0.863-4.152-0.851-10.389,0.027-14.547L522.182,42.785 l0.979-2.653c4.254-11.545,3.599-21.433-1.952-29.392C516.521,4.015,508.764,0,500.462,0c-6.744,0-13.326,2.484-20.089,7.585 L81.487,262.942l-1.873,1.334c-9.293,7.356-14.645,18.045-14.679,29.324C64.899,304.883,70.184,315.602,79.428,323.02z M432.659,92.635l-118.072,173.22l-0.979,2.656c-5.354,14.535-5.4,35.652-0.107,50.208l0.958,2.635l118.67,176.517 L118.461,293.769L432.659,92.635z",
+            //     fillColor: "#6366f1",
+            //     fillOpacity: 1,
+            //     rotation: 0,
+            //     scale: 2,
+            //     strokeWeight: 1,
+            //     anchor: new google.maps.Point(10, 10)
+            // },
+            title: 'You'
         });
     };
 
     static generateDestinationCircle() {
-        const player = Game.getPlayer(get(userStore)?.username);
-        if (!player) throw new Error("u don fuked up, no pp found :(");
+        if (!Game.nextDestination) return;
+        if (!Map.map) return;
 
-        const tempDest = get(Game.store)?.destinations[player.destinationIndex];
-        const latLng = { lat: tempDest.lat, lng: tempDest.lon };
+        const latLng = {
+            lat: Game.nextDestination.lat,
+            lng: Game.nextDestination.lon
+        };
 
-        if (!latLng) return;
         if (Map.nextDestination) {
             Map.nextDestination.setMap(null);
         }
+
         Map.nextDestination = new google.maps.Circle({
             strokeColor: "#FF0000",
             strokeOpacity: 0.8,

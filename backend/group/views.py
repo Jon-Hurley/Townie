@@ -11,15 +11,23 @@ import util
 @csrf_exempt
 def onConnect(request):
     # load input
-    body = json.loads(request.body)
+    
+    input = request.body.decode('utf8').replace("\r", '').replace("\n", '')
+    print(input)
+    body = json.loads(input)
     gameKey = body['gameKey']
     token = body['token']
     connectionId = body['connectionId']
     lat = body['lat']
     lon = body['lon']
-    print(gameKey, connectionId, lat, lon)
+    print(gameKey, token, connectionId, lat, lon)
 
-    userKey = "10010281"
+    # get user key from token
+    user, newToken = util.getUserFromToken(token)
+    if user is None:
+        return util.returnError('Invalid token.', 401)
+
+    userKey = user['key']
 
     # add user to game, nulling their previous connection if left open
     res = queries.addPlayer(gameKey, userKey, connectionId, lat, lon)

@@ -1,8 +1,9 @@
 import { writable, get } from 'svelte/store';
-import { userStore } from '../stores.js';
+import { pushPopup, userStore } from '../stores.js';
 import { PUBLIC_BACKEND_WS } from '$env/static/public';
 import { Map } from './Map.js';
 import { Location } from './Location.js';
+import { goto } from '$app/navigation';
 
 export class Game {
     static store = writable();
@@ -15,61 +16,73 @@ export class Game {
         Game.ws.send(objStr);
     }
 
+    static handleGameUpdate(data) {
+        if (!data) return;
+        data.destinations.sort((a, b) => a.index - b.index);
+        Game.store.set(data);
+        if (Map.map) {
+            console.log("We zoomin");
+            Map.generateUserMarker();
+            Map.generateDestinationCircle();
+            Map.generatePlayerMarkers();
+            Map.setZoomAndCenter();
+        }
+    }
+    static handleLocationUpdate(data) {
+        console.log(data);
+        const {
+            destinationIndex, reached, quiet,
+            time, dist, totalTime, totalDist
+        } = data;
+
+        if (!quiet && reached) {
+            const achievedDest = Game.nextDestination;
+            pushPopup(
+                0,
+                `You reached destination ${achievedDest.n}!\n
+                You took ${time} minutes and traveled ${dist} miles.\n
+                Total time: ${totalTime} minutes\n
+                Total distance: ${totalDist} miles`
+            );
+            if (destinationIndex === Game.destinations.length - 1) {
+                const gameKey = Game.game._key;
+                Game.leave();
+                pushPopup(
+                    0, "You have reached the final destination. You won the game!",
+                    () => goto('/summary/' + gameKey)
+                );
+            } else {
+                Game.store.set({
+                    ...get(Game.store),
+                    destinationIndex: destinationIndex + 1
+                });
+            }
+        }
+    }
+
+
+
     static setDefaultEvents() {
         Game.ws.onmessage = (m) => {
             try {
-                const res = JSON.parse(m.data);
-                console.log("WS MESSAGE:", res);
-                switch (res.method) {
+                const { method, data } = JSON.parse(m.data);
+                console.log("WS MESSAGE:", { method, data });
+                switch (method) {
                     case 'get-game':
                     case 'update-game': {
-                        res.data.destinations.sort((a, b) => a.index - b.index);
-                        Game.store.set(res.data);
-
-                        if (Map.map) {
-
-                            console.log("We zoomin")
-    
-                            Map.generateUserMarker();
-                            Map.generateDestinationCircle();
-                            Map.generatePlayerMarkers();
-    
-                            Map.setZoomAndCenter();
-                        }
-                        return;
+                        Game.handleGameUpdate(data); return;
                     }
                     case 'update-location': {
-                        console.log(res.data);
-                        const {
-                            destinationIndex, reached, quiet,
-                            time,
-                            dist,
-                            totalTime,
-                            totalDist
-                        } = res.data;
-                        if (!quiet && reached) {
-                            const achievedDest = get(Game.store).destinations[destinationIndex];
-                            pushPopup(
-                                0,
-                                `You reached destination ${achievedDest.n}!\n
-                                You took ${time} minutes and traveled ${dist} miles.\n
-                                Total time: ${totalTime} minutes\n
-                                Total distance: ${totalDist} miles`
-                            );
-                            if (destinationIndex === get(Game.store).destinations.length - 1) {
-                                Game.leave();
-                                pushPopup(0, "You won!");
-                            }
-                        }
+                        Game.handleLocationUpdate(data); return;
                     }
                     default: {
-                        console.log("No response behavior")
+                        console.log("No response behavior");
                     }
                 }
             } catch (e) {
                 console.log("WS ERROR:", e);
                 pushPopup(0, "Connections error. Please try again later.");
-            }           
+            }
         };
         Game.ws.onerror = (e) => {
             console.log("WS ERROR:", e);
@@ -101,8 +114,15 @@ export class Game {
 
     static async join(gameKey) {
         try {
-            const userKey = get(userStore).key;
-            Game.ws = new WebSocket(`${PUBLIC_BACKEND_WS}?gameKey=${gameKey}&userKey=${userKey}`);
+            const userLocation = await Location.getCurrentLocation();
+            const params = {
+                'gameKey': gameKey,
+                'token': "\"" + get(userStore).token + "\"",
+                'lat': userLocation.lat,
+                'lon': userLocation.lng
+            }
+            const urlParams = new URLSearchParams(params).toString();
+            Game.ws = new WebSocket(`${PUBLIC_BACKEND_WS}?${urlParams}`);
             await new Promise((res, rej) => { 
                 Game.ws.onerror = () => rej();
                 Game.ws.onopen = (e) => res(e);
@@ -112,25 +132,28 @@ export class Game {
             const res = await new Promise((res, rej) => { 
                 Game.ws.onerror = () => rej();
                 Game.ws.onmessage = (m) => {
-                    console.log(m)
-                    const { method, data } = JSON.parse(m.data);
-                    if (method !== 'get-game') return;
-                    if (!data?.game?._key) rej();
-                    res(data);
+                    try {
+                        const { method, data } = JSON.parse(m.data);
+                        if (method !== 'get-game') return;
+                        if (!data?.game?._key) rej();
+                        res(data);
+                    } catch (e) {
+                        rej({message: 'Invalid game key. Please try again.'});
+                    }
                 };
             });
-            console.log(res)
-            // res.player
+            if (res.player === null) {
+                throw new Error("Unable to connect to game.")
+            }
 
             Game.store.set(res);
-
             Game.setDefaultEvents();
         } catch (err) {
             console.log(err);
             Game.ws?.close();
             Game.ws = undefined;
             Game.store.set(null);
-            pushPopup(0, "Unable to connect to lobby. Please try again.");
+            pushPopup(0, err.message || "Unable to connect to lobby. Please try again.");
         }
     }
 
@@ -146,30 +169,40 @@ export class Game {
         }
     }
     
-    static start() {
+    static async start() {
         try {
-            const gameKey = get(Game.store).game._key;
-            const settings = get(Game.store).game.settings;
-            Game.send('start-game', { gameKey, settings });
+            Game.stopPolling();
+            Game.send('start-game', {
+                gameKey: Game.game._key,
+                settings: Game.game.settings
+            });
+            const res = await new Promise((res, rej) => {
+                Game.ws.onmessage = (m) => {
+                    try {
+                        console.log({m})
+                        const { method, data } = JSON.parse(m.data);
+                        if (method === 'update-game') {
+                            Game.handleGameUpdate(data);
+                            if (data?.game?.page === 'map') res()
+                        }
+                    } catch (e) {
+                        rej(e);
+                    }
+                }
+                Game.ws.onerror = rej;
+            });
             Game.resumePolling();
+            return true;
         } catch (err) {
-            console.log(err);
+            pushPopup(0, "Unable to start game. Please try again.");
+            return false;
         }
     }
     
-    static awardPoints(destinationIndex) {
-        try {
-            const gameKey = get(Game.store).game._key;
-            Game.send('award-points', { gameKey, destinationIndex });
-        } catch (err) {
-            console.log(err);
-        }
-    }
-    
-    static updateLocation(lon, lat) {
+    static updateLocation(lat, lon) {
         try {
             Game.send('update-location', {
-                lon, lat,
+                lat, lon,
                 gameKey: get(Game.store).game._key,
                 userKey: get(userStore).key
             });
@@ -190,26 +223,28 @@ export class Game {
     static updateTime(form) {
         try {
             const gameKey = get(Game.store).game._key;
-            Game.send('update-time', { gameKey, settings: form});
+            Game.send('update-time', { gameKey, settings: form });
         } catch (err) {
             console.log(err);
         }
     }
 
-    static getPage() {
-        return get(Game.store)?.game?.page || 'join'
+    static get players() {
+        return get(Game.store)?.players || [];
     }
-
-    static getPlayer(username) {
-        console.log("This is the game store")
-        console.log(get(Game.store))
-        /** @type {Array} */
-        let pps = get(Game.store)?.players;
-
-        return pps.find(pp => pp.username === username);
+    static get player() {
+        return get(Game.store)?.player;
     }
-
-    static getPlayers() {
-        return get(Game.store)?.players;
+    static get destinations() {
+        return get(Game.store)?.destinations || [];
+    }
+    static get game() {
+        return get(Game.store)?.game;
+    }
+    static get nextDestination() {
+        if (!Game.player || Game.player.destinationIndex >= Game.destinations.length) {
+            return null;
+        }
+        return Game.destinations[Game.player.destinationIndex];
     }
 };

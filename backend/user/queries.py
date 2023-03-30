@@ -25,7 +25,8 @@ def getUserByUsername(username):
         'username': username
     })
 
-def updateInfo(userKey, newUsername, newPhone, newPasswordHash, newLogin2FA, newHidingState):
+def updateInfo(userKey, newUsername, newPhone, newPasswordHash,
+               newLogin2FA, newHidingState):
     return arango_con.db.aql.execute(
         """
             UPDATE {
@@ -33,7 +34,7 @@ def updateInfo(userKey, newUsername, newPhone, newPasswordHash, newLogin2FA, new
                 username: @newUsername,
                 phone: @newPhone,
                 passwordHash: @newPasswordHash,
-                login2FA: @newLogin2FA
+                login2FA: @newLogin2FA,
                 hidingState: @newHidingState
             } IN User
             RETURN NEW
@@ -49,7 +50,7 @@ def updateInfo(userKey, newUsername, newPhone, newPasswordHash, newLogin2FA, new
     )
 
 def UpdatePlayableInfo(userKey, passwordHash, weeklyGamePlayed, newTime):
-   return arango_con.db.aql.execute(
+    return arango_con.db.aql.execute(
         """
         FOR user IN User
             FILTER user._key == @userKey

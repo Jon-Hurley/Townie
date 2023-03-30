@@ -1,56 +1,45 @@
 <script>
     import { buttonStyle, hr, indigoStyle, redStyle } from '../../css';
-	import { Game } from '../../classes/Game';
-	import Settings from './settings.svelte';
 	import Leaderboard from './leaderboard.svelte';
+	import MapSettings from './map/mapSettings.svelte';
+	import LobbySettings from './lobby/lobbySettings.svelte';
 
-    const gameStore = Game.store;
-    $: gamePage = $gameStore?.game?.page || 'join';
-
-    const _leaveGame = async () => {
-		let res = await Game.leave();
-	};
-
-    const _startGame = async() => {
-        const err = Game.start();
-        if (err) {
-            messageObj = {
-                status: 0,
-                message: err,
-                dest: null
-            }
-            return;
-        }
-    }
+    export let startGame, leaveGame, gamePage;    
 </script>
 
-<hr class={hr}>
-<div
-    class="
-        flex
-        w-full justify-between
-        pt-4 gap-2
-    "
->
-    <!-- {#if gamePage === 'map'} -->
-        <Leaderboard/>
-    <!-- {/if} -->
-
-    <Settings/>
-
-    <button
-        on:click={_leaveGame}
-        class="{buttonStyle} {redStyle}"
+{#if gamePage !== 'join'}
+    <hr class={hr}>
+    <div
+        class="
+            flex
+            w-full justify-between
+            pt-4 gap-2
+        "
     >
-        Leave
-    </button>
+        {#if gamePage === 'map'}
+            <Leaderboard/>
+        {/if}
 
-    {#if gamePage === 'lobby'}
+        {#if gamePage === 'lobby'}
+            <LobbySettings/>
+        {:else}
+            <MapSettings/>
+        {/if}
+
         <button
-            class="{buttonStyle} {indigoStyle} w-24"
-            on:click={_startGame}
+            on:click={leaveGame}
+            class="{buttonStyle} {redStyle}"
         >
-            Start
-        </button>     
-    {/if}
-</div>
+            Leave
+        </button>
+
+        {#if gamePage === 'lobby'}
+            <button
+                class="{buttonStyle} {indigoStyle} w-24"
+                on:click={startGame}
+            >
+                Start
+            </button>     
+        {/if}
+    </div>
+{/if}

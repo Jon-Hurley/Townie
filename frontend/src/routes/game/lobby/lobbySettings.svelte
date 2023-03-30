@@ -1,23 +1,14 @@
 <script>
-	import { onMount } from 'svelte';
-	import { blueStyle, buttonStyle, grayStyle, hr, largeTitle, inputStyle } from '../../css';
-	import { Game } from '../../classes/Game';
-	import { getThemeList } from '../../requests/group';
-	import Autocomplete from './autocomplete.svelte';
+	import { blueStyle, buttonStyle, grayStyle, hr, largeTitle } from '../../../css';
+	import { Game } from '../../../classes/Game';
+	import { getThemeList } from '../../../requests/group';
+	import Autocomplete from '../autocomplete.svelte';
 	const section = 'font-semibold text-lg text-center mb-3';
 
-	let form = {};
-
-	onMount(() => {
-		Game.store.subscribe((gs) => {
-			if (gs) {
-				form = { ...gs.game.settings };
-				form.otherCompletionTime = form.otherCompletionTime;
-				form.otherRadius = form.otherRadius;
-				form.otherBudget = form.otherBudget;
-			}
-		});
-	});
+    let gameStore = Game.store;
+	let form = {
+        ...$gameStore.game.settings
+    };
 
 	let otherCompletionTime = false;
 	let otherRadius = false;
@@ -141,25 +132,13 @@
 							console.log('error with random theme generation');
 							v = 'Restaurants';
 						}
-						switch (v) {
-							case 'Tourism':
-								v = 'tourist-attraction';
-								break;
-							case 'Restaurants':
-								v = 'restaurant';
-								break;
-							case 'Shopping':
-								v = 'store';
-								break;
-							case 'Museums':
-								v = 'museum';
-								break;
-							default:
-								v = 'no_theme';
-								break;
-						}
-						form.theme = v;
-						console.log(v);
+                        const themeMap = {
+                            'Tourism': 'tourist-attraction',
+                            'Restaurants': 'restaurant',
+                            'Shopping': 'store',
+                            'Museums': 'museum'
+                        }
+						form.theme = themeMap[v] || 'no_theme';
 						themeValue = 'random';
 					}
 				}}
@@ -173,6 +152,7 @@
 				<option value="random">Random</option>
 			</select>
 		</div>
+
 		<div
 			class="
                 flex justify-between items-center
@@ -192,11 +172,9 @@
 				value={form.desiredCompletionTime}
 				class="w-40"
 			>
-				<option value={30}>30 minutes</option>
-				<option value={60}>60 minutes</option>
-				<option value={90}>90 minutes</option>
-				<option value={120}>120 minutes</option>
-				<option value={180}>180 minutes</option>
+				{#each [30,60,90,120,180] as v}
+					<option value={v}>{v} minutes</option>
+				{/each}
 				<option value="Other">Other</option>
 			</select>
 
@@ -219,10 +197,11 @@
 				/>
 			{/if}
 		</div>
+
 		<div
 			class="
                 flex justify-between items-center
-                bg-white p-3
+                bg-white p-3 mb-2
                 border-2 border-gray-200 rounded
             "
 		>
@@ -279,7 +258,7 @@
             border-2 border-gray-200 rounded
         "
 		>
-			<div class="font-semibold">Max Budget Per Attraction</div>
+			<div class="font-semibold">Max Attraction Budget</div>
 			<select
 				on:change={(e) => {
 					const v = e.target.value;

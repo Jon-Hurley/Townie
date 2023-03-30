@@ -4,8 +4,8 @@
     import { onMount } from 'svelte';
     import { updatePlayableGame } from "../../requests/account";
     import { createGame } from "../../requests/group";
-    import { goto } from '$app/navigation';
     import { get } from 'svelte/store';
+	import { blueStyle, buttonStyle } from "../../css";
 
     const currentTime = Math.floor(Date.now() / 1000)
     const user = get(userStore)
@@ -16,13 +16,13 @@
     let yes = false;
 
     onMount(() => {
-        
         if (!playable || currentTime - prevTime > 604800) {
             let transportation = Math.floor(Math.random() * 4);
             let desiredCompletionTime = Math.floor(Math.random() * 5);
             let theme = Math.floor(Math.random() * 4)
             let radius = Math.floor(Math.random() * 7);
             let budget = Math.floor(Math.random() * 5);
+            
             if (transportation == 0) {
                 form['drivingAllowed'] = true;
                 form['walkingAllowed'] = false;
@@ -48,56 +48,14 @@
                 form['bicyclingAllowed'] = true;
             }
 
-            if (desiredCompletionTime == 0) {
-                form.desiredCompletionTime = 30;
-            }
-            else if (desiredCompletionTime == 1) {
-                form.desiredCompletionTime = 60;
-            }
-            else if (desiredCompletionTime == 2) {
-                form.desiredCompletionTime = 90;
-            }
-            else if (desiredCompletionTime == 3) {
-                form.desiredCompletionTime = 120;
-            }
-            else if (desiredCompletionTime == 4) {
-                form.desiredCompletionTime = 180;
-            }
+            const desiredCompletionTimeMap = [ 30, 60, 90, 120, 180 ];
+            form.desiredCompletionTime = desiredCompletionTimeMap[desiredCompletionTime];
+                        
+            const themeMap = [ "tourist_attraction", "restaurant", "store", "museum" ]
+            form.theme = themeMap[theme];
 
-            if (theme == 0) {
-                form.theme = "tourist_attraction";
-            }
-            else if (theme == 1) {
-                form.theme = "restaurant";
-            }
-            else if (theme == 2) {
-                form.theme = "store";
-            }
-            else if (theme == 3) {
-                form.theme = "museum";
-            }
-
-            if (radius == 0) {
-                form.radius = 1;
-            }
-            else if (radius == 1) {
-                form.radius = 2;
-            }
-            else if (radius == 2) {
-                form.radius = 5;
-            }
-            else if (radius == 3) {
-                form.radius = 10;
-            }
-            else if (radius == 4) {
-                form.radius = 15;
-            }
-            else if (radius == 5) {
-                form.radius = 20;
-            }
-            else if (radius == 6) {
-                form.radius = 25;
-            }
+            const radiusMap = [ 1, 2, 5, 10, 15, 20, 25 ];
+            form.radius = radiusMap[radius];
 
             form.budget = budget;
             console.log(form)
@@ -112,18 +70,19 @@
         console.log("lobby created w/ key: ", lobbyKey);
         const res = await Game.join(lobbyKey);
         console.log("Err:", res);
-        await Game.updateSettings(form);
+        Game.updateSettings(form);
     }
-
 </script>
+
 {#if (currentTime - prevTime > 604800)}
-<div class="flex ">
-    <button
-        on:click={() => {
-            _updatePlayable()
-        }}
-    >
-        Create premade lobby!
-    </button>
-</div>
+    <div class="flex ">
+        <button
+            on:click={() => {
+                _updatePlayable()
+            }}
+            class="{buttonStyle} {blueStyle} w-full"
+        >
+            Create premade lobby!
+        </button>
+    </div>
 {/if}

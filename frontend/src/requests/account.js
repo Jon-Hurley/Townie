@@ -161,13 +161,15 @@ export const updateAccount = async (password, newUsername, newPhone, newLogin2FA
                 password,
                 newUsername,
                 newPhone,
-                newLogin2FA,            
+                newLogin2FA,
                 newHidingState
             }
         );
-        updateAccessToken(res);
         userStore.set(res.data);
-        pushPopup(1, "Account Updated Successfully!");
+        pushPopup(
+            1, "Account Updated Successfully!",
+            () => goto('/account')
+        );
         return true;
     } catch (err) {
         const err_message = err?.response?.data?.errorMessage

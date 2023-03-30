@@ -2,7 +2,7 @@
 	import { blueStyle, buttonStyle, redStyle } from '../../../css';
 	import { updateAccount } from '../../../requests/account';
 	import { userStore } from '../../../stores';
-	const title = 'text-gray-700 font-semibold text-lg mt-6';
+	const title = 'text-gray-700 font-semibold text-lg mt-4';
 	const hr = 'my-2 bg-gray-100 h-[2px]';
 
 	const form = {
@@ -11,10 +11,6 @@
 		newPhone: $userStore?.phone,
 		newLogin2FA: $userStore?.login2FA,
 		newHidingState: $userStore?.hidingState
-	};
-
-	const _deleteUser = async () => {
-		const success = await deleteUser();
 	};
 
 	const _updateUser = async() => {
@@ -42,7 +38,7 @@
 
 <div class="{title} mt-12">Username</div>
 <hr class={hr} />
-<div class="px-2 py-3">
+<div class="px-2">
 	<input
 		bind:value={form.newUsername}
 		type="newUsername"
@@ -54,7 +50,7 @@
 
 <div class={title}>Phone Number</div>
 <hr class={hr} />
-<div class="px-2 py-3 uppercase">
+<div class="px-2 uppercase">
 	<input
 		bind:value={form.newPhone}
 		type="newPhone"
@@ -66,14 +62,14 @@
 
 <div class={title}>Security</div>
 <hr class={hr} />
-<div class="px-2 py-3 flex justify-between">
+<div class="px-2 flex justify-between">
 	Require 2FA on Login
 	<input
 		type="checkbox"
 		bind:checked={form.newLogin2FA}
 	/>
 </div>
-<div class="px-2 py-3 flex justify-between">
+<div class="px-2 mt-1 flex justify-between">
 	Hide My Location in Game
 	<input
 		type="checkbox"
@@ -83,7 +79,7 @@
 
 <div class={title}>Confirm Password</div>
 <hr class={hr} />
-<div class="px-2 py-4 uppercase">
+<div class="px-2 uppercase">
 	<input
 		bind:value={form.password}
 		type="password"

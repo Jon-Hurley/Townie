@@ -125,11 +125,12 @@ def loginWithToken(request):
 @csrf_exempt
 def updateInfo(request):
     data = json.loads(request.body)
+    enteredPassword = data['password']
     newUsername = data['newUsername']
     newLogin2FA = data['newLogin2FA']
     newPhone = data['newPhone']
-    enteredPassword = data['password']
-
+    newHidingState = data['newHidingState']
+    
     user, newToken = util.getUserFromToken(data['token'])
     if user is None:
         return util.returnError('Invalid token.', 401)
@@ -141,13 +142,9 @@ def updateInfo(request):
     if expectedInputHash != passwordHash:
         return util.returnError('Incorrect password entered.', 400)
 
-    newUsername = data['newUsername']
-    newPhone = data['newPhone']
-    newLogin2FA = data['newLogin2FA']
     newPasswordHash = passwordHash if newUsername == oldUsername\
-                      else util.getPasswordHash(passwordHash, newUsername)
-    newHidingState = data['newHidingState']
-
+                      else util.getPasswordHash(enteredPassword, newUsername)
+    
     try:
         docs = queries.updateInfo(
             key, newUsername, newPhone, newPasswordHash, newLogin2FA,

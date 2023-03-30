@@ -64,31 +64,6 @@
 			link: 'link'
 		}
 	];
-
-	function amperoctoplus(s) {
-		s = s.replace(/&/g, '%26');
-		s = s.replace(/#/g, '%23');
-		s = s.replace(/\+/g, '%2B');
-		s = s.replace(/@/g, '%40');
-		s = s.replace(/:/g, '%3A');
-		return s;
-	}
-
-	/*
-        Twitter: 
-        https://twitter.com/intent/tweet?text=Check%20out%20this%20Townie%20game%20I%20played%3A%0A + link
-    
-        Whatsapp: 
-        https://api.whatsapp.com/send/?text=Check%20out%20this%20Townie%20game%20I%20played%3A%0A + link + &type=custom_url
-    
-        Mail:
-        mailto:?&body=Check%20out%20this%20Townie%20game%20I%20played%3A%0A + link
-
-        Reddit:
-        https://www.reddit.com/submit?&title=Check%20out%20this%20Townie%20game%20I%20played%3A%0A&url= + link
-
-        Copy Link:
-    */
 </script>
 
 <link
@@ -112,19 +87,19 @@
 	{#each media as media}
 		<!-- svelte-ignore a11y-click-events-have-key-events -->
 		<div
-			style="display: flex; justify-content: center;"
 			class="
-			border-gray-400 border-2 rounded-full
-			p-3 m-0
-			text-indigo-500 font-semibold
-			w-24 h-24
-			flex flex-col items-center justify-center
-			text-xs
-			hover:scale-110 duration-200
-			z-100
-			overflow-visible
-			cursor-pointer
-		"
+				border-gray-400 border-2 rounded-full
+				p-3 m-0
+				text-indigo-500 font-semibold
+				w-24 h-24
+				flex flex-col items-center justify-center
+				text-xs
+				hover:scale-110 duration-200
+				z-100
+				overflow-visible
+				cursor-pointer
+				flex justify-center
+			"
 			on:click={() => {
 				if (media.name === 'Copy Link') {
 					navigator.clipboard.writeText('link');
@@ -202,7 +177,7 @@
                     cursor-pointer
                 "
 			>
-				{p.rating}
+				{p.rating || ''}
 				{p.name}
 			</div>
 		{/each}

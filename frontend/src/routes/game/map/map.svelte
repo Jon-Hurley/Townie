@@ -1,13 +1,11 @@
 <script>
 	import { onDestroy, onMount } from 'svelte';
-	import { Location } from '../../../Location';
-    import { Map } from '../../../Map';
-	import Settings from '../lobby/settings.svelte';
-	import Newtime from './newtime.svelte';
+	import { Location } from '../../../classes/Location';
+    import { Map } from '../../../classes/Map';
 
     onMount(async() => {
-        await Map.regenerate();
         await Location.subscribe();
+		await Map.regenerate();
     });
 
     onDestroy(() => {
@@ -29,7 +27,7 @@
     ]
 </script>
 
-<div
+<!-- <div
     class="
         absolute top-[5rem] left-4 z-10
         bg-gray-800 rounded
@@ -62,20 +60,18 @@
             </label>
         </div>
     {/each}
-</div>
+</div> -->
 
 <div
     class="full-screen"
     bind:this={Map.container}
 />
 
-<div>
-    <Newtime/>
-</div>
 <style>
     .full-screen {
         width: 100vw;
-        height: calc(100vh - 120px);
+        height: calc(100vh - 196px);
         margin: -16px;
+		margin-bottom: 0px;
     }
 </style>

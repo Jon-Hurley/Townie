@@ -73,6 +73,7 @@ def returnUserPrivate(user):
     )
     user['token'] = token
 
+    del user['passwordHash']
     return JsonResponse(user)
 
 def returnUserPublic(user):
@@ -81,6 +82,9 @@ def returnUserPublic(user):
     del user['passwordHash']
     user['key'] = user['_key']
     del user['_key']
+    del user['login2FA']
+    del user['hidingState']
+    del user['phone']
     return JsonResponse(user)
 
 def getPasswordHash(password, username):

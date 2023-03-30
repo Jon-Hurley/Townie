@@ -31,7 +31,7 @@
 		}
 
 		let players = summary.players;
-		let user = $userStore.username;
+		let user = $userStore?.username;
 		if (players.includes(user)) {
 			userInGame = true;
 		}
