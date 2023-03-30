@@ -352,6 +352,7 @@ def getNearbyDestinations(lat, lng, radius):
         FOR x IN Destinations
             FILTER GEO_DISTANCE([@lat, @lng], [x.latitude, x.longitude]) <= @radius
             FILTER GEO_DISTANCE([@lat, @lng], [x.latitude, x.longitude]) >= 100
+            LIMIT 50
             RETURN x
         """,
         bind_vars={
