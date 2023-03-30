@@ -11,8 +11,10 @@ export class Game {
     static ws = undefined;
     static interval = undefined;
 
-    static atPrevDest = false;
-    static timeSinceLastDest = 0;
+    static timeStore = writable({
+        atPrevDest: false,
+        timeSinceLastDest: 0
+    });
 
     static send(method, data) {
         const objStr = JSON.stringify({ method, ...data });
@@ -31,6 +33,7 @@ export class Game {
             Map.setZoomAndCenter();
         }
     }
+
     static handleLocationUpdate(data) {
         console.log(data);
         const {
@@ -38,9 +41,11 @@ export class Game {
             totalTime, totalDist,
             quiet, arrived, atPrevDest
         } = data;
-
-        Game.atPrevDest = atPrevDest;
-        Game.timeSiceLastDest = time;
+        
+        Game.timeStore.set({
+            atPrevDest,
+            timeSinceLastDest: time
+        })
 
         if (arrived) {
             const achievedDest = Game.nextDestination;
@@ -66,8 +71,6 @@ export class Game {
             }
         }
     }
-
-
 
     static setDefaultEvents() {
         Game.ws.onmessage = (m) => {
