@@ -15,14 +15,11 @@
     let playable = user.weekly_game_played;
     let form = {};
     let display = {};
-    const theme_options = ["Tourism", "Food", "Shoppping", "Museum"];
-    const budget_options = ["Free", "10", "25", "50", "Splurge!"]
-
-    let yes = false;
-    let click = false;
+    const theme_options = ["Tourism", "Food", "Shopping", "Museum"];
+    const budget_options = ["Free", "10", "25", "50", "Splurge!"];
 
     onMount(() => {
-        if (!playable || currentTime - prevTime < 604800) {
+        if (!playable || currentTime - prevTime > 604800) {
             let transportation = Math.floor(Math.random() * 4);
             let desiredCompletionTime = Math.floor(Math.random() * 5);
             let theme = Math.floor(Math.random() * 4)
@@ -93,7 +90,7 @@
     }
 </script>
 
-{#if (currentTime - prevTime < 604800)}
+{#if (currentTime - prevTime > 604800)}
     <div class="flex">
         <ul bind:this={display}
             class=" {buttonStyle} {blueStyle} w-full"

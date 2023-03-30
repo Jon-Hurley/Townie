@@ -21,10 +21,7 @@ export const pushPopup = (status, message, onOk) => {
             status,
             message,
             onOk: () => {
-                const queue = [ ...get(popupQueue) ];
-                queue.shift(1);
-                popupQueue.set(queue);
-                
+                popPopup();
                 if (onOk) onOk();
                 if (message.includes('Invalid token')) {
                     logout();
@@ -32,4 +29,10 @@ export const pushPopup = (status, message, onOk) => {
             }
         }
     ]);
+}
+
+export const popPopup = () => {
+    const queue = [ ...get(popupQueue) ];
+    queue.shift(1);
+    popupQueue.set(queue);
 }

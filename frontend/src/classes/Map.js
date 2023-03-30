@@ -101,6 +101,7 @@ export class Map {
     static generateDestinationCircle() {
         if (!Game.nextDestination) return;
         if (!Map.map) return;
+        if (Map.nextDestination?.id === Game.nextDestination.index) return;
 
         const latLng = {
             lat: Game.nextDestination.lat,
@@ -119,8 +120,8 @@ export class Map {
             fillOpacity: 0.35,
             map: Map.map,
             center: Location.randomize(latLng.lat, latLng.lng),
-            // center: randomizeLocation(40.423538, -86.921738, 20),
             radius: 50,
+            id: Game.nextDestination.index
         })
     };
 

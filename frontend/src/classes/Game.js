@@ -11,6 +11,9 @@ export class Game {
     static ws = undefined;
     static interval = undefined;
 
+    static atPrevDest = false;
+    static timeSinceLastDest = 0;
+
     static send(method, data) {
         const objStr = JSON.stringify({ method, ...data });
         Game.ws.send(objStr);
@@ -31,31 +34,35 @@ export class Game {
     static handleLocationUpdate(data) {
         console.log(data);
         const {
-            destinationIndex, reached, quiet,
-            time, dist, totalTime, totalDist
+            time, dist,
+            totalTime, totalDist,
+            quiet, arrived, atPrevDest
         } = data;
 
-        if (!quiet && reached) {
+        Game.atPrevDest = atPrevDest;
+        Game.timeSiceLastDest = time;
+
+        if (arrived) {
             const achievedDest = Game.nextDestination;
+            const displayTime = Math.round(10 * time / (1000 * 60)) / 10;
+            const displayDist = Math.round(10 * dist / 1000) / 10;
+            const displayTotalTime = Math.round(10 * totalTime / (1000 * 60)) / 10;
+            const displayTotalDist = Math.round(10 * totalDist / 1000) / 10;
+            
             pushPopup(
-                0,
-                `You reached destination ${achievedDest.n}!\n
-                You took ${time} minutes and traveled ${dist} miles.\n
-                Total time: ${totalTime} minutes\n
-                Total distance: ${totalDist} miles`
+                1,
+                `You reached destination ${achievedDest.name}!\n
+                You took ${displayTime} minutes and traveled ${displayDist} meters.\n
+                Total time: ${displayTotalTime} minutes.\n
+                Total distance: ${displayTotalDist} miles.`
             );
-            if (destinationIndex === Game.destinations.length - 1) {
+            if (achievedDest.index === Game.destinations.length - 1) {
                 const gameKey = Game.game._key;
                 Game.leave();
                 pushPopup(
-                    0, "You have reached the final destination. You won the game!",
+                    1, "You have reached the final destination. You won the game!",
                     () => goto('/summary/' + gameKey)
                 );
-            } else {
-                Game.store.set({
-                    ...get(Game.store),
-                    destinationIndex: destinationIndex + 1
-                });
             }
         }
     }
@@ -124,7 +131,7 @@ export class Game {
             const urlParams = new URLSearchParams(params).toString();
             Game.ws = new WebSocket(`${PUBLIC_BACKEND_WS}?${urlParams}`);
             await new Promise((res, rej) => { 
-                Game.ws.onerror = () => rej();
+                Game.ws.onerror = () => rej({ message: 'Unable to connect to web-socket.' });
                 Game.ws.onopen = (e) => res(e);
             });
     
@@ -147,13 +154,13 @@ export class Game {
             }
 
             Game.store.set(res);
-            Game.setDefaultEvents();
+            Game.resumePolling();
         } catch (err) {
             console.log(err);
             Game.ws?.close();
             Game.ws = undefined;
             Game.store.set(null);
-            pushPopup(0, err.message || "Unable to connect to lobby. Please try again.");
+            pushPopup(0, err?.message || "Unable to connect to lobby. Please try again.");
         }
     }
 
@@ -194,7 +201,10 @@ export class Game {
             Game.resumePolling();
             return true;
         } catch (err) {
-            pushPopup(0, "Unable to start game. Please try again.");
+            pushPopup(
+                0, "Unable to start game. Please try again.",
+                () => Game.resumePolling()
+            );
             return false;
         }
     }
@@ -242,7 +252,10 @@ export class Game {
             Game.resumePolling();
             return true;
         } catch (err) {
-            pushPopup(0, "Unable to update settings. Please try again.");
+            pushPopup(
+                0, "Unable to update settings. Please try again.",
+                () => Game.resumePolling()
+            );
             return false;
         }
     }

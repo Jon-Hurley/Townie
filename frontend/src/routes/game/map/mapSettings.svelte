@@ -1,6 +1,7 @@
 <script>
 	import { blueStyle, buttonStyle, grayStyle, hr, largeTitle } from '../../../css';
 	import { Game } from '../../../classes/Game';
+	import { pushPopup } from '../../../stores';
 
     let gameStore = Game.store;
 	let form = {
@@ -95,8 +96,13 @@
 			<button
 				class="{buttonStyle} {blueStyle} w-full mr-2"
 				on:click={() => {
-					isOpen = false;
-					_updateSettings();
+					pushPopup(
+						2, 'Are your sure you want to save these settings?',
+						() => {
+							isOpen = false;
+							_updateSettings();
+						}
+					);
 				}}
 			>
 				Save

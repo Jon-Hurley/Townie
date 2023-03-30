@@ -61,7 +61,9 @@ def addPlayer(gameKey, userKey, connectionId, lat, lon):
             }
             UPDATE {
                 connectionId: @connectionId,
-                finished: false
+                finished: false,
+                lon: @lon,
+                lat: @lat
             }
             IN Players
 
@@ -189,7 +191,7 @@ def updatePlayerLocation(connectionId, lon, lat):
             )[0] // HAS PLAYER REACHED NEXT DEST
             
             // NO dt/dx UPDATES IF PAUSED, STILL AT PREV DEST, OR DONE
-            LET notQuiet = !(p.paused || atPrevDest || destDelta != NULL)
+            LET notQuiet = !(p.paused || atPrevDest || destDelta == NULL)
             // RESET TIME AND DIST ON DESTINATION ARRIVAL
             LET notArrived = !destDelta.inc
             
@@ -197,29 +199,32 @@ def updatePlayerLocation(connectionId, lon, lat):
             LET dt = (t - p.prevTime) * notQuiet
             LET dx = p.lat ? DISTANCE(p.lat, p.lon, @lat, @lon) * notQuiet : 0
             
+            LET newTime = p.time + dt
+            LET newDist = p.dist + dx
+
             UPDATE p
             WITH {
                 lon: @lon,
                 lat: @lat,
                 
-                dist: (p.dist + dx) * notArrived,
+                dist: newDist * notArrived,
                 totalDist: p.totalDist + dx,
                 destinationIndex: p.destinationIndex + destDelta.inc,
                 points: p.points + destDelta.points,
                 
                 prevTime: t,
-                time: (p.time + dt) * notArrived,
+                time: newTime * notArrived,
                 totalTime: p.totalTime + dt
             }
             IN Players
             RETURN {
-                destinationIndex: OLD.destinationIndex,
-                reached: destDelta.inc,
+                time: NEW.time,
+                dist: NEW.dist,
+                totalTime: NEW.totalTime,
+                totalDist: NEW.totalDist,
                 quiet: !notQuiet,
-                time: OLD.time,
-                dist: OLD.dist,
-                totalTime: OLD.totalTime,
-                totalDist: OLD.totalDist
+                arrived: !notArrived,
+                atPrevDest
             }
         """,
         bind_vars={
