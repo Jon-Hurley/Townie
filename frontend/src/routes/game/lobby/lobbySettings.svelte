@@ -10,9 +10,10 @@
         ...$gameStore.game.settings
     };
 
+	let isOpen = false;
+	
 	let otherCompletionTime = false;
 	let otherRadius = false;
-	let isOpen = true;
 	let otherBudget = false;
 	let randomThemeChosen = false;
 
