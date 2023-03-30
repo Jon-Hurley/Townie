@@ -68,3 +68,20 @@ export const rating = async (theme) => {
         return false;
     }
 }
+
+export const submitRating = async (theme, rating, numRatings) => {
+    try {
+        const res = await axios.post(
+            PUBLIC_BACKEND_API + 'user/submit-rating/',
+            {
+                theme,
+                rating,
+                numRatings,
+            }
+        );
+        return res.data;
+    } catch (err) {
+        console.log(err);
+        return false;
+    }
+}

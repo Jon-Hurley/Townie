@@ -291,3 +291,21 @@ def getRating(theme):
     """,
         bind_vars={'theme': theme}
     )
+
+
+def submitRating(theme, rating, numRatings):
+    return arango_con.db.aql.execute(
+        """
+    FOR theme IN Themes
+    FILTER theme.name == @theme
+    UPDATE theme WITH {
+        rating: @rating,
+        numRatings: @numRatings
+    } IN Themes
+    """,
+        bind_vars={
+            'theme': theme,
+            'rating': rating,
+            'numRatings': numRatings
+        }
+    )

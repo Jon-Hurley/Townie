@@ -22,3 +22,11 @@ def getUser(request, key):
 def getSummary(gameID):
     res = queries.getSummary(gameID).batch()[0]
     return JsonResponse(res)
+
+
+@csrf_exempt
+def submitRating(request):
+    data = json.loads(request.body)
+    res = queries.submitRating(
+        data['theme'], data['rating'], data['numRatings']).batch()[0]
+    return JsonResponse(res)

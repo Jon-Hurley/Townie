@@ -17,11 +17,14 @@
 		console.log({ gameKey });
 		summary = await getSummary(gameKey);
 
+		summary.numFinished = summary.players.filter((player) => player.finished).length;
+		console.log(summary);
+
 		let theme = 'error';
 		if (summary) {
 			theme = summary.game.settings.theme;
 		}
-		console.log(theme);
+		console.log(summary);
 		ratings = await rating(summary.game.settings.theme);
 		if (ratings == undefined) {
 			ratings = {
@@ -32,19 +35,21 @@
 
 		let players = summary.players;
 		let user = $userStore.username;
-		if (players.includes(user)) {
-			userInGame = true;
-		}
 
-		console.log(ratings);
-		console.log(summary);
+		console.log(user);
+		for (let i = 0; i < players.length; i++) {
+			if (players[i].username == user) {
+				userInGame = true;
+			}
+		}
+		console.log(userInGame);
 	});
 </script>
 
 {#if summary}
 	{#if ratings}
 		<div class="h-full flex flex-col">
-			<Summary {summary} {ratings} />
+			<Summary {summary} {ratings} {userInGame} />
 		</div>
 	{:else}
 		<Loading />

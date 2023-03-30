@@ -22,4 +22,5 @@ urlpatterns = [
     path('request-friend/', friend.requestFriend),
 
     path('rating/', account.getRating),
+    path('submit-rating/', search.submitRating),
 ]
