@@ -1,11 +1,13 @@
 <script>
     import { userStore } from "../../stores";
     import { Game } from "../../classes/Game";
+    import { Location } from "../../classes/Location";
     import { onMount } from 'svelte';
     import { updatePlayableGame } from "../../requests/account";
     import { createGame } from "../../requests/group";
     import { get } from 'svelte/store';
 	import { blueStyle, buttonStyle } from "../../css";
+    import { goto } from '$app/navigation';
 
     const currentTime = Math.floor(Date.now() / 1000)
     const user = get(userStore)
@@ -20,7 +22,7 @@
     let click = false;
 
     onMount(() => {
-        if (!playable || currentTime - prevTime > 604800) {
+        if (!playable || currentTime - prevTime < 604800) {
             let transportation = Math.floor(Math.random() * 4);
             let desiredCompletionTime = Math.floor(Math.random() * 5);
             let theme = Math.floor(Math.random() * 4)
@@ -82,11 +84,16 @@
         console.log("lobby created w/ key: ", lobbyKey);
         const res = await Game.join(lobbyKey);
         console.log("Err:", res);
-        Game.updateSettings(form);
+        const loc = await Location.getCurrentLocation();
+        form.lat = loc.lat;
+        form.lon = loc.lng;
+        await Game.updateSettings(form);
+        console.log(Game.game)
+        goto('/game')
     }
 </script>
 
-{#if (currentTime - prevTime > 604800)}
+{#if (currentTime - prevTime < 604800)}
     <div class="flex">
         <ul bind:this={display}
             class=" {buttonStyle} {blueStyle} w-full"

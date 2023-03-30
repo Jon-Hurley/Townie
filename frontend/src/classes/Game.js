@@ -211,12 +211,39 @@ export class Game {
         }
     }
     
-    static updateSettings(form) {
+    static async updateSettings(form) {
         try {
-            const gameKey = get(Game.store).game._key;
-            Game.send('update-settings', { gameKey, settings: form });
+            Game.stopPolling();
+            console.log({form})
+            console.log(Game.game._key)
+            Game.send('update-settings', {
+                gameKey: Game.game._key,
+                settings: form
+            });
+            const res = await new Promise((res, rej) => {
+                Game.ws.onmessage = (m) => {
+                    try {
+                        console.log({m})
+                        const { method, data } = JSON.parse(m.data);
+                        if (method === 'update-game') {
+                            Game.handleGameUpdate(data);
+                            if (data?.game?.page === 'map') res()
+                        }
+                        else if (method === 'update-settings') {
+                            Game.handleGameUpdate(data);
+                            res()
+                        }
+                    } catch (e) {
+                        rej(e);
+                    }
+                }
+                Game.ws.onerror = rej;
+            });
+            Game.resumePolling();
+            return true;
         } catch (err) {
-            console.log(err);
+            pushPopup(0, "Unable to update settings. Please try again.");
+            return false;
         }
     }
 
@@ -246,5 +273,8 @@ export class Game {
             return null;
         }
         return Game.destinations[Game.player.destinationIndex];
+    }
+    static get key() {
+        return Game.game._key
     }
 };
