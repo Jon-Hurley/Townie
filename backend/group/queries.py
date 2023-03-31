@@ -212,7 +212,7 @@ def updatePlayerLocation(connectionId, lon, lat):
             LET newTime = p.time + dt
             LET newTimeSec = newTime / 1000
             LET pMult = 1 - (newTimeSec / newDestDelta.trueTime) / 2
-            LET dp = arrived ? ROUND(pMult * newDestDelta.points) : 0
+            LET dp = arrived ? ROUND(MAX(pMult, 0) * newDestDelta.points) : 0
 
             UPDATE p
             WITH {
