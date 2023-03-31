@@ -181,7 +181,7 @@ export const updatePlayableGame = async(weeklyGamePlayed, newTime) => {
     try {
         const user = get(userStore);
         const res = await axios.post(
-            PUBLIC_BACKEND_API + 'user/updateTime', 
+            PUBLIC_BACKEND_API + 'user/updateTime/', 
             {
                 key: user.key,
                 username: user.username,
