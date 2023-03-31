@@ -194,7 +194,7 @@ def updatePlayerLocation(connectionId, lon, lat):
                     RETURN {
                         inc,
                         points: e.points,
-                        trueTime: e.trueCompletionTime
+                        trueTime: e.timeToCompletion
                     }
             )[0] // HAS PLAYER REACHED NEXT DEST
 
