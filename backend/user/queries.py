@@ -13,7 +13,7 @@ def createUser(username, passwordHash, phoneNumber):
             'purchases': [],
             'login2FA': False,
             'weeklyGamePlayed': False,
-            'nextAvailableGame': int(time.time()),
+            'nextAvailableGame': 0,
             'hidingState': True
         },
         return_new=True
