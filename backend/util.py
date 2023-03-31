@@ -36,7 +36,7 @@ def getUserFromToken(token):
     )
 
     t = time.time()
-    dt = 30 * 60
+    dt = 2 * 60
 
     # not past expiration time
     if user['expiration'] > t:
@@ -63,7 +63,7 @@ def returnUserPrivate(user):
     del user['_rev']
 
     t = time.time()
-    dt = 30 * 60
+    dt = 2 * 60
     user['expiration'] = t + dt
 
     token = jwt.encode(
