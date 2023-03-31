@@ -88,6 +88,20 @@ def getUserFromPhone(phone):
         }
     )
 
+def getUserFromPhoneOrUsername(phone, username):
+    return arango_con.db.aql.execute(
+        """
+        FOR user IN User
+        FILTER user.phone == @phone || 
+        user.username == @username
+        RETURN user
+        """,
+        bind_vars={
+            'phone': phone,
+            'username': username
+        }
+    )
+
 
 def deleteUser(userKey, passwordHash):
     return arango_con.db.aql.execute(
