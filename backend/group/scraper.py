@@ -32,7 +32,6 @@ def generate(settings, gameKey):
         mode = "bicycling"
     elif settings['transitAllowed']:
         mode = "transit"
-    print(int(settings['radius']/0.000621371))
     place_info = json.dumps(gmaps.places(None, (settings['lat'], settings['lon']),  int(settings['radius']/0.000621371), None, None, settings['budget'], False, settings['theme'], None, None))
     #place_info = json.dumps(gmaps.places_nearby((settings['lat'], settings['lon']),  int(settings['radius']/0.000621371), None, None, None, settings['budget'], None, False, None, settings['theme'], None))
     print(place_info)
