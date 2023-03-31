@@ -5,16 +5,18 @@
     import { onMount } from 'svelte';
     import { updatePlayableGame } from "../../requests/account";
     import { createGame } from "../../requests/group";
-    import { get } from 'svelte/store';
 	import { blueStyle, buttonStyle } from "../../css";
     import { goto } from '$app/navigation';
 
     const currentTime = Math.floor(Date.now() / 1000)
-    const user = get(userStore)
-    let prevTime = user.next_available_game;
-    let playable = user.weekly_game_played;
+
+    const user = $userStore;
+    let prevTime = user?.nextAvailableGame;
+    let playable = user?.weeklyGamePlayed;
+
     let form = {};
     let display = {};
+
     const theme_options = ["Tourism", "Food", "Shopping", "Museum"];
     const budget_options = ["Free", "10", "25", "50", "Splurge!"];
 

@@ -48,6 +48,11 @@
                 goto('/account');
                 console.log('User state set to valid: GOTO ACCOUNT');
             }
+            userStore.subscribe((user) => {
+                if (user?.token) {
+                    sessionStorage.setItem('token', user.token);
+                }
+            });
         }
 		lastState = !!$userStore;
         loaded = true;
