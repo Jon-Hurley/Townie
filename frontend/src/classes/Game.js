@@ -30,10 +30,14 @@ export class Game {
     }
 
     static handleLocationUpdate(data) {
+        console.log("LOCATION UPDATE:", data);
+        if (!data) return;
+        
         const {
-            time, dist,
+            newTime, newDist,
             totalTime, totalDist,
-            quiet, arrived, atPrevDest
+            arrived, atPrevDest,
+            potentialPoints, points
         } = data;
         
         if (get(Game.timeStore) != atPrevDest) {
@@ -42,17 +46,14 @@ export class Game {
 
         if (arrived) {
             const achievedDest = Game.nextDestination;
-            const displayTime = Math.round(10 * time / (1000 * 60)) / 10;
-            const displayDist = Math.round(10 * dist / 1000) / 10;
-            const displayTotalTime = Math.round(10 * totalTime / (1000 * 60)) / 10;
-            const displayTotalDist = Math.round(10 * totalDist / 1000) / 10;
-            
+            const displayTime = Math.round(10 * newTime / (1000 * 60)) / 10;
+            const displayDist = Math.round(10 * newDist / 1000) / 10;
+           
             pushPopup(
                 1,
                 `You reached destination ${achievedDest.name}!\n
                 You took ${displayTime} minutes and traveled ${displayDist} meters.\n
-                Total time: ${displayTotalTime} minutes.\n
-                Total distance: ${displayTotalDist} miles.\n
+                You received ${potentialPoints}/${points} points.\n
                 Your total time has been paused and will resume once you leave destination.`,
                 () => {
                     Map.generateDestinationCircle();

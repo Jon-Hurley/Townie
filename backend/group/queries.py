@@ -2,8 +2,7 @@ import arango_con
 import time
 from . import scraper
 
-
-def createGame():
+def createGame(lon, lat):
     return arango_con.db.aql.execute(
         """
         INSERT {
@@ -19,13 +18,17 @@ def createGame():
                 theme: "restaurant",
                 desiredCompletionTime: 180,
                 budget: 1,
-                lon: 0.0,
-                lat: 0.0
+                lon: @lon,
+                lat: @lat
             }
         }
         INTO Games
         RETURN NEW
-        """
+        """,
+        bind_vars={
+            'lon': lon,
+            'lat': lat
+        }
     )
 
 
@@ -59,13 +62,15 @@ def addPlayer(gameKey, userKey, connectionId, lat, lon):
                 finished: false,
                 paused: false,
                 lon: @lon,
-                lat: @lat
+                lat: @lat,
+                prevTime: DATE_NOW()
             }
             UPDATE {
                 connectionId: @connectionId,
                 finished: false,
                 lon: @lon,
-                lat: @lat
+                lat: @lat,
+                prevTime: DATE_NOW()
             }
             IN Players
 
@@ -177,7 +182,7 @@ def updatePlayerLocation(connectionId, lon, lat):
                 FOR v, e IN 1..1 OUTBOUND p._to Itineraries
                     FILTER e.index == p.destinationIndex - 1
                     LET dist = DISTANCE(v.latitude, v.longitude, @lat, @lon)
-                    LET inc = (dist != NULL && dist < 20)
+                    LET inc = (dist != NULL && dist < 50)
                     RETURN inc
             )[0] // WHETHER PLAYER IS STILL AT PREV DEST
             
@@ -185,53 +190,60 @@ def updatePlayerLocation(connectionId, lon, lat):
                 FOR v, e IN 1..1 OUTBOUND p._to Itineraries
                     FILTER e.index == p.destinationIndex
                     LET dist = DISTANCE(v.latitude, v.longitude, @lat, @lon)
-                    LET inc = (dist != NULL && dist < 20)
+                    LET inc = (dist != NULL && dist < 50)
                     RETURN {
                         inc,
                         points: e.points,
                         trueTime: e.trueCompletionTime
                     }
             )[0] // HAS PLAYER REACHED NEXT DEST
-            
+
+            LET newDestDelta = destDelta ? destDelta : { inc: 0, points: 0, trueTime: 1 }
+
             // NO dt/dx UPDATES IF PAUSED, STILL AT PREV DEST, OR DONE
-            LET notQuiet = !(p.paused || atPrevDest || destDelta == NULL)
+            LET quiet = p.paused || (atPrevDest != NULL) || (destDelta == NULL)
             // RESET TIME AND DIST ON DESTINATION ARRIVAL
-            LET notArrived = !destDelta.inc
+            LET arrived = newDestDelta.inc
             
             LET t = DATE_NOW()
-            LET dt = (t - p.prevTime) * notQuiet
-            LET dx = p.lat ? DISTANCE(p.lat, p.lon, @lat, @lon) * notQuiet : 0
-            
-            LET newTime = p.time + dt
-            LET newDist = p.dist + dx
+            LET dt = quiet ? 0 : (t - p.prevTime)
+            LET dx = quiet ? 0 : DISTANCE(p.lat, p.lon, @lat, @lon)
 
+            LET newTime = p.time + dt
             LET newTimeSec = newTime / 1000
-            LET pMult = 1 - (newTimeSec / destDelta.trueTime) / 2
-            LET dp = ROUND(pMult * destDelta.points)
+            LET pMult = 1 - (newTimeSec / newDestDelta.trueTime) / 2
+            LET dp = arrived ? ROUND(pMult * newDestDelta.points) : 0
 
             UPDATE p
             WITH {
                 lon: @lon,
                 lat: @lat,
-                destinationIndex: p.destinationIndex + destDelta.inc,
-                points: p.points + dp * destDelta.inc,
-
-                dist: newDist * notArrived,
-                totalDist: p.totalDist + dx,
-
                 prevTime: t,
-                time: newTime * notArrived,
+
+                destinationIndex: p.destinationIndex + arrived,
+                points: p.points + dp,
+                dist: p.time + dx,
+                time: p.time + dt,
+                totalDist: p.totalDist + dx,
                 totalTime: p.totalTime + dt
             }
             IN Players
             RETURN {
-                time: NEW.time,
-                dist: NEW.dist,
+                newTime: NEW.time,
+                newDist: NEW.dist,
+                oldTime: OLD.time,
+                oldDist: OLD.dist,
+
                 totalTime: NEW.totalTime,
                 totalDist: NEW.totalDist,
-                quiet: !notQuiet,
-                arrived: !notArrived,
-                atPrevDest
+
+                quiet,
+                arrived,
+
+                atPrevDest,
+                potentialPoints: dp,
+                points: newDestDelta.points,
+                trueCompletionTime: newDestDelta.trueTime
             }
         """,
         bind_vars={

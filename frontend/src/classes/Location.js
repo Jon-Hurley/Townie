@@ -23,18 +23,16 @@ export class Location {
     }
 
     static updateLocation(lat, lng) {
-        console.log('Location updated');
-        Map.generateUserMarker();
         Location.store.set({ lat, lng });
+        if (Map.map) {
+            Map.generateUserMarker({ lat, lng });
+            Map.setZoomAndCenter();
+        }
         Game.updateLocation(lat, lng);
     }
 
 	static async subscribe() {
         if (Location.interval) return;
-
-        const loc = await Location.getCurrentLocation();
-        Location.updateLocation(loc.lat, loc.lng);
-
 		Location.interval = navigator.geolocation.watchPosition(
             (loc) => {
                 Location.updateLocation(

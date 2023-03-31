@@ -116,7 +116,16 @@ def onDefault(request):
     if method == 'update-location':
         lon = body['lon']
         lat = body['lat']
-        res = queries.updatePlayerLocation(connectionId, lon, lat).batch()[0]
+        
+        try:
+            res = queries.updatePlayerLocation(connectionId, lon, lat).batch()[0]
+        except Exception as err:
+            print(err)
+            return JsonResponse({
+                'method': 'update-location',
+                'error': str(err)
+            })
+
         return JsonResponse({
             'method': 'update-location',
             'data': res
@@ -135,12 +144,14 @@ def propogateAllUpdates(gameKey=None, conExcl={}, data=None):
 @csrf_exempt
 def createGame(request):
     data = json.loads(request.body)
+    lon = data['lon']
+    lat = data['lat']
 
     user, newToken = util.getUserFromToken(data['token'])
     if user is None:
         return util.returnError('Invalid token', 401)
-
-    res = queries.createGame().batch()[0]
+    
+    res = queries.createGame(lon, lat).batch()[0]
     print(res)
     return JsonResponse({
         'key': res['_key'],

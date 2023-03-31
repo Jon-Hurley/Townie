@@ -11,6 +11,8 @@
 		pushPopup(0, 'You have left the current destination. Your total time will resume counting.');
         locationTime = 0;
         showPausedTime = false;
+	} else {
+		showPausedTime = true;
 	}
 
 	let interval;
