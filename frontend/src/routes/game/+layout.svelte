@@ -1,6 +1,7 @@
 <script>
     import { Game } from '../../classes/Game';
 	import Loading from '../../general-components/loading.svelte';
+	import { mapStore } from '../../stores';
     import Join from './join/join.svelte';
 	import Lobby from './lobby/lobby.svelte';
 	import Map from './map/map.svelte';
@@ -29,7 +30,11 @@
         {:else if gamePage === 'lobby'}
             <Lobby/>
         {:else if gamePage === 'map'}
-            <Map/>
+            {#if $mapStore}
+                <Map/>
+            {:else}
+                <Loading/>
+            {/if}
         {/if}
         <Subnav
             startGame={_startGame}

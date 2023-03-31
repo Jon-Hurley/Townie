@@ -11,12 +11,14 @@ dotenv.load_dotenv()
 def signup(request):
     print("Running")
     data = json.loads(request.body)
-    phone = data['newPhone']
-    username = data['newUsername']
+    print(data)
+    phone = data['phone']
+    username = data['username']
 
     try:
-        docs = queries.getUserFrom(phone, username).batch()
+        docs = queries.getUserFromPhoneOrUsername(phone, username).batch()
     except Exception as e:
+        print("error in first try")
         return util.returnError(e.error_message, e.http_code)
 
     if len(docs) != 0:

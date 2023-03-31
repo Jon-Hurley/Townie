@@ -31,6 +31,11 @@ export class Map {
                                 : PUBLIC_GOOGLE_MAPS_LIGHT_MODE,
             disableDefaultUI: true
         });
+        Map.generateDestinationCircle();
+        Map.generatePlayerMarkers();
+        Map.generateUserMarker();
+        Map.setZoomAndCenter();
+
         if (mapLoc && mapZoom) {
             Map.map.setCenter(mapLoc);
             Map.map.setZoom(mapZoom);
@@ -82,8 +87,9 @@ export class Map {
         if (Map.userMarker) {
             Map.userMarker.setMap(null);
         }
+        const loc = Location.getLocation();
         Map.userMarker = new google.maps.Marker({
-            position: { lat: Game.player.lat, lng: Game.player.lon },
+            position: loc,
             map: Map.map,
             // icon: {
             //     path: "M79.428,323.02l0.902,0.722l400,259.455c6.787,5.189,13.406,7.714,20.202,7.714c8.269,0,16.004-3.996,20.695-10.688 c5.548-7.923,6.236-17.791,2.041-29.33l-0.958-2.638l-166.234-247.27c-0.863-4.152-0.851-10.389,0.027-14.547L522.182,42.785 l0.979-2.653c4.254-11.545,3.599-21.433-1.952-29.392C516.521,4.015,508.764,0,500.462,0c-6.744,0-13.326,2.484-20.089,7.585 L81.487,262.942l-1.873,1.334c-9.293,7.356-14.645,18.045-14.679,29.324C64.899,304.883,70.184,315.602,79.428,323.02z M432.659,92.635l-118.072,173.22l-0.979,2.656c-5.354,14.535-5.4,35.652-0.107,50.208l0.958,2.635l118.67,176.517 L118.461,293.769L432.659,92.635z",

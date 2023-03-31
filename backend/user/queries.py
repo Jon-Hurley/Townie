@@ -12,8 +12,8 @@ def createUser(username, passwordHash, phoneNumber):
             'rank': 'beginner',
             'purchases': [],
             'login2FA': False,
-            'weekly_game_played': False,
-            'next_available_game': int(time.time()),
+            'weeklyGamePlayed': False,
+            'nextAvailableGame': int(time.time()),
             'hidingState': True
         },
         return_new=True
@@ -59,7 +59,7 @@ def UpdatePlayableInfo(userKey, weeklyGamePlayed, newTime):
             UPDATE user WITH {
                 _key: @userKey,
                 weeklyGamePlayed: @weeklyGamePlayed,
-                next_available_game: @newTime
+                nextAvailableGame: @newTime
             } IN User
             
             RETURN NEW
@@ -88,6 +88,20 @@ def getUserFromPhone(phone):
         """,
         bind_vars={
             'phone': phone
+        }
+    )
+
+def getUserFromPhoneOrUsername(phone, username):
+    return arango_con.db.aql.execute(
+        """
+        FOR user IN User
+        FILTER user.phone == @phone || 
+        user.username == @username
+        RETURN user
+        """,
+        bind_vars={
+            'phone': phone,
+            'username': username
         }
     )
 

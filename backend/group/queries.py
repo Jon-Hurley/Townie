@@ -188,7 +188,8 @@ def updatePlayerLocation(connectionId, lon, lat):
                     LET inc = (dist != NULL && dist < 20)
                     RETURN {
                         inc,
-                        points: e.points * inc
+                        points: e.points,
+                        trueTime: e.trueCompletionTime
                     }
             )[0] // HAS PLAYER REACHED NEXT DEST
             
@@ -204,16 +205,20 @@ def updatePlayerLocation(connectionId, lon, lat):
             LET newTime = p.time + dt
             LET newDist = p.dist + dx
 
+            LET newTimeSec = newTime / 1000
+            LET pMult = 1 - (newTimeSec / destDelta.trueTime) / 2
+            LET dp = ROUND(pMult * destDelta.points)
+
             UPDATE p
             WITH {
                 lon: @lon,
                 lat: @lat,
-                
+                destinationIndex: p.destinationIndex + destDelta.inc,
+                points: p.points + dp * destDelta.inc,
+
                 dist: newDist * notArrived,
                 totalDist: p.totalDist + dx,
-                destinationIndex: p.destinationIndex + destDelta.inc,
-                points: p.points + destDelta.points,
-                
+
                 prevTime: t,
                 time: newTime * notArrived,
                 totalTime: p.totalTime + dt
