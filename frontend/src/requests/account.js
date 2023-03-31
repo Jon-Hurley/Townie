@@ -246,7 +246,6 @@ export const deleteUser = async() => {
     try {
         const body = {
             key: get(userStore).key,
-            passwordHash: get(userStore).passwordHash,
             token: get(userStore).token
         };
         console.log({ body })

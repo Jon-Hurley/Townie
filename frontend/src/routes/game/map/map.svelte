@@ -5,10 +5,9 @@
 	import Timer from './timer.svelte';
 
 
-    onMount(async() => {
-        await Location.subscribe();
-		await Map.regenerate();
-
+    onMount(() => {
+        Map.regenerate();
+        Location.subscribe();
     });
 
     onDestroy(() => {

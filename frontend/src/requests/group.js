@@ -2,12 +2,16 @@ import axios from 'axios';
 import { PUBLIC_BACKEND_API } from '$env/static/public';
 import { get } from 'svelte/store';
 import { pushPopup, updateAccessToken, userStore } from '../stores';
+import { Location } from '../classes/Location';
 
 export const createGame = async() => {
     try {
+        const loc = await Location.getCurrentLocation();
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'group/create-game/', {
-                token: get(userStore).token
+                token: get(userStore).token,
+                lat: loc.lat,
+                lon: loc.lng
             }
         );
         updateAccessToken(res);

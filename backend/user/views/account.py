@@ -178,16 +178,13 @@ def updatePlayableTime(request):
 @csrf_exempt
 def deleteUser(request):
     data = json.loads(request.body)
-    key = data['key']
-    passwordHash = data['passwordHash']
-    print(key, passwordHash)
 
     user, newToken = util.getUserFromToken(data['token'])
     if user is None:
         return util.returnError('Invalid token.', 401)
 
     try:
-        docs = queries.deleteUser(key, passwordHash).batch()
+        docs = queries.deleteUser(user['key'], user['passwordHash']).batch()
     except Exception as e:
         print(e.error_message, e.http_code)
         return util.returnError(e.error_message, e.http_code)

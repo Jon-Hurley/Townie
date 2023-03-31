@@ -20,9 +20,8 @@ export class Map {
     static bounds = undefined;
 
     static async regenerate() {
-        const mapLoc = Map.map?.getCenter();
-        const mapZoom = Map.map?.getZoom();
         const loc = await Location.getCurrentLocation();
+        console.log({loc})
         
         Map.map = new google.maps.Map(Map.container, {
             zoom: 20,
@@ -33,13 +32,8 @@ export class Map {
         });
         Map.generateDestinationCircle();
         Map.generatePlayerMarkers();
-        Map.generateUserMarker();
+        Map.generateUserMarker(loc);
         Map.setZoomAndCenter();
-
-        if (mapLoc && mapZoom) {
-            Map.map.setCenter(mapLoc);
-            Map.map.setZoom(mapZoom);
-        }
     };
 
     static setCenter(loc) {
@@ -49,6 +43,7 @@ export class Map {
     };
 
     static setZoomAndCenter() {
+        if (!Map.map) return;
         Map.bounds = new google.maps.LatLngBounds();
 
         for (let player of Game.players) {
@@ -80,14 +75,17 @@ export class Map {
         Map.snapInterval = undefined;
     };
 
-    static async generateUserMarker() {
+    static async generateUserMarker(loc) {
+        console.log("GENERATING USER MARKER")
+        
         if (!Map.map) return;
         if (!Game.player) return;
 
         if (Map.userMarker) {
             Map.userMarker.setMap(null);
         }
-        const loc = Location.getLocation();
+        console.log("PLACING USER MARKER")
+        
         Map.userMarker = new google.maps.Marker({
             position: loc,
             map: Map.map,
@@ -132,7 +130,9 @@ export class Map {
     };
 
     static generatePlayerMarkers() {
-        const players = get(Game.store)?.players;
+        if (!Map.map) return;
+
+        const players = Game.players;
         if (!players) return;
         if (Map.playerMarkerList) {
             for (let marker of Map.playerMarkerList) {
