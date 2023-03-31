@@ -82,6 +82,8 @@
 						on:click={() => goto('/summary/' + log.game._key)}
 					>
 						<div class="{buttonStyle}{indigoStyle}" style="padding:2px;">
+							Elapsed Time:
+							<br />
 							{getTime(log.player.totalTime)}
 						</div>
 						<div>
