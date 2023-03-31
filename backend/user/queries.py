@@ -13,7 +13,7 @@ def createUser(username, passwordHash, phoneNumber):
             'purchases': [],
             'login2FA': False,
             'weeklyGamePlayed': False,
-            'next_available_game': int(time.time()),
+            'nextAvailableGame': int(time.time()),
             'hidingState': True
         },
         return_new=True
@@ -57,7 +57,7 @@ def UpdatePlayableInfo(userKey, weeklyGamePlayed, newTime):
             UPDATE user WITH {
                 _key: @userKey,
                 weeklyGamePlayed: @weeklyGamePlayed,
-                next_available_game: @newTime
+                nextAvailableGame: @newTime
             } IN User
             
             RETURN NEW
