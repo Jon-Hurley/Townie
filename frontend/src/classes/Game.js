@@ -51,10 +51,10 @@ export class Game {
            
             pushPopup(
                 1,
-                `You reached destination ${achievedDest.name}!\n
-                You took ${displayTime} minutes and traveled ${displayDist} meters.\n
+                `You reached destination ${achievedDest.name}!
+                You took ${displayTime} minutes and traveled ${displayDist} meters.
                 You received ${potentialPoints}/${points} points.\n
-                Your total time has been paused and will resume once you leave destination.`,
+                Your total time has been paused and will resume once you leave the destination.`,
                 () => {
                     Map.generateDestinationCircle();
                     Map.setZoomAndCenter();

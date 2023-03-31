@@ -12,7 +12,9 @@
         locationTime = 0;
         showPausedTime = false;
 	} else {
-		showPausedTime = true;
+        if (Game.player.destinationIndex !== 0) {
+            showPausedTime = true;
+        }
 	}
 
 	let interval;

@@ -37,9 +37,11 @@
 				{name}
 			</h3>
 			<div class="px-7">
-				<p class="text-sm text-gray-500">
-					{message}
-				</p>
+				{#each message.split('\n') as str}
+					<p class="text-sm text-gray-500">
+						{str}
+					</p>
+				{/each}
 			</div>
 
 			<div class="flex gap-2">
