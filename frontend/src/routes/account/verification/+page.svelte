@@ -10,7 +10,7 @@
     const verify = async () => {
         const res = await verification(form.verification);
         if (res) {
-            goto('/lobby');
+            goto('/store');
         }
         console.log(res);
 	};
