@@ -46,7 +46,6 @@ export class Game {
         }
 
         if (arrived) {
-            Game.player.destinationIndex++;
             const achievedDest = Game.nextDestination;
             const displayTime = Math.round(10 * newTime / (1000 * 60)) / 10;
             const displayDist = Math.round(10 * newDist / 1000) / 10;
@@ -58,6 +57,7 @@ export class Game {
                 You received ${potentialPoints}/${points} points.\n
                 Your total time has been paused and will resume once you leave the destination.`,
                 () => {
+                    Game.player.destinationIndex++;
                     Map.generateDestinationCircle();
                     Map.setZoomAndCenter();
                 }

@@ -7,6 +7,14 @@
 	$: paused = $timeStore;
     $: console.log({paused})
 
+	$: if ($timeStore === false) {
+		pushPopup(0, 'You have left the current destination. Your total time will resume counting.');
+	} else {
+		if (Game.player.destinationIndex !== 0) {
+            showPausedTime = true;
+        }
+	}
+
     let interval;
     let lockedOntoTotalTimer;
 	let locationTime = 0;
