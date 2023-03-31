@@ -327,7 +327,8 @@ def getRating(theme):
     return arango_con.db.aql.execute(
         """
         FOR theme IN Themes
-        FILTER theme.name == @theme
+        SORT NGRAM_SIMILARITY(theme.name, @theme, 1) DESC
+        LIMIT 1
         RETURN {
             name: theme.name,
             rating: theme.rating,

@@ -32,7 +32,7 @@ def getRating(request):
     try:
         res = queries.getRating(theme).batch()[0]
     except:
-        return util.returnError("Invalid theme.", 400)
+        return util.returnError("Invalid theme.", 404)
     return JsonResponse({
         "rating": res['rating'],
         "numRatings": res['numRatings'],

@@ -7,21 +7,18 @@
 	import Loading from '../../../general-components/loading.svelte';
 	import Summary from './summary.svelte';
 
+	let userInGame;
 	let summary;
 	let ratings;
-	let userInGame = false;
 
 	onMount(async () => {
 		let gameKey = $page.params.slug;
 		if (!gameKey) {
 			const url = window.location.href;
-			const gameKey = url.substring(url.lastIndexOf('/') + 1);
-			console.log(number);
+			gameKey = url.substring(url.lastIndexOf('/') + 1);
 		}
-		console.log($page);
-		console.log({ gameKey });
+		
 		summary = await getSummary(gameKey);
-
 		summary.numFinished = summary.players.filter(
 			(player) => player.destinationIndex === summary.destinations.length - 1
 		).length;
@@ -33,7 +30,7 @@
 		}
 		console.log(summary);
 		ratings = await rating(summary.game.settings.theme);
-		if (ratings == undefined) {
+		if (!ratings) {
 			ratings = {
 				rating: 0,
 				numRatings: 0
@@ -41,15 +38,8 @@
 		}
 
 		let players = summary.players;
-		let user = $userStore.username;
-
-		console.log(user);
-		for (let i = 0; i < players.length; i++) {
-			if (players[i].username == user) {
-				userInGame = true;
-			}
-		}
-		console.log(userInGame);
+		let username = $userStore?.username;
+		userInGame = !!players.find(x => x?.username == username);
 	});
 </script>
 
