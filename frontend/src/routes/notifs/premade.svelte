@@ -11,8 +11,8 @@
 
     const currentTime = Math.floor(Date.now() / 1000)
     const user = get(userStore)
-    let prevTime = user.next_available_game;
-    let playable = user.weekly_game_played;
+    let prevTime = user.nextAvailableGame;
+    let playable = user.weeklyGamePlayed;
     let form = {};
     let display = {};
     const theme_options = ["Tourism", "Food", "Shopping", "Museum"];
