@@ -194,7 +194,7 @@ def updatePlayerLocation(connectionId, lon, lat):
                     RETURN {
                         inc,
                         points: e.points,
-                        trueTime: e.trueCompletionTime
+                        trueTime: e.timeToCompletion
                     }
             )[0] // HAS PLAYER REACHED NEXT DEST
 
@@ -212,7 +212,7 @@ def updatePlayerLocation(connectionId, lon, lat):
             LET newTime = p.time + dt
             LET newTimeSec = newTime / 1000
             LET pMult = 1 - (newTimeSec / newDestDelta.trueTime) / 2
-            LET dp = arrived ? ROUND(pMult * newDestDelta.points) : 0
+            LET dp = arrived ? ROUND(MAX(pMult, 0) * newDestDelta.points) : 0
 
             UPDATE p
             WITH {
@@ -358,7 +358,8 @@ def getGameForPlayer(gameKey, connectionId):
                     lon: e.lon,
                     lat: e.lat,
                     destinationIndex: e.destinationIndex,
-                    points: e.points
+                    points: e.points,
+                    hidingState: v.hidingState
                 }
         )
 
@@ -372,7 +373,8 @@ def getGameForPlayer(gameKey, connectionId):
                     lon: e.lon,
                     lat: e.lat,
                     destinationIndex: e.destinationIndex,
-                    points: e.points
+                    points: e.points,
+                    hidingState: v.hidingState
                 }
         )[0]
 
@@ -471,7 +473,7 @@ def insertIntoItinerary(listDict, gameKey):
                 'gameKey': "Games/" + str(gameKey),
                 'DestKey': destination1[0]['_id'],
                 'index': i,
-                'points': 11,
+                'points': 1000,
                 'time': listDict['Destinations'][i]['time']
             }
         )
@@ -515,7 +517,7 @@ def insertIntoNewItinerary(listDict, gameKey, index):
                 'gameKey': "Games/" + str(gameKey),
                 'DestKey': destination1[0]['_id'],
                 'index': i + index,
-                'points': 11,
+                'points': 1000,
                 'time': listDict['Destinations'][i]['time']
             }
         )

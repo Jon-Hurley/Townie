@@ -121,20 +121,6 @@
 			link: '' + window.location.href
 		}
 	];
-	let messageObj = {
-		status: 0,
-		message: null,
-		dest: null
-	};
-
-	function amperoctoplus(s) {
-		s = s.replace(/&/g, '%26');
-		s = s.replace(/#/g, '%23');
-		s = s.replace(/\+/g, '%2B');
-		s = s.replace(/@/g, '%40');
-		s = s.replace(/:/g, '%3A');
-		return s;
-	}
 
 	/*
         Twitter: 
@@ -190,11 +176,7 @@
 			on:click={() => {
 				if (media.name === 'Copy Link') {
 					navigator.clipboard.writeText('' + window.location.href);
-					messageObj = {
-						status: 1,
-						message: 'Link copied to clipboard!',
-						dest: null
-					};
+					pushPopup(1, 'Link copied to clipboard!')
 				} else {
 					window.open(media.link, '_blank');
 				}

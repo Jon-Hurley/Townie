@@ -82,7 +82,7 @@ def login(request):
         return util.returnError('Invalid password.', 401)
 
     if user['login2FA']:
-        # res = twilio_con.sendVerification(user['phone'])
+        res = twilio_con.sendVerification(user['phone'])
         return JsonResponse({
             'verifyToken': util.getVerifyJWT(user)
         })
@@ -98,8 +98,8 @@ def verifyLogin(request):
     user = util.getVerifyJWTData(verifyToken)
     phone = user['phone']
 
-    # res = twilio_con.testVerification(phone, otp)
-    if False:
+    res = twilio_con.testVerification(phone, otp)
+    if not res:
         return util.returnError('Invalid OTP.', 401)
     
     return util.returnUserPrivate(user)

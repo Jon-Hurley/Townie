@@ -16,11 +16,6 @@ export const login = async(username, password, remember, silent) => {
             }
         );
 
-        userStore.subscribe((user) => {
-            if (user?.token) {
-                sessionStorage.setItem('token', user.token);
-            }
-        });
         if (remember) {
 			localStorage.setItem('username', username);
 			localStorage.setItem('password', password);
@@ -142,7 +137,10 @@ export const verifySignup = async (username, password, phone, otp) => {
             }
         );
         userStore.set(res.data);
-        pushPopup(1, 'You have successfully created your account!');
+        pushPopup(
+            1, 'You have successfully created your account!',
+            () => goto('/store')
+        );
         return true;
     } catch (err) {
         const err_message = err?.response?.data?.errorMessage
