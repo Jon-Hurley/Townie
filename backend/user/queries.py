@@ -12,7 +12,7 @@ def createUser(username, passwordHash, phoneNumber):
             'rank': 'beginner',
             'purchases': [],
             'login2FA': False,
-            'weekly_game_played': False,
+            'weeklyGamePlayed': False,
             'next_available_game': int(time.time()),
             'hidingState': True
         },
