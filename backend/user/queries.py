@@ -91,6 +91,7 @@ def getUserFromPhone(phone):
         }
     )
 
+
 def getUserFromPhoneOrUsername(phone, username):
     return arango_con.db.aql.execute(
         """
@@ -341,17 +342,14 @@ def getGameLog(userKey):
     print(userKey)
     return arango_con.db.aql.execute(
         """
-        FOR game IN PastGames
-        LET x = POSITION(game.playerKeys, @key, true)
-        FILTER x != -1
-        RETURN {
-            totalDestinations: game.totalDestinations,
-            destinationsCompleted: game.destinationsCompleted,
-            timeSpent: game.timeSpent,
-            points: game.points,
-            theme: game.theme,
-            themeRating: game.themeRating 
-        }
+        FOR v, e
+        IN 1..1
+        ANY CONCAT("User/", @key)
+        GRAPH Playerships
+            RETURN {
+                game: v,
+                player: e
+            }
         """,
         bind_vars={'key': int(userKey)}
     )
