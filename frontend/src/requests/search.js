@@ -43,7 +43,7 @@ export const getUser = async (targetKey) => {
 export const getSummary = async (gameKey) => {
     try {
         const res = await axios.post(
-            PUBLIC_BACKEND_API + 'group/get-game/',
+            PUBLIC_BACKEND_API + 'group/get-summary/',
             {
                 gameKey,
             }
@@ -71,7 +71,7 @@ export const rating = async (theme) => {
     }
 }
 
-export const getGameLog = async() => {
+export const getGameLog = async () => {
     try {
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'user/gameLog/',
@@ -84,5 +84,22 @@ export const getGameLog = async() => {
     } catch (err) {
         console.log(err);
         return null;
+    }
+}
+
+export const submitRating = async (theme, rating, numRatings) => {
+    try {
+        const res = await axios.post(
+            PUBLIC_BACKEND_API + 'user/submit-rating/',
+            {
+                theme,
+                rating,
+                numRatings,
+            }
+        );
+        return res.data;
+    } catch (err) {
+        console.log(err);
+        return false;
     }
 }

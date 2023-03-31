@@ -24,5 +24,6 @@ urlpatterns = [
     path('reject-friend/', friend.rejectFriend),
     path('request-friend/', friend.requestFriend),
 
-    path('updateTime', account.updatePlayableTime),
+    path('updateTime/', account.updatePlayableTime),
+    path('submit-rating/', search.submitRating),
 ]

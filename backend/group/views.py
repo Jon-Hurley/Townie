@@ -11,7 +11,7 @@ import util
 @csrf_exempt
 def onConnect(request):
     # load input
-    
+
     input = request.body.decode('utf8').replace("\r", '').replace("\n", '')
     print(input)
     body = json.loads(input)
@@ -64,6 +64,7 @@ def onDisconnect(request):
         propogateAllUpdates(gameKey, {connectionId})
     return JsonResponse({})
 
+
 @csrf_exempt
 def onDefault(request):
     data = json.loads(request.body)
@@ -79,7 +80,7 @@ def onDefault(request):
             'method': 'get-game',
             'data': data
         })
-    
+
     if method == 'update-settings':
         gameKey = body['gameKey']
         settings = body['settings']
@@ -91,7 +92,7 @@ def onDefault(request):
         return JsonResponse({
             'method': 'update-settings'
         })
-    
+
     if method == 'update-time':
         gameKey = body['gameKey']
         settings = body['settings']
@@ -111,7 +112,7 @@ def onDefault(request):
         return JsonResponse({
             'method': 'start-game'
         })
-    
+
     if method == 'update-location':
         lon = body['lon']
         lat = body['lat']
@@ -130,6 +131,7 @@ def propogateAllUpdates(gameKey=None, conExcl={}, data=None):
 
 # GET REQUEST: CREATE A LOBBY/GAME
 
+
 @csrf_exempt
 def createGame(request):
     data = json.loads(request.body)
@@ -137,7 +139,7 @@ def createGame(request):
     user, newToken = util.getUserFromToken(data['token'])
     if user is None:
         return util.returnError('Invalid token', 401)
-    
+
     res = queries.createGame().batch()[0]
     print(res)
     return JsonResponse({
@@ -147,6 +149,7 @@ def createGame(request):
 
 # GET REQUEST: GET GAME DATA
 
+
 @csrf_exempt
 def getGame(request):
     data = json.loads(request.body)
@@ -155,7 +158,17 @@ def getGame(request):
     data = queries.getGame(gameKey).batch()[0]
     return JsonResponse(data)
 
+
 def getThemeList(request):
     res = queries.getThemeList().batch()
     print(res)
-    return JsonResponse({ 'themes': list(res) })
+    return JsonResponse({'themes': list(res)})
+
+
+@csrf_exempt
+def getSummary(request):
+    data = json.loads(request.body)
+    print(data)
+    gameKey = data['gameKey']
+    data = queries.getSummary(gameKey).batch()[0]
+    return JsonResponse(data)

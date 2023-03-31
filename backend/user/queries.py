@@ -25,6 +25,7 @@ def getUserByUsername(username):
         'username': username
     })
 
+
 def updateInfo(userKey, newUsername, newPhone, newPasswordHash,
                newLogin2FA, newHidingState):
     return arango_con.db.aql.execute(
@@ -49,6 +50,7 @@ def updateInfo(userKey, newUsername, newPhone, newPasswordHash,
         }
     )
 
+
 def UpdatePlayableInfo(userKey, weeklyGamePlayed, newTime):
     return arango_con.db.aql.execute(
         """
@@ -67,7 +69,8 @@ def UpdatePlayableInfo(userKey, weeklyGamePlayed, newTime):
             'weeklyGamePlayed': weeklyGamePlayed,
             'newTime': newTime
         }
-    ) 
+    )
+
 
 def updatePassword(userKey, newPasswordHash):
     return arango_con.userCollection.update({
@@ -304,6 +307,7 @@ def rejectFriendRequest(friendshipKey):
         bind_vars={'key': friendshipKey}
     )
 
+
 def getRating(theme):
     return arango_con.db.aql.execute(
         """
@@ -317,6 +321,7 @@ def getRating(theme):
         """,
         bind_vars={'theme': theme}
     )
+
 
 def getGameLog(userKey):
     print(userKey)
@@ -335,4 +340,26 @@ def getGameLog(userKey):
         }
         """,
         bind_vars={'key': int(userKey)}
+    )
+
+
+def submitRating(theme, rating, numRatings):
+    return arango_con.db.aql.execute(
+        """
+        LET x = (
+            FOR theme IN Themes
+            FILTER theme.name == @theme
+            UPDATE theme._key WITH {
+                rating: @rating,
+                numRatings: @numRatings
+            } IN Themes
+            RETURN NEW
+        )[0]
+        RETURN {
+            name: x.name,
+            rating: x.rating,
+            numRatings: x.numRatings
+        }
+        """,
+        bind_vars={'theme': theme, 'rating': rating, 'numRatings': numRatings}
     )
