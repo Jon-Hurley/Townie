@@ -25,7 +25,6 @@
 
 	onMount(async () => {
 		gameLog = await getGameLog();
-		console.log(gameLog[0].game.settings.theme);
 		for (let i = 0; i < gameLog.length; i++) {
 			themes[i] = await rating(gameLog[i].game.settings.theme);
 		}

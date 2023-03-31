@@ -473,7 +473,7 @@ def insertIntoItinerary(listDict, gameKey):
                 'gameKey': "Games/" + str(gameKey),
                 'DestKey': destination1[0]['_id'],
                 'index': i,
-                'points': 11,
+                'points': 1000,
                 'time': listDict['Destinations'][i]['time']
             }
         )
@@ -517,7 +517,7 @@ def insertIntoNewItinerary(listDict, gameKey, index):
                 'gameKey': "Games/" + str(gameKey),
                 'DestKey': destination1[0]['_id'],
                 'index': i + index,
-                'points': 11,
+                'points': 1000,
                 'time': listDict['Destinations'][i]['time']
             }
         )
