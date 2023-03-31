@@ -7,18 +7,8 @@
 	$: paused = $timeStore;
     $: console.log({paused})
 
-	$: if ($timeStore === false) {
-		pushPopup(0, 'You have left the current destination. Your total time will resume counting.');
-        locationTime = 0;
-        showPausedTime = false;
-	} else {
-        if (Game.player.destinationIndex !== 0) {
-            showPausedTime = true;
-        }
-	}
-
-	let interval;
-
+    let interval;
+    let lockedOntoTotalTimer;
 	let locationTime = 0;
 	let totalTime = 0;
 	let showPausedTime = false;
@@ -37,18 +27,19 @@
 		interval = setInterval(() => {
 			if (paused) {
 				locationTime++;
+                lockedOntoTotalTimer = false;
 			} else {
 				totalTime++;
+                lockedOntoTotalTimer = true;
+                showPausedTime = false;
 			}
 		}, 1000);
 	});
 
 	//start location timer and pause game timer
 	const toggle = () => {
-        if (paused) {
+        if (!lockedOntoTotalTimer) {
             showPausedTime = !showPausedTime;
-        } else {
-            showPausedTime = false;
         }
 	}; 
 </script>
