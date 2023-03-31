@@ -177,6 +177,7 @@ export class Game {
         try {
             Game.stopPolling();
             Game.ws?.close();
+            goto('summary/' + Game.game._key);
             Game.store.set(null);
             return true;
         } catch (err) {
