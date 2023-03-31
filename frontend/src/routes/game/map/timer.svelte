@@ -6,14 +6,27 @@
 	let timeStore = Game.timeStore;
 	$: paused = $timeStore;
     $: console.log({paused})
-
-	$: if ($timeStore === false) {
-		pushPopup(0, 'You have left the current destination. Your total time will resume counting.');
+	$: if (paused) {
+		lockedOntoTotalTimer = false;
+		showPausedTime = true;
 	} else {
-		if (Game.player.destinationIndex !== 0) {
-            showPausedTime = true;
-        }
+		lockedOntoTotalTimer = true;
+		showPausedTime = false;
 	}
+
+	let prev;
+	$: {
+		if (prev !== paused) {
+			if (prev === true && paused === false) {
+				pushPopup(0, 'You have left the current destination. Your total time will resume counting.');
+			}
+			prev = paused;
+		}
+	}
+
+	onMount(() => {
+		prev = null;
+	})
 
     let interval;
     let lockedOntoTotalTimer;
@@ -35,11 +48,8 @@
 		interval = setInterval(() => {
 			if (paused) {
 				locationTime++;
-                lockedOntoTotalTimer = false;
 			} else {
 				totalTime++;
-                lockedOntoTotalTimer = true;
-                showPausedTime = false;
 			}
 		}, 1000);
 	});

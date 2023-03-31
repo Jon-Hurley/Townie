@@ -75,7 +75,7 @@ export class Map {
         Map.snapInterval = undefined;
     };
 
-    static async generateUserMarker(loc) {
+    static generateUserMarker(loc) {
         console.log("GENERATING USER MARKER")
         
         if (!Map.map) return;

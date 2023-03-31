@@ -35,7 +35,7 @@ export class Game {
         if (!data) return;
 
         const {
-            newTime, newDist,
+            newTime, newDist, oldTime, oldDist,
             totalTime, totalDist,
             arrived, atPrevDest,
             potentialPoints, points
@@ -47,13 +47,13 @@ export class Game {
 
         if (arrived) {
             const achievedDest = Game.nextDestination;
-            const displayTime = Math.round(10 * newTime / (1000 * 60)) / 10;
-            const displayDist = Math.round(10 * newDist / 1000) / 10;
+            const displayTime = Math.round(10 * oldTime / (1000 * 60)) / 10;
+            const displayDist = Math.round(oldDist / 1000) / 10;
            
             pushPopup(
                 1,
-                `You reached destination ${achievedDest.name}!
-                You took ${displayTime} minutes and traveled ${displayDist} meters.
+                `You reached destination: ${achievedDest.name}!\n
+                You took ${displayTime} minutes and traveled ${displayDist} km.\n
                 You received ${potentialPoints}/${points} points.\n
                 Your total time has been paused and will resume once you leave the destination.`,
                 () => {
@@ -63,11 +63,9 @@ export class Game {
                 }
             );
             if (achievedDest.index === Game.destinations.length - 1) {
-                const gameKey = Game.game._key;
-                Game.leave();
                 pushPopup(
                     1, "You have reached the final destination. You won the game!",
-                    () => goto('/summary/' + gameKey)
+                    () => Game.leave()
                 );
             }
         }

@@ -116,15 +116,13 @@ def onDefault(request):
     if method == 'update-location':
         lon = body['lon']
         lat = body['lat']
-        
-        try:
-            res = queries.updatePlayerLocation(connectionId, lon, lat).batch()[0]
-        except Exception as err:
-            print(err)
-            return JsonResponse({
-                'method': 'update-location',
-                'error': str(err)
-            })
+
+        for i in range(3):
+            try:
+                res = queries.updatePlayerLocation(connectionId, lon, lat).batch()[0]
+                break
+            except Exception as err:
+                print(err)
 
         return JsonResponse({
             'method': 'update-location',

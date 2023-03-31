@@ -201,7 +201,7 @@ def updatePlayerLocation(connectionId, lon, lat):
             LET newDestDelta = destDelta ? destDelta : { inc: 0, points: 0, trueTime: 1 }
 
             // NO dt/dx UPDATES IF PAUSED, STILL AT PREV DEST, OR DONE
-            LET quiet = p.paused || (atPrevDest != NULL) || (destDelta == NULL)
+            LET quiet = p.paused || atPrevDest || (destDelta == NULL)
             // RESET TIME AND DIST ON DESTINATION ARRIVAL
             LET arrived = newDestDelta.inc
             
@@ -212,7 +212,7 @@ def updatePlayerLocation(connectionId, lon, lat):
             LET newTime = p.time + dt
             LET newTimeSec = newTime / 1000
             LET pMult = 1 - (newTimeSec / newDestDelta.trueTime) / 2
-            LET dp = arrived ? ROUND(MAX(pMult, 0) * newDestDelta.points) : 0
+            LET dp = arrived ? ROUND(MAX([pMult, 0]) * newDestDelta.points) : 0
 
             UPDATE p
             WITH {
@@ -222,8 +222,8 @@ def updatePlayerLocation(connectionId, lon, lat):
 
                 destinationIndex: p.destinationIndex + arrived,
                 points: p.points + dp,
-                dist: p.time + dx,
-                time: p.time + dt,
+                dist: arrived ? 0 : p.time + dx,
+                time: arrived ? 0 : p.time + dt,
                 totalDist: p.totalDist + dx,
                 totalTime: p.totalTime + dt
             }
@@ -240,10 +240,11 @@ def updatePlayerLocation(connectionId, lon, lat):
                 quiet,
                 arrived,
 
-                atPrevDest,
+                atPrevDest: atPrevDest || arrived,
                 potentialPoints: dp,
                 points: newDestDelta.points,
-                trueCompletionTime: newDestDelta.trueTime
+                trueCompletionTime: newDestDelta.trueTime,
+                destDelta
             }
         """,
         bind_vars={

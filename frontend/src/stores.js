@@ -15,20 +15,19 @@ export const updateAccessToken = (res) => {
 export const popupQueue = writable([]);
 
 export const pushPopup = (status, message, onOk) => {
-    popupQueue.set([
-        ...get(popupQueue),
-        {
-            status,
-            message,
-            onOk: () => {
-                popPopup();
-                if (onOk) onOk();
-                if (message.includes('Invalid token')) {
-                    logout();
-                }
+    const cp = [ ...get(popupQueue) ];
+    cp.push({
+        status,
+        message,
+        onOk: () => {
+            popPopup();
+            if (onOk) onOk();
+            if (message.includes('Invalid token')) {
+                logout();
             }
         }
-    ]);
+    })
+    popupQueue.set(cp);
 }
 
 export const popPopup = () => {

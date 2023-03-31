@@ -32,7 +32,9 @@ export class Location {
     }
 
 	static async subscribe() {
-        if (Location.interval) return;
+        if (Location.interval) {
+            Location.unsubscribe();
+        }
 		Location.interval = navigator.geolocation.watchPosition(
             (loc) => {
                 Location.updateLocation(
