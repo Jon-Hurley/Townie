@@ -25,6 +25,7 @@ export class Game {
         if (Map.map) {
             console.log("We zoomin");
             Map.generatePlayerMarkers();
+            Map.generateDestinationCircle();
             Map.setZoomAndCenter();
         }
     }
@@ -32,7 +33,7 @@ export class Game {
     static handleLocationUpdate(data) {
         console.log("LOCATION UPDATE:", data);
         if (!data) return;
-        
+
         const {
             newTime, newDist,
             totalTime, totalDist,
@@ -45,6 +46,7 @@ export class Game {
         }
 
         if (arrived) {
+            Game.player.destinationIndex++;
             const achievedDest = Game.nextDestination;
             const displayTime = Math.round(10 * newTime / (1000 * 60)) / 10;
             const displayDist = Math.round(10 * newDist / 1000) / 10;
