@@ -201,9 +201,9 @@ def updatePlayerLocation(connectionId, lon, lat):
             LET newDestDelta = destDelta ? destDelta : { inc: 0, points: 0, trueTime: 1 }
 
             // NO dt/dx UPDATES IF PAUSED, STILL AT PREV DEST, OR DONE
-            LET quiet = p.paused || atPrevDest || destDelta == NULL
+            LET quiet = p.paused || (atPrevDest != NULL) || (destDelta == NULL)
             // RESET TIME AND DIST ON DESTINATION ARRIVAL
-            LET arrived = newDestDelta.inc  
+            LET arrived = newDestDelta.inc
             
             LET t = DATE_NOW()
             LET dt = quiet ? 0 : (t - p.prevTime)

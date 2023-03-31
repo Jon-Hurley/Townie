@@ -31,6 +31,8 @@ export class Game {
 
     static handleLocationUpdate(data) {
         console.log("LOCATION UPDATE:", data);
+        if (!data) return;
+        
         const {
             newTime, newDist,
             totalTime, totalDist,
