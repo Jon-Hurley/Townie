@@ -1,43 +1,114 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-import arango_con
+import user.queries as queries
 import json
-
+import twilio_con
+import util
 
 @csrf_exempt
 def getFriends(request):
-    res = arango_con.getFriendsList(
-        json.loads(request.body)['key']
+    body = json.loads(request.body)
+
+    user, newToken = util.getUserFromToken(body['token'])
+    if user is None:
+        return util.returnError('Invalid token.', 401)
+    
+    res = queries.getFriendsList(
+        body['key']
     ).batch()
-    return JsonResponse({ 'friends': list(res) })
+
+    return JsonResponse({
+        'friends': list(res),
+        'token': newToken
+    })
 
 @csrf_exempt
 def getPendingFriends(request):
-    res = arango_con.getPendingFriendsList(
-        json.loads(request.body)['key']
+    body = json.loads(request.body)
+
+    user, newToken = util.getUserFromToken(body['token'])
+    if user is None:
+        return util.returnError('Invalid token.', 401)
+
+    res = queries.getPendingFriendsList(
+        user['key']
     ).batch()
-    return JsonResponse({ 'pending': list(res) })
+
+    return JsonResponse({ 
+        'pending': list(res),
+        'token': newToken                
+    })
 
 
 @csrf_exempt
 def acceptFriend(request):
-    res = arango_con.acceptFriendRequest(
+    body = json.loads(request.body)
+
+    user, newToken = util.getUserFromToken(body['token'])
+    if user is None:
+        return util.returnError('Invalid token.', 401)
+    
+    res = queries.acceptFriendRequest(
         json.loads(request.body)['key']
-    ).batch()
-    return JsonResponse({})
+    ).batch()[0]
+    
+    message = res['originUsername'] + ' accepted your friend request!'
+    twilio_con.sendNotification(
+        phone=res['targetPhone'],
+        message=message
+    )
+
+    return JsonResponse({
+        'token': newToken
+    })
 
 @csrf_exempt
 def rejectFriend(request):
-    res = arango_con.rejectFriendRequest(
-        json.loads(request.body)['key']
-    ).batch()
-    return JsonResponse({})
+    body = json.loads(request.body)
 
+    user, newToken = util.getUserFromToken(body['token'])
+    if user is None:
+        return util.returnError('Invalid token.', 401)
+    
+    print(body)
+    res = queries.rejectFriendRequest(
+        body['key']
+    ).batch()[0]
+    
+    message = res['originUsername'] + ' has rescinded your friendship! No one likes you :(.'
+    twilio_con.sendNotification(
+        phone=res['targetPhone'],
+        message=message
+    )
+    return JsonResponse({
+        'token': newToken
+    })
 
 @csrf_exempt
 def requestFriend(request):
-    res = arango_con.sendFriendRequest(
-        json.loads(request.body)['toKey'],
-        json.loads(request.body)['fromKey']
+    body = json.loads(request.body)
+    toKey = body['toKey']
+    fromKey = body['fromKey']
+
+    user, newToken = util.getUserFromToken(body['token'])
+    if user is None:
+        return util.returnError('Invalid token.', 401)
+
+    docs = queries.sendFriendRequest(
+        toKey,
+        fromKey
+    ).batch()
+
+    if len(docs) != 1:
+        return util.returnError("Invalid friend key.", 404)
+    
+    res = docs[0]
+    message = res['originUsername'] + ' has requested to be your friend!'
+    twilio_con.sendNotification(
+        phone=res['targetPhone'],
+        message=message
     )
-    return JsonResponse({'key': res['_key']})
+
+    return JsonResponse({
+        'token': newToken
+    })

@@ -1,38 +1,102 @@
 <script>
 	import '../app.css';
-    import Navbar from '../components/navbar.svelte';
-    import AccountBar from '../components/account-bar.svelte';
-
-    import { onMount } from 'svelte';
     import { PUBLIC_GOOGLE_MAPS_API_KEY } from '$env/static/public';
-	import { mapStore } from '../stores';
+    import { onMount, onDestroy } from 'svelte';
+    import { goto } from '$app/navigation';
+    import { page } from '$app/stores';
+    
+	import { mapStore, popupQueue, userStore } from '../stores';
+    import { autoLogin } from '../requests/account';
+    import Navbar from './navbar.svelte';
+    import AccountBar from './account-bar.svelte';
+	import Loading from '../general-components/loading.svelte';
+	import Modal from '../general-components/modal.svelte';
 
-    let mounted = false;
-    mapStore.set(false);
+	let mounted = false;
+    let loaded = false;
 
-    onMount(() => {
-        // create a function for the GOOGLE API to call when done initializing
-        window.initMap = () => mapStore.set(true);
-        mounted = true;
-    })
+    $: console.log({MAP: $mapStore})
+
+	onMount(async () => {
+        loaded = false;
+        if (!$mapStore) {
+            // create a function for the GOOGLE API to call when done initializing
+            window.initMap = () => mapStore.set(true);
+            mounted = true;
+        }
+        if (!$userStore) {
+            const res = await autoLogin();
+            if (!res) {
+                goto('/login');
+            }
+        }
+        loaded = true;
+	});
+
+	// IF user goes valid to invalid, GOTO login.
+	let lastState = false;
+	$: {
+        loaded = false;
+        console.log('NEW USER: ', $userStore);
+        if (lastState && !$userStore) {
+            goto('/login');
+            console.log('User state set to null: GOTO LOGIN');
+        }
+        if (!lastState && $userStore) {
+            console.log('PAGE PATH: ', $page);
+            if ($page.route.id === '/login' || $page.route.id === '/signup') {
+                goto('/account');
+                console.log('User state set to valid: GOTO ACCOUNT');
+            }
+            userStore.subscribe((user) => {
+                if (user?.token) {
+                    sessionStorage.setItem('token', user.token);
+                }
+            });
+        }
+		lastState = !!$userStore;
+        loaded = true;
+	}
+    $: console.log({slots: $$slots})
 </script>
 
 <!-- Once mounted, bring in the GOOGLE API -->
 <svelte:head>
-    {#if mounted}
-        <script
-            defer async
-            src={`https://maps.googleapis.com/maps/api/js?key=${PUBLIC_GOOGLE_MAPS_API_KEY}&callback=initMap`}
-        />
-    {/if}
+	{#if mounted}
+		<script
+			defer
+			async
+			src={`https://maps.googleapis.com/maps/api/js?key=${PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places&callback=initMap`}
+		></script>
+	{/if}
 </svelte:head>
 
+{#if loaded}
+    <div class="
+        flex flex-col justify-between items-center
+        h-screen w-screen max-h-screen max-w-screen
+    ">
+        {#if $userStore}
+            <AccountBar/>
+            <div
+                class="
+                    m-0 p-4 h-full
+                    h-screen w-screen max-h-screen max-w-screen
+                "
+            >
+                <slot/>
+            </div>
+            <Navbar/>
+        {:else}
+            <slot/>
+        {/if}
+    </div>
+{:else}
+    <Loading/>
+{/if}
 
-<AccountBar/>
-<div
-    class="m-0 w-full p-4"
-    style="height: calc(100vh - 120px);"
->
-    <slot/>
-</div>
-<Navbar/>
+{#if $popupQueue.length}
+    <Modal
+        {...$popupQueue[0]}
+    />
+{/if}

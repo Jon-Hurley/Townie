@@ -19,4 +19,5 @@ To get started:
         pip install python-dotenv
         pip install googlemaps
         pip install python-arango
+        pip install boto3
 

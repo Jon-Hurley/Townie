@@ -12,3 +12,6 @@ migrations
 __pycache__
 backend/backend.env
 frontend/frontend.env
+venv
+ambient.d.ts
+internal.js

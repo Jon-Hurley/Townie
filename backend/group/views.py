@@ -1,76 +1,183 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-import redis_con
-import googlemaps
 import json
-import os
+import group.queries as queries
+from ws_con import propogateUpdates, forceDisconnect
+import util
 
-# CONNECT:
-def connect(request):
-    print(request)
-    return JsonResponse({})
+# CONNECT: JOIN GAME
 
-def createGroup():
-    return JsonResponse({})
-
-def joinGroup():
-    return JsonResponse({})
-
-# DISCONNECT:
-
-def disconnect(request):
-    print(request)
-    return leaveGroup(request)
-
-def leaveGroup(request):
-    return JsonResponse({})
-
-# DEFAULT
-
-def default(request):
-    return JsonResponse({})
 
 @csrf_exempt
-def map(request):
-    list = []
-    #print(request)
-    gmaps = googlemaps.Client(key=os.environ.get('GOOGLE_API_KEY'))
-    places = json.dumps(gmaps.find_place(str("Purdue University"),str("textquery")))
-    places2 = json.loads(places)
+def onConnect(request):
+    # load input
 
-    #print(places2)
-    result = json.dumps(gmaps.geocode(str('900 John R Wooden Dr, West Lafayette, IN 47907')))
-    #print(result)
-    result2 = json.loads(result)
+    input = request.body.decode('utf8').replace("\r", '').replace("\n", '')
+    print(input)
+    body = json.loads(input)
+    gameKey = body['gameKey']
+    token = body['token']
+    connectionId = body['connectionId']
+    lat = body['lat']
+    lon = body['lon']
+    print(gameKey, token, connectionId, lat, lon)
 
-    addressComponents = result2[0]['formatted_address']
-    #print(addressComponents)
-    latitude = result2[0]['geometry']['location']['lat']
-    longitude = result2[0]['geometry']['location']['lng']
-    place_info = json.dumps(gmaps.places("art museum", (latitude,longitude)))
-    place3 = json.loads(place_info)
-    #print(place3)
-    #print(place3['results'][0])
-    place4 = json.dumps(gmaps.place(place3['results'][0]['place_id']))
-    place5 = json.loads(place4)
-    #print(len(place_info))
-    print(place3)
-    for i in range(len(place3['results'])):
-        name_dest = place3['results'][i]['name']
-        print(name_dest)
-        address = place3['results'][i]['formatted_address']
-        latitude = place3['results'][i]['geometry']['location']['lat']
-        longitude = place3['results'][i]['geometry']['location']['lng']
+    # get user key from token
+    user, newToken = util.getUserFromToken(token)
+    if user is None:
+        return util.returnError('Invalid token.', 401)
 
-        points = 1000
-        destination = dict(name=name_dest, addr=address, location=[latitude, longitude], pts=points)
-        list.append(destination)
-        #print(destination)
-    #location = Location
-    #location.latitude = latitude
-    #location.longitude = longitude
-    #print(latitude)
+    userKey = user['key']
+
+    # add user to game, nulling their previous connection if left open
+    res = queries.addPlayer(gameKey, userKey, connectionId, lat, lon)
+    oldConnectionIds = res.batch()[0]
+    print(oldConnectionIds)
+    for oldConnectionId in oldConnectionIds:
+        try:
+            forceDisconnect(oldConnectionId)
+        except Exception as err:
+            print(err)
+
+    # relay game all game data to all players (except the new one)
+    data = queries.getGame(gameKey).batch()[0]
+    print(data)
+    propogateAllUpdates(
+        conExcl={connectionId},
+        data=data
+    )
+
+    # send game data to new player
+    return JsonResponse(data)
+
+# DISCONNECT: LEAVE GAME
 
 
+@csrf_exempt
+def onDisconnect(request):
+    body = json.loads(request.body)
+    connectionId = body['connectionId']
+    print(connectionId)
+    res = queries.leaveGame(connectionId).batch()
+    if len(res):
+        gameKey = res[0]['gameId'][6:]  # [6:] = id -> key
+        propogateAllUpdates(gameKey, {connectionId})
+    return JsonResponse({})
 
-    return JsonResponse(list,safe=False)
+
+@csrf_exempt
+def onDefault(request):
+    data = json.loads(request.body)
+    connectionId = data['connectionId']
+    body = data['body']
+    print(connectionId, body)
+    method = body['method']
+
+    if method == 'get-game':
+        gameKey = body['gameKey']
+        data = queries.getGameForPlayer(gameKey, connectionId).batch()[0]
+        return JsonResponse({
+            'method': 'get-game',
+            'data': data
+        })
+
+    if method == 'update-settings':
+        gameKey = body['gameKey']
+        settings = body['settings']
+
+        print(gameKey, settings)
+        res = queries.updateGameSettings(gameKey, settings)
+        print(res)
+        propogateAllUpdates(gameKey)
+        return JsonResponse({
+            'method': 'update-settings'
+        })
+
+    if method == 'update-time':
+        gameKey = body['gameKey']
+        settings = body['settings']
+        print(gameKey, settings)
+        res = queries.updateTrueTime(gameKey, settings)
+        print(res)
+        propogateAllUpdates(gameKey)
+        return JsonResponse({
+            'method': 'update-time'
+        })
+
+    if method == 'start-game':
+        gameKey = body['gameKey']
+        settings = body['settings']
+        res = queries.startGame(gameKey, settings).batch()[0]
+        propogateAllUpdates(gameKey)
+        return JsonResponse({
+            'method': 'start-game'
+        })
+
+    if method == 'update-location':
+        lon = body['lon']
+        lat = body['lat']
+
+        for i in range(3):
+            try:
+                res = queries.updatePlayerLocation(connectionId, lon, lat).batch()[0]
+                break
+            except Exception as err:
+                print(err)
+
+        return JsonResponse({
+            'method': 'update-location',
+            'data': res
+        })
+    return JsonResponse({})
+
+
+def propogateAllUpdates(gameKey=None, conExcl={}, data=None):
+    if data is None:
+        data = queries.getGame(gameKey).batch()[0]
+    propogateUpdates(data, conExcl)
+
+# GET REQUEST: CREATE A LOBBY/GAME
+
+
+@csrf_exempt
+def createGame(request):
+    data = json.loads(request.body)
+    lon = data['lon']
+    lat = data['lat']
+
+    user, newToken = util.getUserFromToken(data['token'])
+    if user is None:
+        return util.returnError('Invalid token', 401)
+    
+    res = queries.createGame(lon, lat).batch()[0]
+    print(res)
+    return JsonResponse({
+        'key': res['_key'],
+        'token': newToken
+    })
+
+# GET REQUEST: GET GAME DATA
+
+
+@csrf_exempt
+def getGame(request):
+    data = json.loads(request.body)
+    print(data)
+    gameKey = data['gameKey']
+    data = queries.getGame(gameKey).batch()[0]
+    return JsonResponse(data)
+
+
+def getThemeList(request):
+    res = queries.getThemeList().batch()
+    print(res)
+    return JsonResponse({'themes': list(res)})
+
+
+@csrf_exempt
+def getSummary(request):
+    data = json.loads(request.body)
+    print(data)
+    gameKey = data['gameKey']
+    data = queries.getSummary(gameKey).batch()[0]
+    return JsonResponse(data)

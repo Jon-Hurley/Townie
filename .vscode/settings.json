@@ -1,0 +1,24 @@
+{
+    "files.exclude": {
+        // "**/README.md": true,
+
+        "**/.npmrc/": true,
+        "**/.prettier*/": true,
+        "**/.svelte-kit/": true,
+
+        "**/node_modules": true,
+        "**/tests/": true,
+        "**/src/*.test.js": true,
+        "**/package-lock.json": true,
+        "**/*.config.*": true,
+
+        "**/planning-docs": true,
+
+        "**/__pycache__": true,
+        "**/__init__.py": true,
+        "**/migrations": true,
+        "**/apps.py": true,
+        "**/models.py": true,
+        "**/zappa_settings.json": true,
+    }
+}

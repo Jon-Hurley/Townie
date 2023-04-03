@@ -3,7 +3,7 @@
 </script>
 
 <div
-    class="h-full w-full flex justify-center p-4"
+    class="h-full w-full flex justify-center p-4 align-center"
 >
     <Jumper
         size="60"

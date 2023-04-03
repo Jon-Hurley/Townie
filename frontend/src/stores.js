@@ -1,90 +1,37 @@
 import { get, writable } from 'svelte/store';
-import { PUBLIC_BACKEND_WS } from '$env/static/public';
+import { logout } from './requests/account';
 
-export const groupStore = writable();
-export const userStore = writable({
-    id: 'User/10942',
-    key: '10942',
-    passwordHash: 'password',
-    phone: '+13176909263',
-    points:	50,
-    purchases: [],
-    rank: 'explorer',   
-    username: 'ArnavSuccs'
-});
+export const userStore = writable();
 
-export const logout = () => {
+export const mapStore = writable(false);
 
-}
+export const updateAccessToken = (res) => {
+    const token = res?.data?.token;
+    if (!token) return;
+    console.log("NEW TOKEN:", token);
+    userStore.set({ ...get(userStore), token });
+};
 
-export const login = () => {
+export const popupQueue = writable([]);
 
-}
-
-export const autoLogin = () => {
-
-}
-
-export const signin = () => {
-
-}
-
-let ws;
-
-export const joinLobby = () => {
-    ws = new WebSocket(PUBLIC_BACKEND_WS)
-    console.log(ws)
-}
-
-
-
-export const locationStore = writable();
-
-export const subscribeToLocation = (mapState) => {
-    let interval;
-    
-    const onLocationUpdate = (loc) => {
-        const {
-            latitude: lat,
-            longitude: lng
-        } = loc.coords;
-        const oldLoc = get(locationStore).location;
-
-        if (!mapState.snapLocation) {
-            if (lat === oldLoc?.lat && lng === oldLoc?.lng) {
-                return;
+export const pushPopup = (status, message, onOk) => {
+    const cp = [ ...get(popupQueue) ];
+    cp.push({
+        status,
+        message,
+        onOk: () => {
+            popPopup();
+            if (onOk) onOk();
+            if (message.includes('Invalid token')) {
+                logout();
             }
         }
-
-        console.log("setting location store...")
-        locationStore.set({
-            interval,
-            location: { lat, lng }
-        });
-    }
-
-    interval = setInterval(() => {
-        navigator.geolocation.getCurrentPosition(
-            onLocationUpdate
-        );
-    }, 1000);
-
-    locationStore.set({ interval });
-
-    const setMapCenter = ({ location }) => {
-        if (!(location?.lat && location?.lng)) return;
-        const center = new google.maps.LatLng(
-            location.lat, location.lng
-        );
-        mapState.map.panTo(center);
-    }
-
-    locationStore.subscribe(setMapCenter);
+    })
+    popupQueue.set(cp);
 }
 
-export const unsubscribeToLocation = () => {
-    const locObj = get(locationStore);
-    clearInterval(locObj?.interval);
+export const popPopup = () => {
+    const queue = [ ...get(popupQueue) ];
+    queue.shift(1);
+    popupQueue.set(queue);
 }
-
-export const mapStore = writable();

@@ -1,4 +1,5 @@
 <script>
+	import { inputStyle } from '../../css';
     import { getUsers } from '../../requests/search';
 
     let userSearch = '';
@@ -37,12 +38,7 @@
             timeout = setTimeout(updateResults, 500);
         }}
         type="text"
-        class="
-            m-0 w-full p-2 pl-8
-            rounded border border-gray-200
-            bg-gray-200
-            focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent
-        "
+        class="{inputStyle}"
         placeholder="Search Users"
     >
 </div>

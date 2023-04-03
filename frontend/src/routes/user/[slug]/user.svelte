@@ -1,67 +1,27 @@
 <script>
 	import { acceptFriend, rejectFriend, sendFriendRequest } from "../../../requests/friend";
 	import { userStore } from "../../../stores";
-
-    export let user;
-
-    const title = "text-gray-700 font-semibold text-lg mt-6";
+    import { buttonStyle, redStyle, greenStyle, blueStyle, indigoStyle } from '../../../css'
+	const title = "text-gray-700 font-semibold text-lg mt-6";
     const hr = "my-2 bg-gray-100 h-[2px]";
-    const buttonStyle = `
-        p-2 m-1
-        border-2 rounded
-        font-medium text-sm
-        hover:bg-black hover:bg-opacity-5
-        focus:outline-none focus:ring-0
-        transition duration-150 ease-in-out
-    `;
-    const redStyle = `
-        border-red-500
-        text-red-500
-    `;
-    const greenStyle = `
-        border-green-500
-        text-green-500
-    `;
-    const blueStyle = `
-        border-blue-500
-        text-blue-500
-    `;
-    const indigoStyle = `
-        border-indigo-500
-        text-indigo-500
-    `;
+
+    export let user, reloadUser;
 
     const _acceptFriend = async() => {
-        const res = await acceptFriend(user.friendship[0].key);
-        if (res) {
-            user.friendship[0].status = true;
-            user = user;
-        }
+        const success = await acceptFriend(user.friendship[0].key);
+        reloadUser();
     };
 
     const _rejectFriend = async() => {
-        const res = await rejectFriend(user.friendship[0].key);
-        if (res) {
-            user.friendship = [];
-            user = user;
-        }
+        const success = await rejectFriend(user.friendship[0].key);
+        reloadUser();
     };
 
     const _sendFriendRequest = async() => {
-        const newFriendshipKey = await sendFriendRequest(user.key);
-        if (newFriendshipKey) {
-            user.friendship = [
-                {
-                    key: newFriendshipKey,
-                    status: false,
-                    inbound: false
-                }
-            ];
-            user = user;
-        }
+        const res = await sendFriendRequest(user.key);
+        reloadUser();
     };
 </script>
-
 
 <div class="my-5 w-full">
     <div class="text-gray-700 font-bold text-3xl text-center">
@@ -72,46 +32,45 @@
     </div>
 </div>
 
-
 {#if user.key !== $userStore.key}
     <div class="flex justify-center flex-wrap">
         <button
             disabled
-            class="{indigoStyle} {buttonStyle}"
+            class="{indigoStyle} {buttonStyle} m-1"
         >
             Message
         </button>
 
-        {#if !user.friendship.length}
+        {#if !user?.friendship?.length}
             <button
-                class="{blueStyle} {buttonStyle}"
+                class="{blueStyle} {buttonStyle} m-1"
                 on:click={_sendFriendRequest}
             >
                 Send Friend Request
             </button>
         {:else if user.friendship[0].status}
             <button
-                class="{redStyle} {buttonStyle}"
+                class="{redStyle} {buttonStyle} m-1"
                 on:click={_rejectFriend}
             >
                 Remove Friend
             </button>
         {:else if user.friendship[0].inbound}
             <button
-                class="{greenStyle} {buttonStyle}"
+                class="{greenStyle} {buttonStyle} m-1"
                 on:click={_acceptFriend}
             >
                 Accept Friend Request
             </button>
             <button
-                class="{redStyle} {buttonStyle}"
+                class="{redStyle} {buttonStyle} m-1"
                 on:click={_rejectFriend}
             >
                 Reject Friend Request
             </button>
         {:else}
             <button
-                class="{redStyle} {buttonStyle}"
+                class="{redStyle} {buttonStyle} m-1"
                 on:click={_rejectFriend}
             >
                 Cancel Friend Request
@@ -136,6 +95,11 @@
 <hr class={hr}>
 <div class="h-full overflow-auto">
     <div class="flex flex-wrap justify-center gap-2 px-2 py-4">
+        {#if !user.purchases.length}
+            <div>
+                No badges to display.
+            </div>
+        {/if}
         {#each user.purchases as p}
             <div
                 class="

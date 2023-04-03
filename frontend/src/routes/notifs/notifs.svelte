@@ -2,15 +2,17 @@
     import Notif from './notif.svelte';
 	import { acceptFriend, loadNotifications, rejectFriend } from '../../requests/friend';
 	import { onMount } from 'svelte';
-	import Loading from '../../components/loading.svelte';
+	import Loading from '../../general-components/loading.svelte';
+	import { largeTitle, listItem } from '../../css';
+	import { userStore } from '../../stores';
 
     let notifs = [];
     let loading = true;
 
     const _acceptFriend = async(i, friendshipKey) => {
         console.log({i, friendshipKey})
-        const res = await acceptFriend(friendshipKey);
-        if (res) {
+        const success = await acceptFriend(friendshipKey);
+        if (success) {
             notifs.splice(i, 1);
             notifs = notifs;
         }
@@ -18,20 +20,21 @@
 
     const _rejectFriend = async(i, friendshipKey) => {
         console.log({i, friendshipKey})
-        const res = await rejectFriend(friendshipKey);
-        if (res) {
+        const success = await rejectFriend(friendshipKey);
+        if (success) {
             notifs.splice(i, 1);
             notifs = notifs;
         }
     }
 
     onMount(async() => {
+        if (!$userStore) return;
         notifs = await loadNotifications();
         loading = false;
     });
 </script>
 
-<div class="my-4 text-2xl text-center font-bold text-gray-700">
+<div class="{largeTitle}">
     Your Notifications
 </div>
 
@@ -54,21 +57,7 @@
                     />
                 {/each}
             {:else}
-                <li
-                    class="
-                        bg-white
-                        mb-2
-                        p-2
-                        rounded
-
-                        border-gray-200
-                        border-2
-
-                        w-full
-                        text-gray-900
-                        select-none
-                    "
-                >
+                <li class="{listItem}">
                     You have no notifications.
                 </li>
             {/if}

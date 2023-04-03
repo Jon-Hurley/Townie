@@ -2,25 +2,17 @@
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
 	import { getUser } from '../../../requests/search';
-    import Loading from '../../../components/loading.svelte';
+    import Loading from '../../../general-components/loading.svelte';
 	import User from './user.svelte';
 
     let user;
 
-    onMount(async() => {
-        user = await getUser($page.params.slug);
-        user.purchases = [
-            {
-                name: "PP Music",
-                badge: "M9 9l10.5-3m0 6.553v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 11-.99-3.467l2.31-.66a2.25 2.25 0 001.632-2.163zm0 0V2.25L9 5.25v10.303m0 0v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 01-.99-3.467l2.31-.66A2.25 2.25 0 009 15.553z"
-            }
-        ]
-        user.purchases = [ ...user.purchases, ...user.purchases ]
-        user.purchases = [ ...user.purchases, ...user.purchases ]
-        user.purchases = [ ...user.purchases, ...user.purchases ]
-        user.purchases = [ ...user.purchases, ...user.purchases ]
-        user = user;
-    })    
+    const loadUser = async() => {
+        const key = $page.params.slug;
+        user = await getUser(key);
+    }
+
+    onMount(loadUser);
 </script>
 
 {#if user}
@@ -29,6 +21,7 @@
     >
         <User
             user={user}
+            reloadUser={loadUser}
         />
     </div>
 {:else}

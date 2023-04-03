@@ -3,7 +3,9 @@ import { PUBLIC_BACKEND_API } from '$env/static/public';
 import { userStore } from '../stores';
 import { get } from 'svelte/store';
 
-export const getUsers = async(substr) => {
+// NOTE: ALL REQUESTS HERE SHOULD BE PUBLIC (NOT AUTH NEEDED).
+
+export const getUsers = async (substr) => {
     if (!substr || substr.length === 0) {
         return [];
     }
@@ -21,18 +23,83 @@ export const getUsers = async(substr) => {
     }
 };
 
-export const getUser = async(targetKey) => {
+export const getUser = async (targetKey) => {
     try {
+        console.log(get(userStore));
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'user/profile/' + targetKey + '/',
+            {
+                key: get(userStore).key,
+                targetKey: targetKey
+            }
+        );
+        return res.data;
+    } catch (err) {
+        console.log(err);
+        return null;
+    }
+};
+
+export const getSummary = async (gameKey) => {
+    try {
+        const res = await axios.post(
+            PUBLIC_BACKEND_API + 'group/get-summary/',
+            {
+                gameKey,
+            }
+        );
+        return res.data;
+    } catch (err) {
+        console.log(err);
+        return false;
+    }
+}
+
+export const rating = async (theme) => {
+    try {
+        console.log(theme);
+        const res = await axios.post(
+            PUBLIC_BACKEND_API + 'user/rating/',
+            {
+                theme,
+            }
+        );
+        return res.data;
+    } catch (err) {
+        console.log(err);
+        return false;
+    }
+}
+
+export const getGameLog = async () => {
+    try {
+        const res = await axios.post(
+            PUBLIC_BACKEND_API + 'user/gameLog/',
             {
                 key: get(userStore).key
             }
         );
-        console.log(res);
-        return res.data || [];
+        console.log(res.data);
+        return res.data.games;
     } catch (err) {
         console.log(err);
-        return [];
+        return null;
     }
-};
+}
+
+export const submitRating = async (theme, rating, numRatings) => {
+    try {
+        const res = await axios.post(
+            PUBLIC_BACKEND_API + 'user/submit-rating/',
+            {
+                theme,
+                rating,
+                numRatings,
+            }
+        );
+        return res.data;
+    } catch (err) {
+        console.log(err);
+        return false;
+    }
+}
