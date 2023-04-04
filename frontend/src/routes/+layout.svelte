@@ -33,20 +33,20 @@
         loaded = true;
 	});
 
-	// IF user goes valid to invalid, GOTO login.
+	
 	let lastState = false;
 	$: {
         loaded = false;
         console.log('NEW USER: ', $userStore);
-        if (lastState && !$userStore) {
+        if (lastState && !$userStore) { // IF user goes valid to invalid, GOTO login.
             goto('/login');
             console.log('User state set to null: GOTO LOGIN');
         }
-        if (!lastState && $userStore) {
+        if (!lastState && $userStore) { // IF user goes invalid to valid, GOTO game.
             console.log('PAGE PATH: ', $page);
             if ($page.route.id === '/login' || $page.route.id === '/signup') {
-                goto('/account');
-                console.log('User state set to valid: GOTO ACCOUNT');
+                goto('/game');
+                console.log('User state set to valid: GOTO GAME');
             }
             userStore.subscribe((user) => {
                 if (user?.token) {

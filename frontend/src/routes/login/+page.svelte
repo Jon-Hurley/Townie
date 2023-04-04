@@ -1,6 +1,8 @@
 <script>
 	import { login, verifyLogin } from '../../requests/account';
 	import { goto } from '$app/navigation';
+	import { pushPopup } from '../../stores';
+	import Loading from '../../general-components/loading.svelte';
 
 	const form = {
 		username: '',
@@ -9,37 +11,34 @@
 		verifyToken: undefined,
 		otp: ''
 	};
-
-	let errorMessage = null;
+	let loading = false;
 
 	const _login = async () => {
+		loading = true;
 		if (!form?.username?.length || !form?.password?.length) {
-			errorMessage = 'Missing inputs. Please try again.';
+			pushPopup(0, 'Missing inputs. Please try again.');
 			return;
 		}
 
 		const res = await login(form.username, form.password, form.remember);
+		loading = false;
 		if (res?.verifyToken) {
 			// 2FA. Need to verify
 			form.verifyToken = res.verifyToken;
 			return;
 		}
-		if (res) {
-			// SUCCESS
-			goto('/game');
-		}
 	};
 
 	const verify = async () => {
-		errorMessage = await verifyLogin(form.verifyToken, form.otp);
-		if (errorMessage) {
-			return;
-		}
-		goto('/game');
+		loading = true;
+		const succ = await verifyLogin(form.verifyToken, form.otp);
+		loading = false;
 	};
 </script>
 
-{#if !form.verifyToken}
+{#if loading}
+	<Loading/>
+{:else if !form.verifyToken}
 	<div class="flex h-full w-full items-center justify-center p-4">
 		<div class="w-full max-w-md space-y-8">
 			<h2 class="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
@@ -162,53 +161,6 @@
 					</a>
 				</div>
 			</form>
-		</div>
-	</div>
-{/if}
-
-<!--failed login popup-->
-{#if errorMessage}
-	<div
-		class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full"
-		id="loginFailed-popup"
-	>
-		<div
-			class="relative top-60 mx-auto p-3 border w-80 shadow-lg rounded-lg bg-white border-gray-700"
-		>
-			<div class="mt-3 text-center">
-				<div class="mx-auto flex items-center justify-center rounded-full">
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						fill="none"
-						viewBox="0 0 24 24"
-						stroke-width="1.5"
-						stroke="currentColor"
-						class="w-12 h-12 text-red-600"
-					>
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"
-						/>
-					</svg>
-				</div>
-				<h3 class="text-lg leading-6 font-medium text-gray-900">Login Failed</h3>
-				<div class="px-7">
-					<p class="text-sm text-gray-500">
-						{errorMessage}
-					</p>
-				</div>
-
-				<div class="mr-2 ml-2 flex items-center px-4 py-3">
-					<button
-						id="ok-btn"
-						on:click={() => (errorMessage = false)}
-						class="px-4 py-2 border border-red-600 text-red-600 text-base font-medium rounded-md w-full shadow-sm bg-red-100 hover:border-red-800 focus:outline-none focus:ring-2 focus:ring-red-400"
-					>
-						OK
-					</button>
-				</div>
-			</div>
 		</div>
 	</div>
 {/if}

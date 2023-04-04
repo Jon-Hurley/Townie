@@ -21,12 +21,13 @@ export const login = async(username, password, remember, silent) => {
 			localStorage.setItem('password', password);
 		}
 
-        if (res.data.verifyToken) {
+        if (res.data.verifyToken) { // 2FA needed.
             return res.data;
         }
-
+        // 2FA not needed.
         userStore.set(res.data);
         return true;
+        
     } catch (err) {
         const err_message = err?.response?.data?.errorMessage
                             || 'Connection Refused. Failed to update user. Please try again.';
@@ -45,11 +46,12 @@ export const verifyLogin = async(verifyToken, otp) => {
             }
         );
         userStore.set(res.data);
-        return null;
+        return true;
     } catch (err) {
-        console.log(err)
-        return err?.response?.data?.errorMessage
-            || 'Connection Refused. Failed to login user. Please try again.';
+        const err_message = err?.response?.data?.errorMessage
+                            || 'Connection Refused. Failed to login user. Please try again.';
+        pushPopup(0, err_message);
+        return false;
     }
 };
 
@@ -119,7 +121,7 @@ export const signup = async (phone, username) => {
         return true;
     } catch (err) {
         const err_message = err?.response?.data?.errorMessage
-                            || 'Connection Refused. Failed to update user. Please try again.';
+                            || 'Connection Refused. Failed to signup user. Please try again.';
         pushPopup(0, err_message);
         return false;
     }

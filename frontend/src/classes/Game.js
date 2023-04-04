@@ -48,7 +48,7 @@ export class Game {
         if (arrived) {
             const achievedDest = Game.nextDestination;
             const displayTime = Math.round(10 * oldTime / (1000 * 60)) / 10;
-            const displayDist = Math.round(oldDist / 1000) / 10;
+            const displayDist = Math.round(oldDist / 100) / 10;
            
             pushPopup(
                 1,
