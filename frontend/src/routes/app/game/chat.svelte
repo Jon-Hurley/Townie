@@ -4,6 +4,7 @@
 	import { blueStyle, buttonStyle, grayStyle, hr, inputStyle, largeTitle } from "../../../css";
 	import { userStore } from "../../../stores";
     let messages = Game.messageStore;
+    $: console.log($messages);
     
     let input;
     let isOpen = true;
@@ -88,7 +89,7 @@
                     {#if $userStore.key === key}
                         <div class="text-sm font-light">{timestamp}</div>
                         <div class="
-                                flex flex-col p-2 px-4 bg-gray-200
+                                flex flex-col p-2 px-4 bg-indigo-300
                                 rounded-bl-2xl rounded-tr-2xl rounded-tl-2xl
                                 text-right
                             "
