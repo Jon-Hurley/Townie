@@ -1,5 +1,5 @@
 <script>
 </script>
 <div>
-    No home page yet.
+    No landing page yet.
 </div>

@@ -2,7 +2,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 import group.queries as queries
-from ws_con import propogateUpdates, forceDisconnect
+from ws_con import propogateUpdates, forceDisconnect, propogateNewMessage
 import util
 
 # CONNECT: JOIN GAME
@@ -112,6 +112,13 @@ def onDefault(request):
         return JsonResponse({
             'method': 'start-game'
         })
+    
+    if method == 'new-message':
+        connectionIds = body['connectionIds']
+        message = body['message']
+        print(message, connectionIds)
+        propogateNewMessage(message, connectionIds)
+        return JsonResponse({})
 
     if method == 'update-location':
         lon = body['lon']
@@ -128,6 +135,7 @@ def onDefault(request):
             'method': 'update-location',
             'data': res
         })
+    
     return JsonResponse({})
 
 
@@ -158,7 +166,6 @@ def createGame(request):
 
 # GET REQUEST: GET GAME DATA
 
-
 @csrf_exempt
 def getGame(request):
     data = json.loads(request.body)
@@ -167,12 +174,27 @@ def getGame(request):
     data = queries.getGame(gameKey).batch()[0]
     return JsonResponse(data)
 
+# @csrf_exempt
+# def getChatPermissions(request):
+#     body = json.loads(request.body)
+#     gameKey = body['gameKey']
 
+#     user, newToken = util.getUserFromToken(body['token'])
+#     if user is None:
+#         return util.returnError('Invalid token.', 401)
+
+#     password = redis_con.createConnectionCredentials(user['key'], gameKey)
+#     return JsonResponse({
+#         'password': password,
+#         'token': newToken
+#     })
+
+# THESE SHOULD NOT BE HERE!!!
+@csrf_exempt
 def getThemeList(request):
     res = queries.getThemeList().batch()
     print(res)
     return JsonResponse({'themes': list(res)})
-
 
 @csrf_exempt
 def getSummary(request):

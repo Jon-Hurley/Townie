@@ -43,6 +43,20 @@ def propogateUpdate(connectionId, player, data):
         print(err)
         return None
 
+def propogateNewMessage(message, connectionIds):
+    data = json.dumps({
+        'method': 'new-message',
+        'data': message
+    })
+    for connectionId in connectionIds:
+        try:
+            client.post_to_connection(
+                Data=data,
+                ConnectionId=connectionId
+            )
+        except Exception as err:
+            print(err)
+
 def forceDisconnect(connectionId):
     try:
         print("DISCONNECTING:", connectionId)

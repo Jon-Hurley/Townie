@@ -3,6 +3,7 @@ import { PUBLIC_BACKEND_API } from '$env/static/public';
 import { get } from 'svelte/store';
 import { pushPopup, updateAccessToken, userStore } from '../stores';
 import { Location } from '../classes/Location';
+import { Game } from '../classes/Game';
 
 export const createGame = async() => {
     try {
@@ -27,7 +28,7 @@ export const createGame = async() => {
 export const getThemeList = async() => {
     try {
         const res = await axios.get(
-            PUBLIC_BACKEND_API + 'group/get-theme-list'
+            PUBLIC_BACKEND_API + 'group/get-theme-list/'
         );
         return res.data;
     } catch (err) {

@@ -1,28 +1,7 @@
 <script>
-	import '../app.css';
 	import { goto } from '$app/navigation';
 	import { userStore } from '../stores';
-	import { page } from '$app/stores';
 	import { logout } from '../requests/account';
-	import { onMount } from 'svelte';
-	import { Game } from '../classes/Game';
-
-    const gameStore = Game.store;
-
-	let currentPage;
-	page.subscribe((v) => (currentPage = v.route.id));
-
-	onMount(async () => {
-		console.log(currentPage);
-		if (currentPage === '/delete') {
-			logout();
-		}
-	});
-
-	const _logout = async () => {
-		let res = await logout();
-		goto('/login');
-	};
 
 	$: pages = [
 		{
@@ -65,7 +44,7 @@
             title={tooltip}
             on:click={() => {
                 if (page === '/login') {
-                    _logout();
+                    logout();
                     return;
                 }
                 goto(page);

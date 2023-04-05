@@ -1,21 +1,22 @@
 <script>
 	import '../app.css';
+
     import { PUBLIC_GOOGLE_MAPS_API_KEY } from '$env/static/public';
-    import { onMount, onDestroy } from 'svelte';
+    import { onMount } from 'svelte';
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
-    
-	import { mapStore, popupQueue, userStore } from '../stores';
-    import { autoLogin } from '../requests/account';
+
     import Navbar from './navbar.svelte';
     import AccountBar from './account-bar.svelte';
 	import Loading from '../general-components/loading.svelte';
 	import Modal from '../general-components/modal.svelte';
+    
+	import { mapStore, popupQueue, userStore } from '../stores';
+    import { autoLogin } from '../requests/account';
+    $: console.log('NEW USER: ', $userStore);
 
 	let mounted = false;
     let loaded = false;
-
-    $: console.log({MAP: $mapStore})
 
 	onMount(async () => {
         loaded = false;
@@ -30,34 +31,26 @@
                 goto('/login');
             }
         }
+        userStore.subscribe(user => {
+            if (user?.token) {
+                sessionStorage.setItem('token', user.token);
+            }
+        });
         loaded = true;
 	});
 
-	
-	let lastState = false;
+	let prevUser = false;
 	$: {
-        loaded = false;
-        console.log('NEW USER: ', $userStore);
-        if (lastState && !$userStore) { // IF user goes valid to invalid, GOTO login.
+        if (prevUser && !$userStore) {
             goto('/login');
-            console.log('User state set to null: GOTO LOGIN');
         }
-        if (!lastState && $userStore) { // IF user goes invalid to valid, GOTO game.
-            console.log('PAGE PATH: ', $page);
-            if ($page.route.id === '/login' || $page.route.id === '/signup') {
+        if (!prevUser && $userStore) {
+            if (['/login', '/signup'].includes($page.route.id)) {
                 goto('/game');
-                console.log('User state set to valid: GOTO GAME');
             }
-            userStore.subscribe((user) => {
-                if (user?.token) {
-                    sessionStorage.setItem('token', user.token);
-                }
-            });
         }
-		lastState = !!$userStore;
-        loaded = true;
+		prevUser = $userStore;
 	}
-    $: console.log({slots: $$slots})
 </script>
 
 <!-- Once mounted, bring in the GOOGLE API -->

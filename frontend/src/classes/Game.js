@@ -12,10 +12,18 @@ export class Game {
     static ws = undefined;
     static interval = undefined;
     static timeStore = writable(null);
+    static messageStore = writable([]);
 
     static send(method, data) {
         const objStr = JSON.stringify({ method, ...data });
         Game.ws.send(objStr);
+    }
+
+    static handleNewMessage(data) {
+        Game.messageStore.set([
+            ...get(Game.messageStore),
+            data
+        ]);
     }
 
     static handleGameUpdate(data) {
@@ -84,6 +92,9 @@ export class Game {
                     case 'update-location': {
                         Game.handleLocationUpdate(data); return;
                     }
+                    case 'new-message': {
+                        Game.handleNewMessage(data); return;
+                    }
                     default: {
                         console.log("No response behavior");
                     }
@@ -123,6 +134,7 @@ export class Game {
 
     static async join(gameKey) {
         try {
+            Game.messageStore.set([]);
             const userLocation = await Location.getCurrentLocation();
             const params = {
                 'gameKey': gameKey,
@@ -176,6 +188,7 @@ export class Game {
 
     static leave() {
         try {
+            Game.messageStore.set([]);
             Game.stopPolling();
             Game.ws?.close();
             goto('summary/' + Game.game._key);

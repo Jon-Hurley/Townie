@@ -3,6 +3,7 @@
 	import Leaderboard from './leaderboard.svelte';
 	import MapSettings from './map/mapSettings.svelte';
 	import LobbySettings from './lobby/lobbySettings.svelte';
+	import Chat from './chat.svelte';
 
     export let startGame, leaveGame, gamePage;    
 </script>
@@ -16,6 +17,8 @@
             pt-4 gap-2
         "
     >
+        <Chat/>
+
         {#if gamePage === 'map'}
             <Leaderboard/>
         {/if}

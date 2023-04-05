@@ -1,5 +1,4 @@
 <script>
-	import '../app.css';
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
     import { pages, getHighlight } from './navbar';
@@ -9,7 +8,6 @@
 
     page.subscribe(v => {
         currentPage = v.route.id;
-        console.log(currentPage)
         highlightedPage = getHighlight(currentPage);
     });
 </script>
