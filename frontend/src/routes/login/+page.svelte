@@ -1,6 +1,5 @@
 <script>
 	import { login, verifyLogin } from '../../requests/account';
-	import { goto } from '$app/navigation';
 	import { pushPopup } from '../../stores';
 	import Loading from '../../general-components/loading.svelte';
 
@@ -82,7 +81,7 @@
 
 					<div class="text-sm">
 						<a
-							href="/account/password-reset"
+							href="/password-reset"
 							class="font-medium text-indigo-600 hover:text-indigo-400"
 						>
 							Forgot your password?

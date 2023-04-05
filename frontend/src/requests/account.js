@@ -141,7 +141,7 @@ export const verifySignup = async (username, password, phone, otp) => {
         userStore.set(res.data);
         pushPopup(
             1, 'You have successfully created your account!',
-            () => goto('/store')
+            () => goto('/app/tutorial')
         );
         return true;
     } catch (err) {
@@ -168,7 +168,7 @@ export const updateAccount = async (password, newUsername, newPhone, newLogin2FA
         userStore.set(res.data);
         pushPopup(
             1, "Account Updated Successfully!",
-            () => goto('/account')
+            () => goto('/app/account')
         );
         return true;
     } catch (err) {

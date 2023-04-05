@@ -191,7 +191,7 @@ export class Game {
             Game.messageStore.set([]);
             Game.stopPolling();
             Game.ws?.close();
-            goto('summary/' + Game.game._key);
+            goto('/app/game-summary/' + Game.game._key);
             Game.store.set(null);
             return true;
         } catch (err) {
