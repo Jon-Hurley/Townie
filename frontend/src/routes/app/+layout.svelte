@@ -44,9 +44,11 @@
 {#if $userStore}
     <AccountBar/>
     <div
-        class="
-            m-0 p-4 h-full
-            h-screen w-screen max-h-screen max-w-screen
+        class="m-0 p-4"
+        style="
+            height: calc(100vh - 120px);
+            max-height: calc(100vh - 120px);
+            width: 100vw;
         "
     >
         <slot/>

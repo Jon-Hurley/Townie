@@ -6,6 +6,8 @@ import os
 import time
 dotenv.load_dotenv()
 
+dt = 60 * 60
+
 def returnError(errorMessage, errCode):
     return JsonResponse(
         {
@@ -36,7 +38,6 @@ def getUserFromToken(token):
     )
 
     t = time.time()
-    dt = 2 * 60
 
     # not past expiration time
     if user['expiration'] > t:
@@ -63,7 +64,7 @@ def returnUserPrivate(user):
     del user['_rev']
 
     t = time.time()
-    dt = 2 * 60
+
     user['expiration'] = t + dt
 
     token = jwt.encode(
