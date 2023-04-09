@@ -13,7 +13,8 @@ export const getUsers = async (substr) => {
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'user/search/',
             {
-                substr
+                substr,
+                key: get(userStore).key
             }
         );
         return res.data.users || [];

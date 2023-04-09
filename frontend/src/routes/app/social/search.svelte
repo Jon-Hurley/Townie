@@ -7,6 +7,7 @@
 
     const updateResults = async() => {
         results = await getUsers(userSearch);
+        console.log(results)
     }
 
     let timeout = setTimeout(updateResults, 500);
@@ -51,43 +52,45 @@
             class="w-full rounded-md bg-white text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
             tabindex="-1"
             role="listbox"
-            aria-labelledby="listbox-label"
-            aria-activedescendant="listbox-option-3"
         >
             {#if results.length === 0}
-                <li
-                    class="
-                        w-full z-10
-                        bg-white
-                        text-gray-900
-                        relative
-                        cursor-default
-                        select-none
-                        p-2
-                    "
-                >
+                <li class="p-2">
                     No Results Found.
                 </li>
             {:else}
-                {#each results as r}
-                    <li
-                        class="
-                            w-full
-                            text-gray-900
-                            z-10
-                            bg-white
-                            relative
-                            cursor-pointer
-                            p-2
-                            flex
-                            justify-between
-                        "
-                    >
-                        <a href={"/app/user/" + r.key}>
-                            <!-- <img></img> -->
-                            {r.username} #{r.key}
+                {#each results as r, i}
+                    <li class="p-2">
+                        <a
+                            href={"/app/user/" + r.key}
+                            class="flex justify-between items-center w-full"
+                        >
+                            <div class="flex items-center">
+                                <div
+                                    class="
+                                        w-1 h-6 mr-3
+                                        {
+                                            r.isFriend ? 'bg-green-500'
+                                            : r.suggestion ? 'bg-indigo-500'
+                                            : 'bg-gray-300'
+                                        }
+                                        rounded-full
+                                    "
+                                />
+                                <div>
+                                    {r.username} #{r.key}
+                                </div>
+                            </div>
+                            {#if r.suggestion}
+                                <div class="text-gray-300">
+                                    Suggested
+                                </div>
+                            {/if}                
                         </a>
                     </li>
+                    
+                    {#if i !== results.length - 1}
+                        <hr class="h-[1px] bg-gray-100 mx-2">
+                    {/if}
                 {/each}
             {/if}
         </ul>

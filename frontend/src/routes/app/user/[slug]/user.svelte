@@ -22,6 +22,17 @@
         const res = await sendFriendRequest(user.key);
         reloadUser();
     };
+
+    const getNetworkDistanceStr = () => {
+        const dist = user.networkDistance;
+        switch (dist) {
+            case 1: return "1st";
+            case 2: return "2nd";
+            case 3: return "3rd";
+            case 4: return "4th";
+            default: return "5th+";
+        }
+    };
 </script>
 
 <div class="my-5 w-full">
@@ -29,34 +40,35 @@
         {user.username}
     </div>
     <div class="text-gray-700 text-md text-center">
-        #{user.key}
+        {getNetworkDistanceStr()} &bull;  
+        {user.mutualFriends} Mutual Friend{user.mutualFriends == 1 ? '' : 's'}
     </div>
 </div>
 
 {#if user.key !== $userStore.key}
     <div class="flex justify-center flex-wrap">
-        <button
+        <!-- <button
             disabled
             class="{indigoStyle} {buttonStyle} m-1"
         >
             Message
-        </button>
+        </button> -->
 
-        {#if !user?.friendship?.length}
+        {#if !user?.friendship}
             <button
                 class="{blueStyle} {buttonStyle} m-1"
                 on:click={_sendFriendRequest}
             >
                 Send Friend Request
             </button>
-        {:else if user.friendship[0].status}
+        {:else if user.friendship.status}
             <button
                 class="{redStyle} {buttonStyle} m-1"
                 on:click={_rejectFriend}
             >
                 Remove Friend
             </button>
-        {:else if user.friendship[0].inbound}
+        {:else if user.friendship.inbound}
             <button
                 class="{greenStyle} {buttonStyle} m-1"
                 on:click={_acceptFriend}
