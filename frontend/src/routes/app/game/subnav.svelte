@@ -1,14 +1,18 @@
 <script>
     import { buttonStyle, hr, indigoStyle, redStyle } from '../../../css';
-	import Leaderboard from './leaderboard.svelte';
+
+    import Leaderboard from './leaderboard.svelte';
 	import MapSettings from './map/mapSettings.svelte';
 	import LobbySettings from './lobby/lobbySettings.svelte';
 	import Chat from './chat.svelte';
 
+    import { Game } from '../../../classes/Game';
+    const gameStore = Game.store;
+
     export let startGame, leaveGame, gamePage;    
 </script>
 
-{#if gamePage !== 'join'}
+{#if $gameStore}
     <hr class={hr}>
     <div
         class="

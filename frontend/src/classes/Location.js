@@ -9,6 +9,14 @@ export class Location {
     static getLocation() {
         return get(Location.store);
     }
+
+    static get lat() {
+        return Location.getLocation().lat;
+    }
+
+    static get lng() {
+        return Location.getLocation().lng;
+    }
     
     static async getCurrentLocation() {
         return await new Promise((res, rej) => {
@@ -24,10 +32,6 @@ export class Location {
 
     static updateLocation(lat, lng) {
         Location.store.set({ lat, lng });
-        if (Map.map) {
-            Map.generateUserMarker({ lat, lng });
-            Map.setZoomAndCenter();
-        }
         Game.updateLocation(lat, lng);
     }
 

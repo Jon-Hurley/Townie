@@ -267,8 +267,8 @@ def getGame(gameKey):
                     key: v._key,
                     username: v.username,
                     connectionId: e.connectionId,
-                    lon: e.lon,
-                    lat: e.lat,
+                    lon: v.hidingState ? null : e.lon,
+                    lat: v.hidingState ? null : e.lat,
                     destinationIndex: e.destinationIndex,
                     points: e.points,
                     hidingState: v.hidingState
@@ -356,8 +356,8 @@ def getGameForPlayer(gameKey, connectionId):
                     key: v._key,
                     username: v.username,
                     connectionId: e.connectionId,
-                    lon: e.lon,
-                    lat: e.lat,
+                    lon: v.hidingState ? null : e.lon,
+                    lat: v.hidingState ? null : e.lat,
                     destinationIndex: e.destinationIndex,
                     points: e.points,
                     hidingState: v.hidingState

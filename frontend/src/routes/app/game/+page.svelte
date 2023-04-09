@@ -6,10 +6,10 @@
     import Loading from '../../../general-components/loading.svelte';
 
     import { Game } from '../../../classes/Game';
-	import { mapStore } from '../../../stores';
-    
-    let gameStore = Game.store;    
+
+    let gameStore = Game.store;
     $: gamePage = $gameStore?.game?.page || 'join';
+    
     let loading = false;
 
     const _leaveGame = async () => {
@@ -31,11 +31,7 @@
         {:else if gamePage === 'lobby'}
             <Lobby/>
         {:else if gamePage === 'map'}
-            {#if $mapStore}
-                <Map/>
-            {:else}
-                <Loading/>
-            {/if}
+            <Map/>
         {/if}
         <Subnav
             startGame={_startGame}

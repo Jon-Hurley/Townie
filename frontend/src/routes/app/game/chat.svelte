@@ -7,7 +7,7 @@
     $: console.log($messages);
     
     let input;
-    let isOpen = true;
+    let isOpen = false;
     let scrollElement;  
 
     const sendMessage = () => {
@@ -24,19 +24,18 @@
         input = null;
     }
 
-    let sub, interval;
-    onMount(() => {
-        sub = messages.subscribe(() => {
-            interval = setTimeout(() => {
-                scrollElement.scroll({
-                    top: scrollElement.scrollHeight,
-                    behavior: 'smooth'
-                });
-            }, 1000);
-        });
-    });
-    onDestroy(sub);
-    onDestroy(() => clearInterval(interval));
+    let timeout;
+    $: $messages, () => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+            if (!scrollElement) return;
+            scrollElement.scroll({
+                top: scrollElement.scrollHeight,
+                behavior: 'smooth'
+            });
+        }, 1000);
+    };
+    onDestroy(() => clearTimeout(timeout));
 </script>
 
 <button

@@ -1,81 +1,64 @@
 <script>
-	import { onDestroy, onMount } from 'svelte';
-	import { Location } from '../../../../classes/Location';
+	import { PUBLIC_MAPBOX_TOKEN } from '$env/static/public';
+    import { onDestroy, onMount } from 'svelte';
+    import { Map as Mapbox, Marker } from '@beyonk/svelte-mapbox';
+    import * as turf from '@turf/turf';
+
+    import Timer from './timer.svelte';
+    import Options from './options.svelte';
+
+    import { Location } from '../../../../classes/Location';
     import { Map } from '../../../../classes/Map';
-	import Timer from './timer.svelte';
+    import { Game } from '../../../../classes/Game';
+
+    const gameStore = Game.store;
+    const mapSettingsStore = Map.settings;
+    const locationStore = Location.store;
+
+    const onMapReady = async() => {
+        const mapboxObj = Map.map.getMap();
+        Map.setCenterToCurrent();
+        Map.setDestinationCircle();
+        // mapboxObj.setStyle('mapbox://styles/arnavmehra/cle7jp4jn003b01ntixmh28ea');
+        gameStore.subscribe(Map.updateDestinationCircle);
+        locationStore.subscribe(Map.updateBounds);
+    }
 
     onMount(() => {
-        Map.regenerate();
         Location.subscribe();
     });
 
     onDestroy(() => {
         Location.unsubscribe();
-        Map.cancelSnapLocation();
+        // Map.cancelSnapLocation();
     });
-    
-    const checkboxes = [
-        {
-            title: "Dark Mode",
-            fn: () => Map.regenerate(),
-            mapProp: "darkMode"
-        },
-        {
-            title: "Snap Location",
-            fn: () => Map.toggleSnapLocation(),
-            mapProp: "snapLocation"
-        }
-    ]
 </script>
 
 <Timer/>
 
+<Options/>
 
-<!-- <div
-    class="
-        absolute top-[5rem] left-4 z-10
-        bg-gray-800 rounded
-        px-2 py-1
-        opacity-50
-    "
+<Mapbox
+    accessToken={PUBLIC_MAPBOX_TOKEN}
+    bind:this={Map.map}
+    on:ready={onMapReady}
+    zoom={$mapSettingsStore.zoom}
 >
-    {#each checkboxes as box}
-        <div>
-            <input
-                id="checkbox"
-                type="checkbox"
-                class="
-                    w-3 h-3
-                    checked:bg-indigo-500
-                    border:none
-                    rounded
-                    appearance-none
-                    cursor-pointer
-                    ring-2 ring-gray-400
-                "
-                bind:checked={Map[box.mapProp]}
-                on:change={box.fn}
-            >
-            <label
-                for="checkbox"
-                class="ml-1 text-md text-gray-400"
-            >
-                {box.title}
-            </label>
-        </div>
+    {#each $gameStore.players as player}
+        {#if player.username !== $gameStore.player.username
+             && player.lat !== null && player.lon !== null}
+            <Marker
+                lng={player.lon}
+                lat={player.lat}
+                color="rgb(255,0,0)"
+            />
+        {/if}
     {/each}
-</div> -->
 
-<div
-    class="full-screen"
-    bind:this={Map.container}
-/>
-
-<style>
-    .full-screen {
-        width: 100vw;
-        height: calc(100vh - 196px);
-        margin: -16px;
-		margin-bottom: 0px;
-    }
-</style>
+    <Marker
+        lng={$locationStore.lng}
+        lat={$locationStore.lat}
+        label={'You'}
+        color="rgb(255,0,0)"
+    />
+</Mapbox>

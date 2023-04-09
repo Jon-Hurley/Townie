@@ -30,12 +30,6 @@ export class Game {
         if (!data) return;
         data.destinations.sort((a, b) => a.index - b.index);    
         Game.store.set(data);
-        if (Map.map) {
-            console.log("We zoomin");
-            Map.generatePlayerMarkers();
-            Map.generateDestinationCircle();
-            Map.setZoomAndCenter();
-        }
     }
 
     static handleLocationUpdate(data) {
@@ -66,8 +60,6 @@ export class Game {
                 Your total time has been paused and will resume once you leave the destination.`,
                 () => {
                     Game.player.destinationIndex++;
-                    Map.generateDestinationCircle();
-                    Map.setZoomAndCenter();
                 }
             );
             if (achievedDest.index === Game.destinations.length - 1) {
@@ -132,9 +124,29 @@ export class Game {
         Game.interval = undefined;
     }
 
+    static async getGame(gameKey) {
+        Game.send('get-game', { gameKey });
+        return await new Promise((res, rej) => { 
+            Game.ws.onerror = () => rej();
+            Game.ws.onmessage = (m) => {
+                try {
+                    const { method, data } = JSON.parse(m.data);
+                    if (method !== 'get-game') return;
+                    if (!data?.game?._key) rej();
+                    Game.handleGameUpdate(data);
+                    res(data);
+                } catch (e) {
+                    console.log(e)
+                    rej({message: 'Invalid game key. Please try again.'});
+                }
+            };
+        });
+    }
+
     static async join(gameKey) {
         try {
             Game.messageStore.set([]);
+
             const userLocation = await Location.getCurrentLocation();
             const params = {
                 'gameKey': gameKey,
@@ -148,26 +160,10 @@ export class Game {
                 Game.ws.onerror = () => rej({ message: 'Unable to connect to web-socket.' });
                 Game.ws.onopen = (e) => res(e);
             });
-    
-            Game.send('get-game', { gameKey });
-            const res = await new Promise((res, rej) => { 
-                Game.ws.onerror = () => rej();
-                Game.ws.onmessage = (m) => {
-                    try {
-                        const { method, data } = JSON.parse(m.data);
-                        if (method !== 'get-game') return;
-                        if (!data?.game?._key) rej();
-                        res(data);
-                    } catch (e) {
-                        rej({message: 'Invalid game key. Please try again.'});
-                    }
-                };
-            });
-            if (res.player === null) {
-                throw {
-                    message: "Unable to connect to game. Your session token may be expired.",
-                    func: () => logout()
-                }
+
+            const res = await Game.getGame(gameKey);
+            if (!res?.player) {
+                throw { message: "Unable to connect to game. Your session token may be expired." }
             }
 
             Game.store.set(res);
@@ -178,20 +174,18 @@ export class Game {
             Game.ws = undefined;
             Game.store.set(null);
             pushPopup(0,
-                err?.message || "Unable to connect to lobby. Please try again.",
-                () => {
-                    if (err?.func) err.func();
-                }
+                err?.message || "Unable to connect to lobby. Please try again."
             );
         }
     }
 
     static leave() {
         try {
-            Game.messageStore.set([]);
             Game.stopPolling();
             Game.ws?.close();
-            goto('/app/game-summary/' + Game.game._key);
+            Game.ws = undefined;
+            goto('/app/game-summary/' + Game.key);
+            Game.messageStore.set([]);
             Game.store.set(null);
             return true;
         } catch (err) {
@@ -312,6 +306,6 @@ export class Game {
         return Game.destinations[Game.player.destinationIndex];
     }
     static get key() {
-        return Game.game._key
+        return Game.game?._key
     }
 };
