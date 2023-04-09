@@ -211,6 +211,11 @@ def getUsersBySubstring(substr, userKey):
         """
         LET lowerSubstr = LOWER(@substr)
 
+        LET userFriends = (
+            FOR v IN 1..1 ANY CONCAT("User/", @userKey) GRAPH Friendships
+                RETURN v._key
+        )
+
         LET mutualFriendCounts = (
             FOR v, e, p IN 2..2 ANY
                 CONCAT("User/", @userKey)
@@ -218,9 +223,9 @@ def getUsersBySubstring(substr, userKey):
                 PRUNE e.status == false
                 
                 LET target = p.vertices[2]
-                COLLECT userGroup = target WITH COUNT INTO mutualFriends
+                COLLECT user = target WITH COUNT INTO mutualFriends
                 RETURN {
-                    key: userGroup._key,
+                    key: user._key,
                     mutualFriends
                 }
         )
@@ -252,19 +257,82 @@ def getUsersBySubstring(substr, userKey):
                     FILTER v._key == user1.key
                     RETURN e.status
             )[0] || false
-            
-            LET priority = (mutualFriends + 1) / (user1.dist + 1)
-            
+
+            LET targetFriends = (
+                FOR v IN 1..1 ANY user1 GRAPH Friendships
+                    RETURN v._key
+            )
+
+            LET unionLength = LENGTH(UNION_DISTINCT(userFriends, targetFriends))
+            LET jaccardIndex = unionLength == 0 ? 0 : mutualFriends / unionLength
+
             RETURN {
                 key: user1.key,
                 username: user1.username,
                 mutualFriends,
-                suggestion: priority >= 1,
-                isFriend
+                isFriend,
+                jaccardIndex
             }
         """,
         bind_vars={
             'substr': substr,
+            'userKey': userKey     
+        }
+    )
+
+def getOnlySuggestedUsers(userKey):
+    return arango_con.db.aql.execute(
+        """
+        LET userFriends = (
+            FOR v IN 1..1 ANY CONCAT("User/", @userKey) GRAPH Friendships
+                RETURN v._key
+        )
+        
+        LET mutualFriendCounts = (
+            FOR v, e, p IN 2..2 ANY
+                CONCAT("User/", @userKey)
+                GRAPH Friendships
+                PRUNE e.status == false
+                
+                LET target = p.vertices[2]
+                COLLECT user = target WITH COUNT INTO mutualFriends
+                RETURN {
+                    user,
+                    mutualFriends
+                }
+        )
+
+        FOR mf IN mutualFriendCounts
+            LET user = mf.user
+            LET mutualFriends = mf.mutualFriends
+
+            LET isFriend = (
+                FOR v, e IN 1..1 ANY CONCAT("User/", @userKey) GRAPH Friendships
+                    FILTER v._key == user._key
+                    RETURN e.status
+            )[0] || false
+            FILTER isFriend == false
+
+            LET targetFriends = (
+                FOR v, e IN 1..1 ANY user GRAPH Friendships
+                    FILTER e.status
+                    RETURN v._key
+            )
+            LET unionLength = LENGTH(UNION_DISTINCT(userFriends, targetFriends))
+            LET jaccardIndex = mutualFriends / unionLength
+            FILTER jaccardIndex >= 0.25
+            SORT jaccardIndex DESC
+            LIMIT 10
+            
+            RETURN {
+                key: user._key,
+                username: user.username,
+                mutualFriends,
+                isFriend,
+                jaccardIndex
+            }
+        """,
+        bind_vars={
             'userKey': userKey     
         }
     )

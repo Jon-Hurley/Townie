@@ -10,7 +10,10 @@ def searchUsers(request):
     body = json.loads(request.body)
     substr = body['substr']
     userKey = body['key']
-    res = queries.getUsersBySubstring(substr, userKey).batch()
+    if len(substr) != 0:
+        res = queries.getUsersBySubstring(substr, userKey).batch()
+    else:
+        res = queries.getOnlySuggestedUsers(userKey).batch()
     return JsonResponse({'users': list(res)})
 
 

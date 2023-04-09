@@ -6,9 +6,6 @@ import { get } from 'svelte/store';
 // NOTE: ALL REQUESTS HERE SHOULD BE PUBLIC (NOT AUTH NEEDED).
 
 export const getUsers = async (substr) => {
-    if (!substr || substr.length === 0) {
-        return [];
-    }
     try {
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'user/search/',

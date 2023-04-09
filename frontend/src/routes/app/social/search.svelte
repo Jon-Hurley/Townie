@@ -1,18 +1,29 @@
 <script>
+	import { onMount } from 'svelte';
 	import { inputStyle } from '../../../css';
     import { getUsers } from '../../../requests/search';
 
     let userSearch = '';
     let results = [];
+    let suggestions = [];
+    let displayResults = false;
 
     const updateResults = async() => {
+        if (userSearch.length === 0) {
+            results = suggestions;
+            return;
+        }
         results = await getUsers(userSearch);
         console.log(results)
     }
 
+    onMount(async() => {
+        suggestions = await getUsers('');
+        results = suggestions;
+    })
+
     let timeout = setTimeout(updateResults, 500);
 </script>
-
 
 <div
     class="
@@ -41,24 +52,30 @@
         type="text"
         class="{inputStyle}"
         placeholder="Search Users"
+        on:focusin={(e) => {
+            e.stopPropagation();
+            displayResults = true;
+        }}
     >
 </div>
 
-{#if userSearch.length}
-    <div
-        class="absolute top-28 m-0 w-full left-0 p-4"
-    >
+{#if displayResults}
+    <div class="absolute top-28 m-0 w-full left-0 p-4">
         <ul
-            class="w-full rounded-md bg-white text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
+            class="w-full rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
             tabindex="-1"
             role="listbox"
         >
-            {#if results.length === 0}
-                <li class="p-2">
-                    No Results Found.
+            {#if !results?.length}
+                <li class="p-2 text-gray-900 flex items-center">
+                    <div class="w-1 h-8 mr-3 bg-gray-300 rounded-full"/>
+                    <div>
+                        No Results Found.
+                    </div>
                 </li>
+                <hr class="h-[0.5px] bg-gray-100 mx-2">
             {:else}
-                {#each results as r, i}
+                {#each results as r}
                     <li class="p-2">
                         <a
                             href={"/app/user/" + r.key}
@@ -67,32 +84,37 @@
                             <div class="flex items-center">
                                 <div
                                     class="
-                                        w-1 h-6 mr-3
+                                        w-1 h-8 mr-3
                                         {
                                             r.isFriend ? 'bg-green-500'
-                                            : r.suggestion ? 'bg-indigo-500'
+                                            : r.jaccardIndex >= 0.25 ? 'bg-indigo-500'
                                             : 'bg-gray-300'
                                         }
                                         rounded-full
                                     "
                                 />
-                                <div>
-                                    {r.username} #{r.key}
+                                <div class="text-gray-900">
+                                    {r.username}
+                                    &bull;
+                                    {r.mutualFriends} Mutual Friend{r.mutualFriends !== 1 ? 's' : ''} 
                                 </div>
                             </div>
-                            {#if r.suggestion}
-                                <div class="text-gray-300">
-                                    Suggested
-                                </div>
-                            {/if}                
+                            <div class="text-gray-300">
+                                {r.jaccardIndex >= 0.25 && !r.isFriend ? 'Suggested' : ''}
+                            </div>
                         </a>
                     </li>
-                    
-                    {#if i !== results.length - 1}
-                        <hr class="h-[1px] bg-gray-100 mx-2">
-                    {/if}
+
+                    <hr class="h-[0.5px] bg-gray-100 mx-2">
                 {/each}
             {/if}
+
+            <button
+                class="flex justify-center text-gray-400 p-2 w-full"
+                on:click={() => displayResults = false}
+            >
+                Hide Results
+            </button>
         </ul>
     </div>
 {/if}
