@@ -26,6 +26,8 @@
 	    },
 	    "type": "module",
 	    "dependencies": {
+	    	    "@beyonk/svelte-mapbox": "^9.0.5",
+	    	    "@turf/turf": "^6.5.0",
 	    	    "axios": "^1.3.3",
 	    	    "esbuild": "^0.17.10",
 	    	    "svelte-loading-spinners": "^0.3.4"
