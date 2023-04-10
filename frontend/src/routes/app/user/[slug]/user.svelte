@@ -39,7 +39,7 @@
     <div class="text-gray-700 font-bold text-3xl text-center">
         {user.username}
     </div>
-    <div class="text-gray-700 text-md text-center">
+    <div class="text-gray-700 text-md text-center mt-1">
         {getNetworkDistanceStr()} &bull;  
         {user.mutualFriends} Mutual Friend{user.mutualFriends == 1 ? '' : 's'}
     </div>
