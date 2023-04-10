@@ -19,7 +19,7 @@ def generate():
 
     headers = {
         "Accept": "application/json",
-        "Authorization": os.environ.get("TOWNIE_API_KEY")
+        "Authorization": os.environ.get("TOWNIE_FSQ_KEY")
     }
 
     response = requests.request("GET", url, params=params, headers=headers)
