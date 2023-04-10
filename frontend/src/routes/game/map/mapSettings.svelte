@@ -14,6 +14,8 @@
 	const _updateSettings = () => {
 		Game.updateTime(form);
 	};
+	let curr_game = "40.423538,-86.921738"
+	let url = "https://www.google.com/maps/dir/?api=1&destination=" + curr_game;
 </script>
 
 <button type="button" class="{buttonStyle} {grayStyle} w-full" on:click={() => (isOpen = true)}>
@@ -114,6 +116,22 @@
 				}}
 			>
 				Cancel
+			</button>
+		</div>
+		<div>
+			<button
+				class="{buttonStyle} {blueStyle} w-full mr-2"
+				on:click={() => {
+					pushPopup(
+						2, 'Are you sure you want to navigate?',
+						() => {
+							isOpen = false;
+							window.open(url, "_blank")
+						}
+					)
+				}
+			}>
+			Get navigation
 			</button>
 		</div>
 	</div>
