@@ -103,6 +103,16 @@
 	</a>
 </div>
 
+<!--
+<div>
+	<a href='/account/game_log'>
+		<input type= class="{buttonStyle} {blueStyle}">
+			  
+		</button>
+	</a>
+</div>
+-->
+
 {#if popupOpen}
 	<!--deleteUser popup-->
 	<div
