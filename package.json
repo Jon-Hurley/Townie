@@ -8,5 +8,8 @@
 		"backend": "python ./backend/manage.py runserver"
 	},
 	"type": "module",
-	"dependencies": {}
+	"dependencies": {
+		"@beyonk/svelte-mapbox": "^9.0.5",
+		"@turf/turf": "^6.5.0"
+	}
 }
