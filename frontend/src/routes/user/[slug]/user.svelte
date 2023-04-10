@@ -79,6 +79,20 @@
     </div>
 {/if}
 
+<div class={title}>
+    Level {user.level}
+    <meter
+        id = "xp-meter"
+        class="w-full"
+        min="0"
+        max={user.level * 100}
+        value={user.xp}
+    >
+</div>
+<hr class={hr}>
+<div class="px-2 py-4 uppercase">
+    {user.rank}
+</div>
 
 <div class={title}>
     Rank
