@@ -1,9 +1,11 @@
 <script>
 	import { onDestroy, onMount } from 'svelte';
+	import { Game } from '../../../classes/Game';
 	import { Location } from '../../../classes/Location';
     import { Map } from '../../../classes/Map';
     import { buttonStyle, redStyle } from '../../../css';
 	import Timer from './timer.svelte';
+    import { goto } from '$app/navigation';
 
 
     onMount(() => {
@@ -19,10 +21,17 @@
     const _skipLocation = async () => {
         popupOpen = false;
         //const skipped = await skipLocation();
-        console.log("This works!");
+        if (Game.player.destinationIndex === Game.destinations.length - 1) {
+            
+        }
+        Game.player.destinationIndex++;
+        Map.generateDestinationCircle();
+        Map.setZoomAndCenter();
+        //console.log("This works!");
     }
 
     let popupOpen = false;
+    let tempText = Game.player.destinationIndex === Game.destinations.length - 1 ? "WARNING: This is the final destination! If you skip this, you will be sent to the game summary page!" : "Do you want to skip this destination? If you do, you will not gain points for this destination."
     
     const checkboxes = [
         {
@@ -56,7 +65,7 @@
 </div>
 
 {#if popupOpen}
-	<!--deleteUser popup-->
+	<!--skipLocation popup-->
 	<div
 		class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full"
 		id="skipLocation-popup"
@@ -82,7 +91,7 @@
 				<h3 class="text-lg leading-6 font-medium text-gray-900">Are you sure?</h3>
 				<div class="px-7 py-3">
 					<p class="text-sm text-gray-500">
-						Do you want to skip this destination? If you do, you will not gain points for this destination.
+						{tempText}
 					</p>
 				</div>
 

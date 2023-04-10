@@ -90,7 +90,7 @@ export const localLogin = async() => {
     if (!username || !password) {
         return false;
     }
-    const errorMessage = await login(username, password, false, slient=true);
+    const errorMessage = await login(username, password, false, true);
     if (errorMessage) {
         localStorage.removeItem('username');
         localStorage.removeItem('password');
