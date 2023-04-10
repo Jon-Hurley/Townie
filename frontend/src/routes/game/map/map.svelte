@@ -22,7 +22,7 @@
         popupOpen = false;
         //const skipped = await skipLocation();
         if (Game.player.destinationIndex === Game.destinations.length - 1) {
-            
+
         }
         Game.player.destinationIndex++;
         Map.generateDestinationCircle();
@@ -57,7 +57,7 @@
 		}}
 		name="skipLocationButton"
 		id="skipLocation-btn"
-		class="{buttonStyle} {redStyle} flex"
+		class="{buttonStyle} {redStyle} flex z-50"
 	>
 		<div class="mr-2">Skip Location</div>
 	</button>
@@ -67,7 +67,7 @@
 {#if popupOpen}
 	<!--skipLocation popup-->
 	<div
-		class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full"
+		class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
 		id="skipLocation-popup"
 	>
 		<div class="relative top-60 mx-auto p-3 border w-80 shadow-lg rounded-md bg-white">
@@ -113,7 +113,7 @@
 							on:click={_skipLocation}
 							class="px-4 py-2 bg-red-600 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-400"
 						>
-							SKIP LOCATION
+							SKIP
 						</button>
 					</div>
 				</div>
