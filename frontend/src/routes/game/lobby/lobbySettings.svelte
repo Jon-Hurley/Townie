@@ -146,10 +146,10 @@
 				value={themeValue}
 				class="w-40"
 			>
-				<option value="tourist_attraction">Tourism</option>
-				<option value="restaurant">Food</option>
-				<option value="store">Shopping</option>
-				<option value="museum">Museum</option>
+				<option value={10000}>Tourism</option>
+				<option value={13000}>Food</option>
+				<option value={17000}>Shopping</option>
+				<option value={10027}>Museum</option>
 				<option value="random">Random</option>
 			</select>
 		</div>
@@ -273,8 +273,7 @@
 				value={form.budget}
 				class="w-40"
 			>
-				<option value={0}>Free</option>
-				<option value={1}>10 dollars</option>
+				<option value={1}>Most affordable</option>
 				<option value={2}>25 dollars</option>
 				<option value={3}>50 dollars</option>
 				<option value={4}>Splurge!</option>
@@ -297,7 +296,7 @@
 						}
 						const budget1 = Math.abs(v);
 						if (budget1 == 0) {
-							form.budget = 0;
+							form.budget = 1;
 						} else if (budget1 <= 10) {
 							form.budget = 1;
 						} else if (budget1 <= 25) {

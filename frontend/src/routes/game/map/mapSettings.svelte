@@ -14,8 +14,8 @@
 	const _updateSettings = () => {
 		Game.updateTime(form);
 	};
-	let curr_game = "40.423538,-86.921738"
-	let url = "https://www.google.com/maps/dir/?api=1&destination=" + curr_game;
+	let curr_dest = "40.423838,-86.921938"
+	let url = "https://www.google.com/maps/dir/?api=1&dir_action=navigate&destination=" + curr_dest;
 </script>
 
 <button type="button" class="{buttonStyle} {grayStyle} w-full" on:click={() => (isOpen = true)}>
