@@ -1,6 +1,6 @@
 import arango_con
 import time
-from . import scraper
+from . import scraper, scraperfsq
 
 def createGame(lon, lat):
     return arango_con.db.aql.execute(
@@ -129,7 +129,7 @@ def startGame(gameKey, settings):
     # settings = lobbyRes['settings']
 
     # TRIGGER WEB-SCRAPER: (get destinations & auto add to the DB)
-    trueCompletionTime = scraper.generate(settings, gameKey)
+    trueCompletionTime = scraperfsq.generate(settings, gameKey)
     # trueCompletionTime = 100
 
     return arango_con.db.aql.execute(
