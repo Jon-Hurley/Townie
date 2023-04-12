@@ -14,6 +14,17 @@
 	const _updateSettings = () => {
 		Game.updateTime(form);
 	};
+	let curr_lat;
+	let curr_lng;
+	let curr_dest;
+	let url;
+	const _getNavigation = () => {
+		curr_lat = Game.nextDestination.lat;
+		curr_lng = Game.nextDestination.lon;
+		curr_dest = curr_lat + "," + curr_lng;
+		url = "https://www.google.com/maps/dir/?api=1&dir_action=navigate&destination=" + curr_dest;
+		window.open(url, "_blank");
+	}
 </script>
 
 <button type="button" class="{buttonStyle} {grayStyle} w-full" on:click={() => (isOpen = true)}>
@@ -114,6 +125,22 @@
 				}}
 			>
 				Cancel
+			</button>
+		</div>
+		<div>
+			<button
+				class="{buttonStyle} {blueStyle} w-full mr-2"
+				on:click={() => {
+					pushPopup(
+						2, 'Are you sure you want to navigate?',
+						() => {
+							isOpen = false;
+							_getNavigation();
+						}
+					)
+				}
+			}>
+			Get navigation
 			</button>
 		</div>
 	</div>
