@@ -161,6 +161,10 @@ export class Game {
                 Game.ws.onopen = (e) => res(e);
             });
 
+            if (!Game.ws) {
+                throw { message: "Unable to create websocket. Try again." }
+            }
+
             const res = await Game.getGame(gameKey);
             if (!res?.player) {
                 throw { message: "Unable to connect to game. Your session token may be expired." }

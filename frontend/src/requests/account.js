@@ -266,3 +266,14 @@ export const deleteUser = async() => {
         return false;
     }
 }
+
+export const spendPoints = async(pointsSpent) => {
+    const res = axios.post(
+        PUBLIC_BACKEND_API + 'user/spend-points/',
+        {
+            token: get(userStore).token,
+            pointsSpent,
+            key: get(userStore).key
+        }
+    )
+}

@@ -2,6 +2,7 @@ import { writable, get } from 'svelte/store';
 import { Location } from './Location';
 import { Game } from './Game';
 import * as turf from '@turf/turf';
+import { shrinkFactor, showDestination } from "../routes/app/game/map/map.svelte";
 
 export class Map {
     static map = undefined;
@@ -103,6 +104,7 @@ export class Map {
         ]
         
         const nextDest = Game.nextDestination;
+        console.log(nextDest);
         if (nextDest) {
             features.push(turf.point([ nextDest.lon, nextDest.lat ]));
         }

@@ -247,3 +247,25 @@ def completePasswordReset(request):
             return util.returnError("Invalid user key.", 500)
 
     return JsonResponse({})
+
+@csrf_exempt
+def updatePoints(request):
+    data = json.loads(request.body)
+    key = data['key']
+    points = data['points']
+
+    user, newToken = util.getUserFromToken(data['token'])
+    if user is None:
+        return util.returnError('Invalid token.', 401)
+
+    try:
+        docs = queries.updatePoints(key, points).batch()
+    except Exception as e:
+        return util.returnError(e.error_message, e.http_code)
+
+    if len(docs) == 0:
+        return util.returnError('Invalid key.', 401)
+
+    return JsonResponse({
+        "token": newToken
+    })
