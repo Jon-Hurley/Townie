@@ -1,7 +1,13 @@
 <script>
 	import { blueStyle, buttonStyle, grayStyle, hr, largeTitle } from '../../../../css';
 	import { Game } from '../../../../classes/Game';
+	import { Map } from '../../../../classes/Map';
+	import { Location } from '../../../../classes/Location'; 
 	import { pushPopup } from '../../../../stores';
+	import { get } from 'svelte/store';
+	import * as turf from '@turf/turf';
+
+	const settingsStore = Map.settings;
 
     let gameStore = Game.store;
 	let form = {
@@ -14,15 +20,48 @@
 	const _updateSettings = () => {
 		Game.updateTime(form);
 	};
-	let curr_lat;
-	let curr_lng;
-	let curr_dest;
+	// let currLat;
+	// let currLng;
+	// let destLat;
+	// let destLng;
+	let exportNav;
 	let url;
+	// let from;
+	// let to;
+	const options = {units: 'degrees'};
 	const _getNavigation = () => {
-		curr_lat = Game.nextDestination.lat;
-		curr_lng = Game.nextDestination.lon;
-		curr_dest = curr_lat + "," + curr_lng;
-		url = "https://www.google.com/maps/dir/?api=1&dir_action=navigate&destination=" + curr_dest;
+		console.log("Getting navigation");
+		const currLat = Location.lat;
+		const currLng = Location.lng;
+		console.log(currLat);
+		console.log(currLng);
+		const destLat = Game.nextDestination.lat;
+		const destLng = Game.nextDestination.lon;
+		console.log(destLat);
+		console.log(destLng);
+		const from = turf.point([currLng, currLat]);
+		console.log(from);
+		const to = turf.point([destLng, destLat]);
+		const distance = turf.distance(from, to, options);
+		console.log("Distance: ");
+		console.log(distance);
+		const addLat = Math.random();
+
+		const randPos = (Math.random() * distance / 2.0);
+		let finalLat;
+		if (addLat > 0.5) {
+			console.log("Adding to lat");
+			finalLat = currLat + randPos;
+			console.log(finalLat);
+		} else {
+			console.log("Subtracting from lat");
+			finalLat = currLat - randPos;
+			console.log(finalLat);
+		}
+		
+
+		exportNav = finalLat + "," + destLng;
+		url = "https://www.google.com/maps/dir/?api=1&dir_action=navigate&destination=" + exportNav;
 		window.open(url, "_blank");
 	}
 </script>
@@ -132,7 +171,7 @@
 				class="{buttonStyle} {blueStyle} w-full mr-2"
 				on:click={() => {
 					pushPopup(
-						2, 'Are you sure you want to navigate?',
+						2, 'Are you sure you want to navigate? It will only be the rough area.',
 						() => {
 							isOpen = false;
 							_getNavigation();
