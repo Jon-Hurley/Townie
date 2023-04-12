@@ -49,19 +49,23 @@ export class Game {
             const achievedDest = Game.nextDestination;
             const displayTime = Math.round(10 * newTime / (1000 * 60)) / 10;
             const displayDist = Math.round(10 * newDist / 1000) / 10;
-           
             pushPopup(
-                1,
+                1, 
+                (!Game.game.settings.casual?
                 `You reached destination ${achievedDest.name}!
                 You took ${displayTime} minutes and traveled ${displayDist} meters.
                 You received ${potentialPoints}/${points} points.\n
-                Your total time has been paused and will resume once you leave the destination.`,
+                Your total time has been paused and will resume once you leave the destination.`:
+                `You reached destination ${achievedDest.name}!
+                You took ${displayTime} minutes and traveled ${displayDist} meters.
+                Your total time has been paused and will resume once you leave the destination.`),
                 () => {
                     Game.player.destinationIndex++;
                     Map.generateDestinationCircle();
                     Map.setZoomAndCenter();
                 }
             );
+            
             if (achievedDest.index === Game.destinations.length - 1) {
                 const gameKey = Game.game._key;
                 Game.leave();

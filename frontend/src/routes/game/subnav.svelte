@@ -3,8 +3,13 @@
 	import Leaderboard from './leaderboard.svelte';
 	import MapSettings from './map/mapSettings.svelte';
 	import LobbySettings from './lobby/lobbySettings.svelte';
+    import Locations from './locations.svelte';
+    import { Game } from '../../classes/Game';
+    
 
-    export let startGame, leaveGame, gamePage;    
+    export let startGame, leaveGame, gamePage;  
+    let gameStore = Game.store;
+
 </script>
 
 {#if gamePage !== 'join'}
@@ -17,7 +22,11 @@
         "
     >
         {#if gamePage === 'map'}
-            <Leaderboard/>
+            {#if $gameStore.game.settings.casual}
+                <Locations/>
+            {:else}
+                <Leaderboard/>
+            {/if}
         {/if}
 
         {#if gamePage === 'lobby'}

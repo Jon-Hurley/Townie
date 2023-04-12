@@ -318,8 +318,12 @@
                 border-2 border-gray-200 rounded
             "
 		>
-			<div class="font-semibold">Casual Mode</div>
-			<input type="checkbox" class="w-4 h-4 border border-gray-300 rounded focus:ring-3 focus:ring-indigo-600 accent-indigo-600"/>
+		<div class="font-semibold">Casual Mode</div>
+			<input 
+				type="checkbox" 
+				value = "form.casual"
+				bind:checked={form.casual}
+				class="w-4 h-4 border border-gray-300 rounded focus:ring-3 focus:ring-indigo-600 accent-indigo-600"/>
 		</div>
 
 		<hr class="{hr} my-4" />
