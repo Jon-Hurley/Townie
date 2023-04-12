@@ -14,8 +14,17 @@
 	const _updateSettings = () => {
 		Game.updateTime(form);
 	};
-	let curr_dest = "40.423838,-86.921938"
+
+	let curr_lat = Game.nextDestination.lat;
+	let curr_lng = Game.nextDestination.lon;
+	let curr_dest = curr_lat + "," + curr_lng;
 	let url = "https://www.google.com/maps/dir/?api=1&dir_action=navigate&destination=" + curr_dest;
+	// const _getNavigation = () => {
+		
+	// 	window.open(url, "_blank");
+	// }
+	
+	console.log(curr_dest)
 </script>
 
 <button type="button" class="{buttonStyle} {grayStyle} w-full" on:click={() => (isOpen = true)}>

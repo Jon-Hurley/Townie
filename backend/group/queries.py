@@ -612,10 +612,10 @@ def updateTrueTime(gameKey, settings):
     new_true_time = 0
     if new_desired_time < game1[0]['settings']['desiredCompletionTime']:
         print("decrease")
-        new_true_time = scraper.truncateGame(settings, gameKey)
+        new_true_time = scraperfsq.truncateGame(settings, gameKey)
     elif new_desired_time > game1[0]['settings']['desiredCompletionTime']:
         print("increase")
-        new_true_time = scraper.extendGame(settings, gameKey)
+        new_true_time = scraperfsq.extendGame(settings, gameKey)
     game1[0]['settings'] = settings
     game1[0]['trueCompletionTime'] = new_true_time
     return arango_con.gameCollection.update_match(dict(_key=game1[0]['_key']), game1[0])
