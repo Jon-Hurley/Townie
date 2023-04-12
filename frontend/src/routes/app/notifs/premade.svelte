@@ -19,7 +19,7 @@
     let display = {};
 
     const theme_options = ["Tourism", "Food", "Shopping", "Museum"];
-    const budget_options = ["Free", "10", "25", "50", "Splurge!"];
+    const budget_options = ["Most Affordable", "10", "25", "50", "Splurge!"];
 
     onMount(() => {
         if (!playable || currentTime - prevTime > 604800) {
@@ -27,7 +27,7 @@
             let desiredCompletionTime = Math.floor(Math.random() * 5);
             let theme = Math.floor(Math.random() * 4)
             let radius = Math.floor(Math.random() * 7);
-            let budget = Math.floor(Math.random() * 5);
+            let budget = Math.floor(Math.random() * 4) + 1;
             
             if (transportation == 0) {
                 form['drivingAllowed'] = true;

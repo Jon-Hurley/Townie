@@ -419,19 +419,21 @@ def createDestination(lat, lng, name, theme):
         pass
 
 
-def getNearbyDestinations(lat, lng, radius):
+def getNearbyDestinations(lat, lng, radius, theme):
     return arango_con.db.aql.execute(
         """
         FOR x IN Destinations
             FILTER GEO_DISTANCE([@lat, @lng], [x.latitude, x.longitude]) <= @radius
             FILTER GEO_DISTANCE([@lat, @lng], [x.latitude, x.longitude]) >= 100
+            FILTER x.theme == @theme
             LIMIT 50
             RETURN x
         """,
         bind_vars={
             'lat': lat,
             'lng': lng,
-            'radius': radius
+            'radius': radius,
+            'theme': theme
         }
     )
 

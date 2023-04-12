@@ -112,8 +112,7 @@ def generate(settings, gameKey):
             return 0
         
     for i in range(len(list)):
-        print(list[i]['name'])
-        
+        print(list[i]['name']) 
     locationList = []
     list_copy = []
     origin = dict(lat=settings['lat'], lng=settings['lon'])
