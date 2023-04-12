@@ -28,7 +28,7 @@
 </script>
 
 <button type="button" class="{buttonStyle} {grayStyle} w-full" on:click={() => (isOpen = true)}>
-	Settings
+	Options
 </button>
 
 <div
@@ -54,7 +54,7 @@
             w-full
         "
 	>
-		<div class={largeTitle}>Settings</div>
+		<div class={largeTitle}>Options</div>
 		<hr class="{hr} my-4" />
 
 		<div
