@@ -19,7 +19,8 @@ def createGame(lon, lat):
                 desiredCompletionTime: 180,
                 budget: 1,
                 lon: @lon,
-                lat: @lat
+                lat: @lat,
+                casual: False
             }
         }
         INTO Games
@@ -35,6 +36,13 @@ def createGame(lon, lat):
 def addPlayer(gameKey, userKey, connectionId, lat, lon):
     return arango_con.db.aql.execute(
         """
+            FOR user IN User
+                FILTER user._key == @userKey
+                UPDATE user._key WITH {
+                    inGame: @gameKey
+                } 
+                IN User
+
             LET oldConnectionIds = (
                 FOR v, e
                 IN 1..1
@@ -99,6 +107,7 @@ def leaveGame(connectionId):
                         UPDATE u
                         WITH {
                             points: p.points - p.addedPoints
+                            inGame: null
                         }
                         IN User
                         RETURN NEW

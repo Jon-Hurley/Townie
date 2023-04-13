@@ -104,6 +104,17 @@ const processPending = (pendingRes) => {
     return pendingList;
 };
 
+const processPendingGame = (pendingRes) => {  
+    const pendingList = pendingRes?.data?.pending || [];
+    console.log({pendingList})
+    pendingList.forEach(
+        x => {
+            x.title = 'Your friend is in a game'
+        }
+    );
+    return pendingList;
+};
+
 export const loadNotifications = async() => {
     try {
         const [ pendingRes ] = await Promise.all([
@@ -119,6 +130,33 @@ export const loadNotifications = async() => {
 
         const notifs = [
             ...processPending(pendingRes)
+        ];
+        notifs.sort((a, b) => b.timestamp - a.timestamp);
+        
+        return notifs;
+    } catch (err) {
+        const err_message = err?.response?.data?.errorMessage
+                            || "Unable to remove or reject friend. Please try again.";
+        pushPopup(0, err_message);
+        return [];
+    }
+};
+
+export const loadFriendsInGameNotifs = async() => {
+    try {
+        const [ pendingRes ] = await Promise.all([
+            axios.post(
+                PUBLIC_BACKEND_API + 'user/friends-game/',
+                {
+                    key: get(userStore).key,
+                    token: get(userStore).token
+                }
+            )
+        ]);
+        updateAccessToken(pendingRes);
+
+        const notifs = [
+            ...processPendingGame(pendingRes)
         ];
         notifs.sort((a, b) => b.timestamp - a.timestamp);
         

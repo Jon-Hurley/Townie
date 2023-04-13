@@ -23,6 +23,23 @@ def getFriends(request):
     })
 
 @csrf_exempt
+def getFriendsInGames(request):
+    body = json.loads(request.body)
+
+    user, newToken = util.getUserFromToken(body['token'])
+    if user is None:
+        return util.returnError('Invalid token.', 401)
+    
+    res = queries.getFriendsInGame(
+        body['key']
+    ).batch()
+
+    return JsonResponse({
+        'friends': list(res),
+        'token': newToken
+    })
+
+@csrf_exempt
 def getPendingFriends(request):
     body = json.loads(request.body)
 

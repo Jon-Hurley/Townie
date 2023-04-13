@@ -29,9 +29,24 @@
         }
     }
 
+    const _closeJoin = async(i) => {
+        if (success) {
+            notifs.splice(i, 1);
+            notifs = notifs;
+        }
+    }
+
+    const _joinGame = async(lobbyInput) => {
+        loading = true;
+        const res = await Game.join(lobbyInput);
+        console.log("Err:", res);
+        loading = false;
+    }
+
     onMount(async() => {
         if (!$userStore) return;
         notifs = await loadNotifications();
+        notifs.push(await loadFriendsInGameNotifs());
         loading = false;
     });
 </script>
@@ -56,6 +71,8 @@
                         n={n}
                         acceptFriend={() => _acceptFriend(i, n.key)}
                         rejectFriend={() => _rejectFriend(i, n.key)}
+                        closeJoin={() => _closeJoin(i)}
+                        joinGame={() => _joinGame(lobbyInput)}
                     />
                 {/each}
             {:else}

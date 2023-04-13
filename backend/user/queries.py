@@ -15,7 +15,8 @@ def createUser(username, passwordHash, phoneNumber):
             'weeklyGamePlayed': False,
             'nextAvailableGame': 0,
             'hidingState': False,
-            'isPremium': False
+            'isPremium': False,
+            'inGame' : 'null',
         },
         return_new=True
     )
@@ -388,6 +389,21 @@ def getFriendsList(key):
                 username: v.username,
                 isPremium: v.isPremium
             }
+        """,
+        bind_vars={'key': key}
+    )
+
+def getFriendsInGame(key):
+    return arango_con.db.aql.execute(
+        """
+        FOR v, e IN 1..1 ANY CONCAT("User/", @key) GRAPH Friendships
+            FILTER e.status
+            FILTER v.inGame != 'null'
+            RETURN {
+                game: v.inGame,
+                username: v.username
+            }
+            
         """,
         bind_vars={'key': key}
     )
