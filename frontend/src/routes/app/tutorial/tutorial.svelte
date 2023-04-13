@@ -54,8 +54,7 @@
 
 {#each [images[currentSlideItem]] as item (currentSlideItem)}
   <img
-    in:slide={{ duration: 1000, easing: elasticInOut }}
-    out:fade
+    in:slide
     src={item.src}
     alt={item.description}
     style="max-height: calc(100vh - 120px - 4rem); margin: auto;"
