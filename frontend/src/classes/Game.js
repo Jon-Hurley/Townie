@@ -220,7 +220,7 @@ export class Game {
             return true;
         } catch (err) {
             pushPopup(
-                0, "Unable to start game. Please try again.",
+                0, "Unable to start game. You may have to change your settings.",
                 () => Game.resumePolling()
             );
             return false;

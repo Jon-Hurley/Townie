@@ -106,10 +106,8 @@ def generate(settings, gameKey):
                 break
         if new_name == True:
             list.append(new_loc)
-        
-        if len(list) ==0:
-            print("No destinations were found")
-            return 0
+
+    assert(len(list) > 0)
         
     for i in range(len(list)):
         print(list[i]['name']) 

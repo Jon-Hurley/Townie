@@ -33,33 +33,23 @@
 		console.log("Getting navigation");
 		const currLat = Location.lat;
 		const currLng = Location.lng;
-		console.log(currLat);
-		console.log(currLng);
 		const destLat = Game.nextDestination.lat;
 		const destLng = Game.nextDestination.lon;
-		console.log(destLat);
-		console.log(destLng);
 		const from = turf.point([currLng, currLat]);
-		console.log(from);
 		const to = turf.point([destLng, destLat]);
 		const distance = turf.distance(from, to, options);
-		console.log("Distance: ");
-		console.log(distance);
 		const addLat = Math.random();
 
 		const randPos = (Math.random() * distance / 2.0);
 		let finalLat;
 		if (addLat > 0.5) {
-			console.log("Adding to lat");
 			finalLat = currLat + randPos;
 			console.log(finalLat);
 		} else {
-			console.log("Subtracting from lat");
 			finalLat = currLat - randPos;
 			console.log(finalLat);
 		}
 		
-
 		exportNav = finalLat + "," + destLng;
 		url = "https://www.google.com/maps/dir/?api=1&dir_action=navigate&destination=" + exportNav;
 		window.open(url, "_blank");
