@@ -50,21 +50,24 @@ export class Game {
             const displayTime = Math.round(10 * oldTime / (1000 * 60)) / 10;
             const displayDist = Math.round(oldDist / 100) / 10;
            
-            pushPopup(
-                1,
-                `You reached destination: ${achievedDest.name}!\n
-                You took ${displayTime} minutes and traveled ${displayDist} km.\n
-                You received ${potentialPoints}/${points} points.\n
-                Your total time has been paused and will resume once you leave the destination.`,
-                () => {
+            pushPopup({
+                status: 1,
+                message: `
+                    You reached destination: ${achievedDest.name}!\n
+                    You took ${displayTime} minutes and traveled ${displayDist} km.\n
+                    You received ${potentialPoints}/${points} points.\n
+                    Your total time has been paused and will resume once you leave the destination.
+                `,
+                onOk: () => {
                     Game.player.destinationIndex++;
                 }
-            );
+            });
             if (achievedDest.index === Game.destinations.length - 1) {
-                pushPopup(
-                    1, "You have reached the final destination. You won the game!",
-                    () => Game.leave()
-                );
+                pushPopup({
+                    status: 1,
+                    message: "You have reached the final destination. You won the game!",
+                    onOk: () => Game.leave()
+                });
             }
         }
     }
@@ -91,12 +94,18 @@ export class Game {
                 }
             } catch (e) {
                 console.log("WS ERROR:", e);
-                pushPopup(0, "Connections error. Please try again later.");
+                pushPopup({
+                    status: 0,
+                    message: "Connections error. Please try again later."
+                });
             }
         };
         Game.ws.onerror = (e) => {
             console.log("WS ERROR:", e);
-            pushPopup(0, "Connections error. Please try again later.");
+            pushPopup({
+                status: 0,
+                message: "Connections error. Please try again later."
+            });
         }
         Game.ws.onclose = () => {
             Game.ws = undefined;
@@ -171,9 +180,10 @@ export class Game {
             Game.ws?.close();
             Game.ws = undefined;
             Game.store.set(null);
-            pushPopup(0,
-                err?.message || "Unable to connect to lobby. Please try again."
-            );
+            pushPopup({
+                status: 0,
+                message: err?.message || "Unable to connect to lobby. Please try again."
+            });
         }
     }
 
@@ -217,10 +227,11 @@ export class Game {
             Game.resumePolling();
             return true;
         } catch (err) {
-            pushPopup(
-                0, "Unable to start game. Please try again.",
-                () => Game.resumePolling()
-            );
+            pushPopup({
+                status: 0,
+                message: "Unable to start game. Please try again.",
+                onOk: () => Game.resumePolling()
+            });
             return false;
         }
     }
@@ -268,10 +279,11 @@ export class Game {
             Game.resumePolling();
             return true;
         } catch (err) {
-            pushPopup(
-                0, "Unable to update settings. Please try again.",
-                () => Game.resumePolling()
-            );
+            pushPopup({
+                status: 0,
+                message: "Unable to update settings. Please try again.",
+                onOk: () => Game.resumePolling()
+            });
             return false;
         }
     }

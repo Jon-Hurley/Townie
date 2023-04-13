@@ -16,13 +16,15 @@
 		if (urlParams.has('success')) {
 			const wasSuccessful = urlParams.get('success') === 'true';
 			if (wasSuccessful) {
-				pushPopup(
-					1, 'You have successfully activated premium. You can now access all premium features.'
-				)
+				pushPopup({
+					status: 1,
+					message: 'You have successfully activated premium. You can now access all premium features.'
+				})
 			} else {
-				pushPopup(
-					0, 'Failed to activate premium. Please contact customer support at (123)456-7890.'
-				)
+				pushPopup({
+					status: 0,
+					message: 'Failed to activate premium. Please contact customer support at (123)456-7890.'
+				})
 			}
 		}
 	})
@@ -62,7 +64,7 @@
 <div class="flex justify-center mt-2 gap-2">
 	<a href='/app/game-log'>
 		<button class="{buttonStyle} {blueStyle}">
-			Go to Game Logs  
+			Game Logs  
 		</button>
 	</a>
 	<Premium simplified={false}/>

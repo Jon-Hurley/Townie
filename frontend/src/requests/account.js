@@ -31,7 +31,7 @@ export const login = async(username, password, remember, silent) => {
     } catch (err) {
         const err_message = err?.response?.data?.errorMessage
                             || 'Connection Refused. Failed to update user. Please try again.';
-        if (!silent) pushPopup(0, err_message);
+        if (!silent) pushPopup({ status: 0, message: err_message });
         return false;
     }
 };
@@ -50,7 +50,7 @@ export const verifyLogin = async(verifyToken, otp) => {
     } catch (err) {
         const err_message = err?.response?.data?.errorMessage
                             || 'Connection Refused. Failed to login user. Please try again.';
-        pushPopup(0, err_message);
+        pushPopup({status: 0, message: err_message});
         return false;
     }
 };
@@ -122,7 +122,7 @@ export const signup = async (phone, username) => {
     } catch (err) {
         const err_message = err?.response?.data?.errorMessage
                             || 'Connection Refused. Failed to signup user. Please try again.';
-        pushPopup(0, err_message);
+        pushPopup({status: 0, message: err_message});
         return false;
     }
 };
@@ -139,15 +139,16 @@ export const verifySignup = async (username, password, phone, otp) => {
             }
         );
         userStore.set(res.data);
-        pushPopup(
-            1, 'You have successfully created your account!',
-            () => goto('/app/tutorial')
-        );
+        pushPopup({
+            status: 1,
+            message: 'You have successfully created your account!',
+            onOk: () => goto('/app/tutorial')
+        });
         return true;
     } catch (err) {
         const err_message = err?.response?.data?.errorMessage
                             || 'Connection Refused. Failed to update user. Please try again.';
-        pushPopup(0, err_message);
+        pushPopup({status: 0, message: err_message});
         return false;
     }
 }
@@ -166,15 +167,16 @@ export const updateAccount = async (password, newUsername, newPhone, newLogin2FA
             }
         );
         userStore.set(res.data);
-        pushPopup(
-            1, "Account Updated Successfully!",
-            () => goto('/app/account')
-        );
+        pushPopup({
+            status: 1,
+            message: "Account Updated Successfully!",
+            onOk: () => goto('/app/account')
+        });
         return true;
     } catch (err) {
         const err_message = err?.response?.data?.errorMessage
                             || 'Connection Refused. Failed to update user. Please try again.'
-        pushPopup(0, err_message);
+        pushPopup({status: 0, message: err_message});
         return false;
     }
 };
@@ -229,15 +231,16 @@ export const completePasswordReset = async (phone, otp, newPassword) => {
             }
         );
         userStore.set(res.data);
-        pushPopup(
-            1, "Password Reset Successfully!",
-            () => goto('/login')
-        );
+        pushPopup({
+            status: 1,
+            message: "Password Reset Successfully!",
+            onOk: () => goto('/login')
+        });
         return true;
     } catch (err) {
         const err_message = err?.response?.data?.errorMessage
                             || 'Connection Refused. Failed to update user. Please try again.'
-        pushPopup(0, err_message);
+        pushPopup({status: 0, message: err_message});
         return false;
     }
 };
@@ -254,15 +257,16 @@ export const deleteUser = async() => {
             body
         );
         userStore.set(null);
-        pushPopup(
-            1, 'Account Deleted Successfully!',
-            () => logout()
-        );
+        pushPopup({
+            status: 1,
+            message: 'Account Deleted Successfully!',
+            onOk: () => logout()
+        });
         return true;
     } catch (err) {
         const err_message = err?.response?.data?.errorMessage
                             || 'Connection Refused. Failed to delete user. Please try again.';
-        pushPopup(0, err_message);
+        pushPopup({status: 0, message: err_message});
         return false;
     }
 }
@@ -284,7 +288,7 @@ export const initiatePremiumSession = async() => {
         console.log(err)
         const err_message = err?.response?.data?.errorMessage
                             || "Unable to process payments at this time. Please try again later.";
-        pushPopup(0, err_message);
+        pushPopup({status: 0, message: err_message});
     }
 }
 
@@ -301,6 +305,6 @@ export const cancelPremium = async() => {
         console.log(err)
         const err_message = err?.response?.data?.errorMessage
                             || "Unable to process cancelation at this time. Please contact customer support at (123)456-7890.";
-        pushPopup(0, err_message);
+        pushPopup({status: 0, message: err_message});
     }
 }

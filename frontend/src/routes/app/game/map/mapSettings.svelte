@@ -96,13 +96,14 @@
 			<button
 				class="{buttonStyle} {blueStyle} w-full mr-2"
 				on:click={() => {
-					pushPopup(
-						2, 'Are your sure you want to save these settings?',
-						() => {
+					pushPopup({
+						status: 2,
+						message: 'Are your sure you want to save these settings?',
+						onOk: () => {
 							isOpen = false;
 							_updateSettings();
 						}
-					);
+					});
 				}}
 			>
 				Save

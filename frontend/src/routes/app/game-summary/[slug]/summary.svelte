@@ -57,7 +57,10 @@
 			userRating > 5 ||
 			userRating < 0
 		) {
-			pushPopup(0, 'Please select a valid rating to submit.');
+			pushPopup({
+				status: 0,
+				message: 'Please select a valid rating to submit.'
+			});
 			return;
 		}
 		userRating = parseInt(userRating);
@@ -65,17 +68,12 @@
 		let newRating = (ratings.rating * ratings.numRatings + userRating) / (ratings.numRatings + 1);
 		newRating = Math.round(newRating * 100) / 100;
 		let newNumRatings = ratings.numRatings + 1;
-		pushPopup(
-			1,
-			'Rating submitted: ' +
-				userRating +
-				'(new rating: ' +
-				newRating +
-				')' +
-				'(new num ratings: ' +
-				newNumRatings +
-				')'
-		);
+		pushPopup({
+			status: 1,
+			message: 'Rating submitted: ' + userRating +
+				'(new rating: ' + newRating + ')' +
+				'(new num ratings: ' + newNumRatings + ')'
+		});
 		await submitRating(summary.game.settings.theme, newRating, newNumRatings);
 		ratings.rating = newRating;
 		ratings.numRatings = newNumRatings;
@@ -173,7 +171,10 @@
 			on:click={() => {
 				if (media.name === 'Copy Link') {
 					navigator.clipboard.writeText('' + window.location.href);
-					pushPopup(1, 'Link copied to clipboard!')
+					pushPopup({
+						status: 1,
+						message: 'Link copied to clipboard!'
+					})
 				} else {
 					window.open(media.link, '_blank');
 				}

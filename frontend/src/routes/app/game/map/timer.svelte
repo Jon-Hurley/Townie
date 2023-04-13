@@ -18,7 +18,10 @@
 	$: {
 		if (prev !== paused) {
 			if (prev === true && paused === false) {
-				pushPopup(0, 'You have left the current destination. Your total time will resume counting.');
+				pushPopup({
+					status: 0,
+					message: 'You have left the current destination. Your total time will resume counting.'
+				});
 			}
 			prev = paused;
 		}

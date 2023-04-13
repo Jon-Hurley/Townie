@@ -20,7 +20,7 @@ export const createGame = async() => {
     } catch (err) {
         const err_message = err?.response?.data?.errorMessage
                             || "Unable to create game. Please try again.";
-        pushPopup(0, err_message);
+        pushPopup({status: 0, message: err_message});
         return false;
     }
 };

@@ -13,18 +13,27 @@
 
 	const confirm = async () => {
 		if (!password?.length || !username?.length || !phone?.length) {
-			pushPopup(0, 'Missing inputs. Please try again.');
+			pushPopup({
+				status: 0,
+				message: 'Missing inputs. Please try again.'
+			});
 			return;
 		}
 
 		if (password !== confirmPassword) {
-			pushPopup(0, 'Your password inputs do not match.');
+			pushPopup({
+				status: 0,
+				message: 'Your password inputs do not match.'
+			});
 			return;
 		}
 
 		const formattedPhone = '+1' + phone.replace(/\D/g, '');
 		if (formattedPhone.toString().length !== 12) {
-			pushPopup(0, 'Please enter a valid phone number.');
+			pushPopup({
+				status: 0,
+				message: 'Please enter a valid phone number.'
+			});
 			return;
 		}
 

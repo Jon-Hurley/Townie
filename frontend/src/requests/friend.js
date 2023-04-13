@@ -20,7 +20,7 @@ export const getFriends = async() => {
     } catch (err) {
         const err_message = err?.response?.data?.errorMessage
                             || "Unable to remove or reject friend. Please try again.";
-        pushPopup(0, err_message);
+        pushPopup({status: 0, message: err_message});
         return [];
     }
 };
@@ -41,7 +41,7 @@ export const sendFriendRequest = async(toKey) => {
     } catch (err) {
         const err_message = err?.response?.data?.errorMessage
                             || "Unable to send friend request. Please try again.";
-        pushPopup(0, err_message);
+        pushPopup({status: 0, message: err_message});
         return false;
     }
 };
@@ -61,7 +61,7 @@ export const acceptFriend = async(friendshipKey) => {
         console.log(err);
         const err_message = err?.response?.data?.errorMessage
                             || "Unable to accept friend. Please try again.";
-        pushPopup(0, err_message);
+        pushPopup({status: 0, message: err_message});
         return false;
     }
 };
@@ -87,7 +87,7 @@ export const rejectFriend = async(friendshipKey) => {
         console.log(err);
         const err_message = err?.response?.data?.errorMessage
                             || "Unable to remove or reject friend. Please try again.";
-        pushPopup(0, err_message);
+        pushPopup({status: 0, message: err_message});
         return false;
     }
 };
@@ -126,7 +126,7 @@ export const loadNotifications = async() => {
     } catch (err) {
         const err_message = err?.response?.data?.errorMessage
                             || "Unable to remove or reject friend. Please try again.";
-        pushPopup(0, err_message);
+        pushPopup({status: 0, message: err_message});
         return [];
     }
 };

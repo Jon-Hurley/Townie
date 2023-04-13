@@ -1,17 +1,24 @@
 <script>
-	import { buttonStyle, grayStyle, greenStyle, redStyle } from '../css';
-	import { popPopup } from '../stores';
+	import { amberStyle, buttonStyle, grayStyle, greenStyle, redStyle } from '../css';
 
-	export let status, message, onOk, onCancel;
+	export let
+		status = 0,
+		message = '',
+		onOk = () => {},
+		onCancel = () => {},
+		okText = 'Ok',
+		cancelText = 'Cancel',
+		includeCancel = status === 2;  // typically only confirmations have a cancel button
 
-	const colorStyle = [redStyle, greenStyle, grayStyle][status];
-	const color = ['red', 'green', 'gray'][status];
-	const name = ['Error', 'Success', 'Confirm'][status];
+	const colorStyle = [redStyle, greenStyle, grayStyle, amberStyle][status];
+	const color = ['red', 'green', 'gray', 'amber'][status];
+	const name = ['Error', 'Success', 'Confirm', 'Warning'][status];
 	const bStyle = `${buttonStyle} ${colorStyle}`;
 	const svg = [
 		'M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z',
 		'M4.5 12.75l6 6 9-13.5',
-		'M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z'
+		'M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z',
+		'M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z'
 	][status];
 </script>
 
@@ -45,14 +52,14 @@
 			</div>
 
 			<div class="flex gap-2">
-				{#if status === 2}
+				{#if includeCancel}
 					<button id="cancel-btn" on:click={onCancel} class="w-full mt-6 {buttonStyle} {redStyle}">
-						Cancel
+						{cancelText}
 					</button>
 				{/if}
 
 				<button id="ok-btn" on:click={onOk} class="w-full mt-6 {buttonStyle} {bStyle}">
-					OK
+					{okText}
 				</button>
 			</div>
 		</div>

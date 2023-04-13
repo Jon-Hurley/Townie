@@ -15,7 +15,10 @@
 	const _login = async () => {
 		loading = true;
 		if (!form?.username?.length || !form?.password?.length) {
-			pushPopup(0, 'Missing inputs. Please try again.');
+			pushPopup({
+				status: 0,
+				message: 'Missing inputs. Please try again.'
+			});
 			return;
 		}
 
