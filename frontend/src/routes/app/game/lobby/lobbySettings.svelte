@@ -255,7 +255,7 @@
 		<div
 			class="
             flex justify-between items-center
-            bg-white p-3
+            bg-white p-3 mb-2
             border-2 border-gray-200 rounded
         "
 		>
@@ -310,6 +310,21 @@
 					}}
 				/>
 			{/if}
+		</div>
+
+		<div
+			class="
+                flex justify-between items-center
+                bg-white p-3
+                border-2 border-gray-200 rounded
+            "
+		>
+		<div class="font-semibold">Casual Mode</div>
+			<input 
+				type="checkbox" 
+				value = "form.casual"
+				bind:checked={form.casual}
+				class="w-4 h-4 border border-gray-300 rounded focus:ring-3 focus:ring-indigo-600 accent-indigo-600"/>
 		</div>
 
 		<hr class="{hr} my-4" />

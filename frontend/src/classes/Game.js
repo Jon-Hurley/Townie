@@ -54,10 +54,13 @@ export class Game {
            
             pushPopup(
                 1,
-                `You reached destination: ${achievedDest.name}!\n
-                You took ${displayTime} minutes and traveled ${displayDist} km.\n
-                You received ${potentialPoints}/${points} points.\n
-                Your total time has been paused and will resume once you leave the destination.`,
+                (!Game.game.settings.casual?
+                    `You reached destination ${achievedDest.name}!
+                    You took ${displayTime} minutes and traveled ${displayDist} meters.
+                    You received ${potentialPoints}/${points} points.\n
+                    Your total time has been paused and will resume once you leave the destination.`:
+                    `You reached destination ${achievedDest.name}!
+                    You took ${displayTime} minutes and traveled ${displayDist} meters.`),
                 () => {
                     Game.player.destinationIndex++;
                 }
