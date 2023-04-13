@@ -62,7 +62,8 @@ def generate(settings, gameKey):
         "radius": int(settings['radius']/0.000621371),
         "max_price": settings['budget'],
         "categories": [theme],
-        "limit": 50
+        "limit": 50,
+        "fields": "name,geocodes,categories,distance,description,website,price,menu,tips,tastes,features",
     }
 
     headers = {
@@ -74,7 +75,7 @@ def generate(settings, gameKey):
     response1 = json.loads(response.text)
     # for i in range(len(response1['results'])):
     #     print(response1['results'][i]['name'])
-    # print(response1)
+    # print(response1) SAI: This is the response from the FSQ call. You can use this to get the data you need.
 
     for i in range(len(response1['results'])):
         name_dest = response1['results'][i]['name']

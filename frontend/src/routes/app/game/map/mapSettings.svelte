@@ -161,7 +161,7 @@
 				class="{buttonStyle} {blueStyle} w-full mr-2"
 				on:click={() => {
 					pushPopup(
-						2, 'Are you sure you want to navigate? It will only be the rough area.',
+						2, 'This will not be an exact navigation.',
 						() => {
 							isOpen = false;
 							_getNavigation();

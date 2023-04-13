@@ -5,6 +5,7 @@ import { Map } from './Map.js';
 import { Location } from './Location.js';
 import { goto } from '$app/navigation';
 import { logout } from '../requests/account.js';
+import * as turf from '@turf/turf';
 
 export class Game {
     static store = writable();
@@ -30,6 +31,20 @@ export class Game {
         if (!data) return;
         data.destinations.sort((a, b) => a.index - b.index);    
         Game.store.set(data);
+    }
+
+    static handleRadiusUpdate(data) {
+        const currLat = Location.lat;
+        const currLng = Location.lng;
+
+        const destLat = Game.nextDestination.lat;
+        const destLng = Game.nextDestination.lon;
+
+        const from = turf.point([currLng, currLat]);
+        const to = turf.point([destLng, destLat]);
+        const distance = turf.distance(from, to, {units: 'kilometers'});
+
+        Map.updateDestinationRadius(x => x = distance / 2.0);
     }
 
     static handleLocationUpdate(data) {
@@ -82,7 +97,9 @@ export class Game {
                         Game.handleGameUpdate(data); return;
                     }
                     case 'update-location': {
-                        Game.handleLocationUpdate(data); return;
+                        Game.handleLocationUpdate(data); 
+                        Game.handleRadiusUpdate(data);
+                        return;
                     }
                     case 'new-message': {
                         Game.handleNewMessage(data); return;

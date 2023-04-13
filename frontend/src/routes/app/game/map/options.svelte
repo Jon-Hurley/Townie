@@ -22,7 +22,7 @@
                 const reps = t / period;
                 let i = 0;
                 let interval = setInterval(() => {
-                    Map.updateDestinationRadius(x => x - rad / reps)
+                    Map.updateDestinationRadius(x => x - rad / reps);
                     if (i++ === reps) clearInterval(interval);
                 }, period)
             },
