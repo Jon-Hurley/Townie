@@ -1,6 +1,7 @@
 <script>
 	import { Game } from "../../../classes/Game";
 	import { amberStyle, buttonStyle, grayStyle, hr, largeTitle } from "../../../css";
+	import Username from "../../../general-components/username.svelte";
 
     let isOpen = false;
 
@@ -51,13 +52,11 @@
         <div class="p-2 mx-14 min-h-[50vh]">
             {#each players as player, i}
                 <div class="flex justify-between">
-                    <div>
+                    <div class="flex">
                         <span class="font-bold mr-4">
                             #{i + 1}
                         </span>
-                        <span>
-                            {player.username}
-                        </span>
+                        <Username user={player}/>
                     </div>
                     <div>
                         {player.points}

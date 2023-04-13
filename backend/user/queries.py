@@ -14,7 +14,8 @@ def createUser(username, passwordHash, phoneNumber):
             'login2FA': False,
             'weeklyGamePlayed': False,
             'nextAvailableGame': 0,
-            'hidingState': True
+            'hidingState': False,
+            'isPremium': False
         },
         return_new=True
     )
@@ -78,6 +79,35 @@ def updatePassword(userKey, newPasswordHash):
         'passwordHash': newPasswordHash
     })
 
+def activatePremium(userKey, customerId, subscriptionId):
+    return arango_con.userCollection.update({
+        '_key': userKey,
+        'isPremium': True,
+        'stripeCustomerId': customerId,
+        'stripeSubscriptionId': subscriptionId,
+        'premiumActivationTime': int(time.time() * 1000)
+    }, return_new=True)
+
+def updatePremium(customerId, isPremium, subscriptionId):
+    return arango_con.db.aql.execute(
+        """
+        FOR user IN User
+            FILTER user.stripeCustomerId == @customerId
+               AND user.stripeCustomerId != null
+            UPDATE user
+            WITH {
+                isPremium: @isPremium,
+                stripeSubscriptionId: @subscriptionId
+            }
+            IN User
+            RETURN NEW
+        """,
+        bind_vars={
+            'customerId': customerId,
+            'isPremium': isPremium,
+            'subscriptionId': subscriptionId
+        }
+    )
 
 def getUserFromPhone(phone):
     return arango_con.db.aql.execute(
@@ -90,6 +120,11 @@ def getUserFromPhone(phone):
             'phone': phone
         }
     )
+
+def getUserInternal(userKey):
+    return arango_con.userCollection.find({
+        '_key': userKey
+    })
 
 
 def getUserFromPhoneOrUsername(phone, username):
@@ -174,6 +209,7 @@ def getUserWithFriendship(userKey, targetKey):
                 rank: user.rank,
                 username: user.username,
                 points: user.points,
+                isPremium: user.isPremium,
                 purchases: user.purchases,
                 friendship: f,
                 mutualFriends,
@@ -197,7 +233,8 @@ def getUser(targetKey):
                 rank: user.rank,
                 username: user.username,
                 points: user.points,
-                purchases: user.purchases
+                purchases: user.purchases,
+                isPremium: user.isPremium
             }
         """,
         bind_vars={
@@ -241,6 +278,7 @@ def getUsersBySubstring(substr, userKey):
                 RETURN {
                     key: user._key,
                     username: user.username,
+                    isPremium: user.isPremium,
                     dist
                 }
         )
@@ -269,6 +307,7 @@ def getUsersBySubstring(substr, userKey):
             RETURN {
                 key: user1.key,
                 username: user1.username,
+                isPremium: user1.isPremium,
                 mutualFriends,
                 isFriend,
                 jaccardIndex
@@ -327,6 +366,7 @@ def getOnlySuggestedUsers(userKey):
             RETURN {
                 key: user._key,
                 username: user.username,
+                isPremium: user.isPremium,
                 mutualFriends,
                 isFriend,
                 jaccardIndex
@@ -345,7 +385,8 @@ def getFriendsList(key):
             FILTER e.status
             RETURN {
                 key: v._key,
-                username: v.username
+                username: v.username,
+                isPremium: v.isPremium
             }
         """,
         bind_vars={'key': key}
@@ -361,7 +402,8 @@ def getPendingFriendsList(key):
                 key: e._key,
                 friend: {
                     key: v._key,
-                    username: v.username
+                    username: v.username,
+                    isPremium: v.isPremium
                 },
                 'inbound': e._from == v._id,
                 timestamp: e.timestamp

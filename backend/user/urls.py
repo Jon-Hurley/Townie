@@ -26,4 +26,8 @@ urlpatterns = [
 
     path('updateTime/', account.updatePlayableTime),
     path('submit-rating/', search.submitRating),
+
+    path('stripe-web-hook/', account.handleStripeWebhookEvent),
+    path('initiate-subscription/', account.initiateStripeSession),
+    path('cancel-subscription/', account.cancelStripeSubscription)
 ]

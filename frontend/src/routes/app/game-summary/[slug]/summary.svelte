@@ -9,6 +9,7 @@
 	} from '../../../../css';
 	import { submitRating } from '../../../../requests/search';
 	import { onMount } from 'svelte';
+	import Username from '../../../../general-components/username.svelte';
 	const title = 'text-gray-700 font-semibold text-lg mt-6';
 	const hr = 'my-1 bg-gray-100 h-[2px]';
 
@@ -289,41 +290,41 @@
 			{#if r.destinationIndex === summary.destinations.length - 1}
 				<li
 					class="
-                            w-full
-                            text-gray-900
-                            z-10
-                            bg-white
-                            relative
-                            cursor-pointer
-                            p-2
-                            flex
-                            justify-between
-                        {listItem}{greenStyle}"
+						w-full
+						text-gray-900
+						z-10
+						bg-white
+						relative
+						cursor-pointer
+						p-2
+						flex
+						justify-between
+                        {listItem}{greenStyle}
+					"
 					style="font-size:larger"
 				>
 					<a href={'/app/user/' + r.key}>
-						<!-- <img></img> -->
-						{r.username} #{r.key}
+						<Username user={r}/>
 					</a>
 				</li>
 			{:else}
 				<li
 					class="
-                            w-full
-                            text-gray-900
-                            z-10
-                            bg-white
-                            relative
-                            cursor-pointer
-                            p-2
-                            flex
-                            justify-between
-                        {listItem}{redStyle}"
+						w-full
+						text-gray-900
+						z-10
+						bg-white
+						relative
+						cursor-pointer
+						p-2
+						flex
+						justify-between
+						{listItem}{redStyle}
+					"
 					style="font-size:larger"
 				>
 					<a href={'/app/user/' + r.key}>
-						<!-- <img></img> -->
-						{r.username} #{r.key}
+						<Username user={r}/>
 					</a>
 				</li>
 			{/if}

@@ -1,5 +1,6 @@
 <script>
 	import { greenStyle, redStyle, buttonBaseStyle, listItem } from "../../../css";
+	import Username from "../../../general-components/username.svelte";
 
     export let n, acceptFriend, rejectFriend;
 
@@ -16,7 +17,7 @@
             {n.title}
         </div>
         <a href={"/app/user/" + n.friend.key}>
-            {n.friend.username} #{n.friend.key}
+            <Username user={n.friend}/>
         </a>
     </div>
 

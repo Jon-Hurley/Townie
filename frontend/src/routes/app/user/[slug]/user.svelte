@@ -2,6 +2,7 @@
 	import { acceptFriend, rejectFriend, sendFriendRequest } from "../../../../requests/friend";
 	import { userStore } from "../../../../stores";
     import { buttonStyle, redStyle, greenStyle, blueStyle, indigoStyle } from '../../../../css'
+	import Username from "../../../../general-components/username.svelte";
 	
     const title = "text-gray-700 font-semibold text-lg mt-6";
     const hr = "my-2 bg-gray-100 h-[2px]";
@@ -35,9 +36,9 @@
     };
 </script>
 
-<div class="my-5 w-full">
+<div class="my-5 w-full pb-4">
     <div class="text-gray-700 font-bold text-3xl text-center">
-        {user.username}
+        <Username boldness={'bold'} user={user}/>
     </div>
     <div class="text-gray-700 text-md text-center mt-1">
         {getNetworkDistanceStr()} &bull;  

@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { inputStyle } from '../../../css';
     import { getUsers } from '../../../requests/search';
+	import Username from '../../../general-components/username.svelte';
 
     let userSearch = '';
     let results = [];
@@ -93,10 +94,12 @@
                                         rounded-full
                                     "
                                 />
-                                <div class="text-gray-900">
-                                    {r.username}
+                                <div class="text-gray-900 flex gap-2">
+                                    <Username user={r}/>
                                     &bull;
-                                    {r.mutualFriends} Mutual Friend{r.mutualFriends !== 1 ? 's' : ''} 
+                                    <div>
+                                        {r.mutualFriends} Mutual Friend{r.mutualFriends !== 1 ? 's' : ''} 
+                                    </div>
                                 </div>
                             </div>
                             <div class="text-gray-300">

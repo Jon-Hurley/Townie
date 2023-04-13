@@ -12,7 +12,7 @@ export const updateAccessToken = (res) => {
 
 export const popupQueue = writable([]);
 
-export const pushPopup = (status, message, onOk) => {
+export const pushPopup = (status, message, onOk, onCancel) => {
     const cp = [ ...get(popupQueue) ];
     cp.push({
         status,
@@ -20,6 +20,13 @@ export const pushPopup = (status, message, onOk) => {
         onOk: () => {
             popPopup();
             if (onOk) onOk();
+            if (message.includes('Invalid token')) {
+                logout();
+            }
+        },
+        onCancel: () => {
+            popPopup();
+            if (onCancel) onCancel();
             if (message.includes('Invalid token')) {
                 logout();
             }

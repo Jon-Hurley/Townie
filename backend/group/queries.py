@@ -271,7 +271,8 @@ def getGame(gameKey):
                     lat: v.hidingState ? null : e.lat,
                     destinationIndex: e.destinationIndex,
                     points: e.points,
-                    hidingState: v.hidingState
+                    hidingState: v.hidingState,
+                    isPremium: v.isPremium
                 }
         )
 
@@ -315,7 +316,8 @@ def getSummary(gameKey):
                     lat: e.lat,
                     destinationIndex: e.destinationIndex,
                     points: e.points,
-                    hidingState: v.hidingState
+                    hidingState: v.hidingState,
+                    isPremium: v.isPremium
                 }
         )
 
@@ -360,7 +362,8 @@ def getGameForPlayer(gameKey, connectionId):
                     lat: v.hidingState ? null : e.lat,
                     destinationIndex: e.destinationIndex,
                     points: e.points,
-                    hidingState: v.hidingState
+                    hidingState: v.hidingState,
+                    isPremium: v.isPremium
                 }
         )
 
@@ -375,7 +378,8 @@ def getGameForPlayer(gameKey, connectionId):
                     lat: e.lat,
                     destinationIndex: e.destinationIndex,
                     points: e.points,
-                    hidingState: v.hidingState
+                    hidingState: v.hidingState,
+                    isPremium: v.isPremium
                 }
         )[0]
 

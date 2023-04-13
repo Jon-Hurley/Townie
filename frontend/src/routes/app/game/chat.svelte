@@ -3,6 +3,7 @@
 	import { Game } from "../../../classes/Game";
 	import { blueStyle, buttonStyle, grayStyle, hr, inputStyle, largeTitle } from "../../../css";
 	import { userStore } from "../../../stores";
+	import Username from "../../../general-components/username.svelte";
     let messages = Game.messageStore;
     $: console.log($messages);
     
@@ -13,12 +14,8 @@
     const sendMessage = () => {
         if (!input?.length) return;
         Game.send('new-message', {
-            message: {
-                key: $userStore.key,
-                username: $userStore.username,
-                message: input,
-                timestamp: new Date().toLocaleTimeString()
-            },
+            token: $userStore.token,
+            message: input,
             connectionIds: Game.players.map(x => x.connectionId)
         });
         input = null;
@@ -83,30 +80,35 @@
             "
             bind:this={scrollElement}
         >
-            {#each $messages as { username, message, timestamp, key }}
+            {#each $messages as { username, message, timestamp, key, isPremium }}
                 <div class="flex justify-between items-center">
                     {#if $userStore.key === key}
-                        <div class="text-sm font-light">{timestamp}</div>
+                        <div class="text-sm font-light">
+                            {new Date(timestamp).toLocaleTimeString()}
+                        </div>
                         <div class="
-                                flex flex-col p-2 px-4 bg-indigo-300
+                                flex flex-col p-2 px-4 
+                                {$userStore.isPremium ? 'bg-amber-100' : 'bg-indigo-100'}
                                 rounded-bl-2xl rounded-tr-2xl rounded-tl-2xl
                                 text-right
                             "
                         >
-                            <div class="font-bold">{username}</div>
+                            <Username boldness="bold"/>
                             <div class="text-sm">{message}</div>
                         </div>
                     {:else}
                         <div class="
-                                flex flex-col p-2 px-4 bg-gray-200
+                                flex flex-col p-2 px-4 bg-gray-100
                                 rounded-br-2xl rounded-tr-2xl rounded-tl-2xl
                                 text-left
                             "
                         >
-                            <div class="font-bold">{username}</div>
+                            <Username boldness="bold" user={{ username, isPremium }}/>
                             <div class="text-sm">{message}</div>
                         </div>
-                        <div class="text-sm font-light">{timestamp}</div>
+                        <div class="text-sm font-light">
+                            {new Date(timestamp).toLocaleTimeString()}
+                        </div>
                     {/if}
                 </div>
             {/each}

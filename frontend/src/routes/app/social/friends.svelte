@@ -6,6 +6,7 @@
     import { userStore } from '../../../stores';
     import { getFriends } from '../../../requests/friend';
 	import { gridItem, largeTitle, listItem } from '../../../css';
+	import Username from '../../../general-components/username.svelte';
 
     let friends = [];
     let loading = true;
@@ -38,8 +39,7 @@
             {#each friends as r}
                 <div class="{gridItem}">
                     <a href={"/app/user/" + r.key}>
-                        <!-- <img></img> -->
-                        {r.username}
+                        <Username user={r}/>
                     </a>
                 </div>
             {/each}
