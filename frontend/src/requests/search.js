@@ -55,6 +55,21 @@ export const getSummary = async (gameKey) => {
     }
 }
 
+export const getDestination = async (destKey) => {
+    try {
+        const res = await axios.post(
+            PUBLIC_BACKEND_API + 'group/get-destination/',
+            {
+                destKey,
+            }
+        );
+        return res.data;
+    } catch (err) {
+        console.log(err);
+        return false;
+    }
+}
+
 export const rating = async (theme) => {
     try {
         console.log(theme);
@@ -93,6 +108,23 @@ export const submitRating = async (theme, rating, numRatings) => {
             PUBLIC_BACKEND_API + 'user/submit-rating/',
             {
                 theme,
+                rating,
+                numRatings,
+            }
+        );
+        return res.data;
+    } catch (err) {
+        console.log(err);
+        return false;
+    }
+}
+
+export const submitDestRating = async (destKey, rating, numRatings) => {
+    try {
+        const res = await axios.post(
+            PUBLIC_BACKEND_API + 'user/submit-dest-rating/',
+            {
+                destKey,
                 rating,
                 numRatings,
             }

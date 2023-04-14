@@ -2,6 +2,7 @@ import arango_con
 import time
 from . import scraper
 
+
 def createGame(lon, lat):
     return arango_con.db.aql.execute(
         """
@@ -98,7 +99,8 @@ def leaveGame(connectionId):
                         FILTER u._id == p._from
                         UPDATE u
                         WITH {
-                            points: p.points - p.addedPoints
+                            points: u.points + (p.points - p.addedPoints),
+                            cumPoints: u.cumPoints + (p.points - p.addedPoints)
                         }
                         IN User
                         RETURN NEW
@@ -340,6 +342,21 @@ def getSummary(gameKey):
     """,
         bind_vars={
             'key': str(gameKey),
+        }
+    )
+
+
+def getDestination(destKey):
+    return arango_con.db.aql.execute(
+        """
+        WITH Destinations
+
+        FOR dest IN Destinations
+        FILTER dest._key == @key
+        RETURN dest
+    """,
+        bind_vars={
+            'key': str(destKey),
         }
     )
 

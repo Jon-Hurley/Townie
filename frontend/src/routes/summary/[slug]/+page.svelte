@@ -17,7 +17,7 @@
 			const url = window.location.href;
 			gameKey = url.substring(url.lastIndexOf('/') + 1);
 		}
-		
+
 		summary = await getSummary(gameKey);
 		summary.numFinished = summary.players.filter(
 			(player) => player.destinationIndex === summary.destinations.length - 1
@@ -39,7 +39,7 @@
 
 		let players = summary.players;
 		let username = $userStore?.username;
-		userInGame = !!players.find(x => x?.username == username);
+		userInGame = !!players.find((x) => x?.username == username);
 	});
 </script>
 

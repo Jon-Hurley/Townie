@@ -58,3 +58,16 @@ def submitRating(request):
     except:
         return util.returnError("Invalid theme or rating.", 400)
     return JsonResponse({})
+
+
+@csrf_exempt
+def submitDestRating(request):
+    data = json.loads(request.body)
+    destKey = data['destKey']
+    rating = data['rating']
+    numRatings = data['numRatings']
+    try:
+        queries.submitDestRating(destKey, rating, numRatings)
+    except:
+        return util.returnError("Invalid theme or rating.", 400)
+    return JsonResponse({})

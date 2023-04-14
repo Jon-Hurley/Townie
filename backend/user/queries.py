@@ -9,6 +9,7 @@ def createUser(username, passwordHash, phoneNumber):
             'passwordHash': passwordHash,
             'phone': phoneNumber,
             'points': 0,
+            'cumPoints': 0,
             'rank': 'beginner',
             'purchases': [],
             'login2FA': False,
@@ -152,6 +153,7 @@ key: user._key,
 rank: user.rank,
 username: user.username,
 points: user.points,
+cumPoints: user.cumPoints,
 purchases: user.purchases,
 friendship: f
 }
@@ -375,4 +377,27 @@ def submitRating(theme, rating, numRatings):
         }
         """,
         bind_vars={'theme': theme, 'rating': rating, 'numRatings': numRatings}
+    )
+
+
+def submitDestRating(destKey, rating, numRatings):
+    return arango_con.db.aql.execute(
+        """
+        LET x = (
+            FOR dest IN Destinations
+            FILTER dest._key == @destKey
+            UPDATE dest._key WITH {
+                rating: @rating,
+                numRatings: @numRatings
+            } IN Destinations
+            RETURN NEW
+        )[0]
+        RETURN {
+            name: x.name,
+            rating: x.rating,
+            numRatings: x.numRatings
+        }
+        """,
+        bind_vars={'destKey': destKey,
+                   'rating': rating, 'numRatings': numRatings}
     )

@@ -1,4 +1,5 @@
 <script>
+	import { onMount } from 'svelte';
 	import { buttonStyle, greenStyle, redStyle, blueStyle } from '../../css';
 	import { deleteUser } from '../../requests/account';
 	import { userStore } from '../../stores';
@@ -6,10 +7,85 @@
 	const hr = 'my-2 bg-gray-100 h-[2px]';
 
 	let popupOpen = false;
+	let progress = 0.0;
+	let points = $userStore?.cumPoints;
+	let level = 1;
+	let rank = 'Beginner';
 
 	const _deleteUser = async () => {
 		popupOpen = false;
 		const success = await deleteUser();
+	};
+
+	onMount(async () => {
+		await _pointsToLevel();
+		_getRank();
+	});
+
+	const _pointsToLevel = async () => {
+		while (points >= 1000 && level < 5) {
+			points -= 1000;
+			level++;
+		}
+
+		if (points < 1000) {
+			progress = points / 1000.0;
+			return level;
+		}
+
+		while (points >= 5000 && level < 15) {
+			points -= 5000;
+			level++;
+		}
+
+		if (points < 5000) {
+			progress = points / 5000.0;
+			return level;
+		}
+
+		while (points >= 15000 && level < 25) {
+			points -= 15000;
+			level++;
+		}
+
+		if (points < 15000) {
+			progress = points / 15000.0;
+			return level;
+		}
+
+		while (points >= level * 1000) {
+			points -= level * 1000;
+			level++;
+		}
+
+		progress = points / (level * 1000.0);
+		return level;
+	};
+
+	// Set variable rank based on level
+	// 1-4: Beginner
+	// 5-14: Tourist
+	// 15-24: Adventurer
+	// 25-49: Traveler
+	// 50-74: Citizen
+	// 75-99: Resident
+	// 100+: Townie
+	const _getRank = () => {
+		if (level < 5) {
+			rank = 'Beginner';
+		} else if (level < 15) {
+			rank = 'Tourist';
+		} else if (level < 25) {
+			rank = 'Adventurer';
+		} else if (level < 50) {
+			rank = 'Traveler';
+		} else if (level < 75) {
+			rank = 'Citizen';
+		} else if (level < 100) {
+			rank = 'Resident';
+		} else {
+			rank = 'Townie';
+		}
 	};
 </script>
 
@@ -88,18 +164,18 @@
 <div class="px-2 py-4 uppercase">
 	{$userStore?.phone}
 </div>
-
-<div class={title}>Rank</div>
 <hr class={hr} />
-<div class="px-2 py-4 uppercase">
-	{$userStore?.rank}
+
+<div class={title}>
+	Rank: {rank}
+	<meter id="xp-meter" class="w-full" min="0" max="1" value={progress ? progress : 0} />
+	Level {level}
 </div>
+<hr class={hr} />
 
 <div>
-	<a href='/account/game_log'>
-		<button class="{buttonStyle} {blueStyle}">
-			Go to Game Logs  
-		</button>
+	<a href="/account/game_log">
+		<button class="{buttonStyle} {blueStyle}"> Go to Game Logs </button>
 	</a>
 </div>
 
