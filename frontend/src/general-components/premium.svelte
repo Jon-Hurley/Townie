@@ -7,14 +7,11 @@
 
     const _initiatePremiumSession = async() => {
         const url = await initiatePremiumSession();
-        if (url) {
-            window.open(url, '_blank').focus();
-        }
     }
 
     const _openStripePortal = async() => {
-        window.open('https://billing.stripe.com/p/login/8wM6pUbE3eFz20UeUU', '_blank')
-              .focus();
+        const winder = window.open('https://billing.stripe.com/p/login/8wM6pUbE3eFz20UeUU', '_blank');
+        if (winder?.focus) winder.focus();
     }
 
     $: isPremium = !!$userStore?.isPremium;

@@ -282,7 +282,8 @@ export const initiatePremiumSession = async() => {
         updateAccessToken(res);
         const url = res.data.url;
         if (url) {
-            window.open(url, '_blank').focus();
+            const winder = window.open(url, '_blank');
+            if (winder?.focus) winder.focus();
         }
     } catch (err) {
         console.log(err)
