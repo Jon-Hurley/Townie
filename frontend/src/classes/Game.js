@@ -34,6 +34,13 @@ export class Game {
     }
 
     static handleRadiusUpdate(data) {
+        const {
+            newTime, newDist, oldTime, oldDist,
+            totalTime, totalDist,
+            arrived, atPrevDest,
+            potentialPoints, points
+        } = data;
+
         const currLat = Location.lat;
         const currLng = Location.lng;
 
@@ -42,9 +49,41 @@ export class Game {
 
         const from = turf.point([currLng, currLat]);
         const to = turf.point([destLng, destLat]);
-        const distance = turf.distance(from, to, {units: 'kilometers'});
+        let distance = turf.distance(from, to, {units: 'kilometers'}) / 2.0;
+        const startTime = Game?.game?.createTime;
+        const currTime = newTime;
+        console.log("START TIME:", startTime);
+        console.log("CURRENT TIME:", currTime);
+        const timeLeft = Game?.nextDestination?.timeToCompletion * 1000;
+        console.log("TIME LEFT:", timeLeft);
+        const radius = get(Map.settings).destinationRadius;
+        console.log("RADIUS:", radius);
+        let timeComputation = -1;
+        if (currTime > timeLeft) {
+            timeComputation = currTime / timeLeft;
+        }
+        if (timeComputation < 1.2 && timeComputation > 1) {
+            distance = distance / 1.2;
+        }
+        else if (timeComputation < 1.4 && timeComputation > 1) {
+            distance = distance / 1.4;
+        }
+        else if (timeComputation < 1.6 && timeComputation > 1) {
+            distance = distance / 1.6;
+        }
+        else if (timeComputation < 1.8 && timeComputation > 1) {
+            distance = distance / 1.8;
+        }
+        else if (timeComputation < 2 && timeComputation > 1) {
+            distance = distance / 2.0;
+        }
+        else if  (timeComputation > 2) {
+            distance = 0;
+        }
+        console.log("FINAL DISTANCE:", distance);
 
-        Map.updateDestinationRadius(x => x = distance / 2.0);
+
+        Map.updateDestinationRadius(x => x = distance);
     }
 
     static handleLocationUpdate(data) {
@@ -94,10 +133,11 @@ export class Game {
                 switch (method) {
                     case 'get-game':
                     case 'update-game': {
-                        Game.handleGameUpdate(data); return;
+                        Game.handleGameUpdate(data);  
+                        return;
                     }
                     case 'update-location': {
-                        Game.handleLocationUpdate(data); 
+                        Game.handleLocationUpdate(data);
                         Game.handleRadiusUpdate(data);
                         return;
                     }
