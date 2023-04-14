@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import friend, account, search
+from .views import friend, account, search, store
 
 urlpatterns = [
     path('login/', account.login),
@@ -27,7 +27,10 @@ urlpatterns = [
     path('updateTime/', account.updatePlayableTime),
     path('submit-rating/', search.submitRating),
 
-    path('stripe-web-hook/', account.handleStripeWebhookEvent),
-    path('initiate-subscription/', account.initiateStripeSession),
-    path('cancel-subscription/', account.cancelStripeSubscription)
+    path('stripe-web-hook/', store.handleStripeWebhookEvent),
+    path('initiate-subscription/', store.initiateStripeSession),
+    path('cancel-subscription/', store.cancelStripeSubscription),
+
+    path('purchase/', store.makePurchase),
+    path('purchasables/', store.getPurchasables)
 ]

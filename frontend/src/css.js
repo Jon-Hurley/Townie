@@ -49,10 +49,9 @@ export const largeTitle = `
     text-2xl
     text-center
     font-bold
-    text-gray-700
 `;
 
-export const hr = "bg-gray-100 h-[2px]";
+export const hr = "bg-gray-100 h-[2px] mb-4 mt-2";
 
 export const gridItem = `
     p-3 h-[51px] m-0

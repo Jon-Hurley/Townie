@@ -10,7 +10,6 @@ def createUser(username, passwordHash, phoneNumber):
             'phone': phoneNumber,
             'points': 0,
             'rank': 'beginner',
-            'purchases': [],
             'login2FA': False,
             'weeklyGamePlayed': False,
             'nextAvailableGame': 0,
@@ -22,15 +21,62 @@ def createUser(username, passwordHash, phoneNumber):
 
 
 def getUserByUsername(username):
-    return arango_con.userCollection.find({
-        'username': username
-    })
+    return arango_con.db.aql.execute(
+        """
+        FOR user IN User
+            FILTER user.username == @username
+            LET purchases = (
+                FOR v, e IN 1..1 ANY user._id GRAPH Consumerships
+                    RETURN v
+            )
+            RETURN MERGE(user, { purchases })
+        """,
+        bind_vars={
+            'username': username
+        }
+    )
 
+def getUserFromPhone(phone):
+    return arango_con.db.aql.execute(
+        """
+        FOR user IN User
+            FILTER user.phone == @phone
+            LET purchases = (
+                FOR v, e IN 1..1 ANY user._id GRAPH Consumerships
+                    RETURN v
+            )
+            RETURN MERGE(user, { purchases })
+        """,
+        bind_vars={
+            'phone': phone
+        }
+    )
+
+def getUserFromPhoneOrUsername(phone, username):
+    return arango_con.db.aql.execute(
+        """
+        FOR user IN User
+            FILTER user.phone == @phone
+                || user.username == @username
+            RETURN user._key
+        """,
+        bind_vars={
+            'phone': phone,
+            'username': username
+        }
+    )
 
 def updateInfo(userKey, newUsername, newPhone, newPasswordHash,
                newLogin2FA, newHidingState):
     return arango_con.db.aql.execute(
         """
+            LET purchases = (
+                FOR v, e IN 1..1 ANY
+                CONCAT("User/", @userKey)
+                GRAPH Consumerships
+                    RETURN v
+            )
+            
             UPDATE {
                 _key: @userKey,
                 username: @newUsername,
@@ -39,7 +85,7 @@ def updateInfo(userKey, newUsername, newPhone, newPasswordHash,
                 login2FA: @newLogin2FA,
                 hidingState: @newHidingState
             } IN User
-            RETURN NEW
+            RETURN MERGE(NEW, { purchases })
         """,
         bind_vars={
             'userKey': userKey,
@@ -55,6 +101,13 @@ def updateInfo(userKey, newUsername, newPhone, newPasswordHash,
 def UpdatePlayableInfo(userKey, weeklyGamePlayed, newTime):
     return arango_con.db.aql.execute(
         """
+        LET purchases = (
+            FOR v, e IN 1..1 ANY
+            CONCAT("User/", @userKey)
+            GRAPH Consumerships
+                RETURN v
+        )
+
         FOR user IN User
             FILTER user._key == @userKey
             UPDATE user WITH {
@@ -63,7 +116,7 @@ def UpdatePlayableInfo(userKey, weeklyGamePlayed, newTime):
                 nextAvailableGame: @newTime
             } IN User
             
-            RETURN NEW
+            RETURN MERGE(NEW, { purchases })
         """,
         bind_vars={
             'userKey': userKey,
@@ -106,38 +159,6 @@ def updatePremium(customerId, isPremium, subscriptionId):
             'customerId': customerId,
             'isPremium': isPremium,
             'subscriptionId': subscriptionId
-        }
-    )
-
-def getUserFromPhone(phone):
-    return arango_con.db.aql.execute(
-        """
-            FOR user IN User
-            FILTER user.phone == @phone
-            RETURN user
-        """,
-        bind_vars={
-            'phone': phone
-        }
-    )
-
-def getUserInternal(userKey):
-    return arango_con.userCollection.find({
-        '_key': userKey
-    })
-
-
-def getUserFromPhoneOrUsername(phone, username):
-    return arango_con.db.aql.execute(
-        """
-        FOR user IN User
-        FILTER user.phone == @phone || 
-        user.username == @username
-        RETURN user
-        """,
-        bind_vars={
-            'phone': phone,
-            'username': username
         }
     )
 
@@ -202,6 +223,11 @@ def getUserWithFriendship(userKey, targetKey):
                 RETURN COUNT(p.edges)
         )[0] || 5
 
+        LET purchases = (
+            FOR v, e IN 1..1 ANY userId GRAPH Consumerships
+                RETURN v
+        )
+
         FOR user IN User
             FILTER user._key == @targetKey
             RETURN {
@@ -210,7 +236,7 @@ def getUserWithFriendship(userKey, targetKey):
                 username: user.username,
                 points: user.points,
                 isPremium: user.isPremium,
-                purchases: user.purchases,
+                purchases: purchases,
                 friendship: f,
                 mutualFriends,
                 networkDistance
@@ -228,12 +254,18 @@ def getUser(targetKey):
         """
         FOR user IN User
             FILTER user._key == @targetKey
+
+            LET purchases = (
+                FOR v, e IN 1..1 ANY user._id GRAPH Consumerships
+                    RETURN v
+            )
+
             RETURN {
                 key: user._key,
                 rank: user.rank,
                 username: user.username,
                 points: user.points,
-                purchases: user.purchases,
+                purchases: purchases,
                 isPremium: user.isPremium
             }
         """,
@@ -554,4 +586,85 @@ def submitRating(theme, rating, numRatings):
         }
         """,
         bind_vars={'theme': theme, 'rating': rating, 'numRatings': numRatings}
+    )
+
+
+def getPurchasables(userKey):
+    return arango_con.db.aql.execute(
+        """
+        LET user = (
+            FOR user IN User
+                FILTER user._key == @userKey
+                RETURN user
+        )
+        LET purchased = (
+            FOR v, e IN 1..1 ANY
+            CONCAT("User/", @userKey)
+            GRAPH Consumerships
+                RETURN v
+        )
+        FOR p IN Purchasables
+            LET matches = (
+                FOR x IN purchased
+                    FILTER p._id == x._id
+                    RETURN x
+            )
+            FILTER LENGTH(matches) == 0
+            RETURN p
+        """,
+        bind_vars={
+            'userKey': userKey
+        }
+    )
+
+def makePurchase(userKey, purchasableKey):
+    return arango_con.db.aql.execute(
+        """
+        LET user = (
+            FOR user IN User
+                FILTER user._key == @userKey
+                RETURN user
+        )[0]
+
+        LET matches = (
+            FOR p IN Purchasables
+                FILTER p._key == @purchasableKey
+                RETURN p
+        )
+
+        LET res = (
+            For p in matches
+                FILTER !p.isPremium
+                    OR user.isPremium
+                FILTER p.cost <= user.points
+                
+                LET userRes = (
+                    UPDATE user
+                    WITH {
+                        points: user.points - p.cost
+                    }
+                    IN User
+                )
+
+                INSERT {
+                    _from: CONCAT("User/", @userKey),
+                    _to: p._id,
+                    purchaseTime: DATE_NOW()
+                }
+                INTO Purchases
+                RETURN NEW
+        )[0]
+
+        LET item = matches[0]
+        RETURN {
+            foundItem: item != null,
+            hasPremiumReq: !item.isPremium OR user.isPremium,
+            enoughPoints: user.points - item.cost,
+            alreadyPurchased: res == null
+        }
+        """,
+        bind_vars={
+            'userKey': userKey,
+            'purchasableKey': purchasableKey
+        }
     )

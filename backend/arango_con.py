@@ -26,6 +26,10 @@ if not db.has_collection('Games'):
     db.create_collection('Games')
     gameCollection = db.collection('Games')
 
+if not db.has_collection('Purchasables'):
+    db.create_collection('Purchasables')
+    purchasablesCollection = db.collection('Purchasables')
+
 if not db.has_collection('Destinations'):
     db.create_collection('Destinations')
     destinationCollection = db.collection('Destinations')
@@ -34,6 +38,14 @@ if not db.has_collection('Destinations'):
     )
     destinationCollection.add_persistent_index(
         fields=['name'],
+        unique=True
+    )
+
+if not db.has_collection('Purchases'):
+    db.create_collection('Purchases', edge=True)
+    purchaseCollection = db.collection('Purchases')
+    purchaseCollection.add_persistent_index(
+        fields=['_from', '_to'],
         unique=True
     )
 
@@ -69,6 +81,14 @@ if not db.has_collection('UnusedItineraries'):
         sparse=True
     )
 
+if not db.has_graph('Consumerships'):
+    consumershipGraph = db.create_graph('Consumerships')
+    consumershipGraph.create_edge_definition(
+        edge_collection='Purchases',
+        from_vertex_collections=['User'],
+        to_vertex_collections=['Purchasables']
+    )
+
 if not db.has_graph('Friendships'):
     friendshipGraph = db.create_graph('Friendships')
     friendshipGraph.create_edge_definition(
@@ -92,3 +112,5 @@ playerCollection = db.collection('Players')
 destinationCollection = db.collection('Destinations')
 itineraryCollection = db.collection('Itineraries')
 unusedItineraryCollection = db.collection('UnusedItineraries')
+purchasablesCollection = db.collection('Purchasables')
+purchaseCollection = db.collection('Purchases')

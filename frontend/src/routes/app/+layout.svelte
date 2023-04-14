@@ -8,16 +8,12 @@
   
 	import { userStore } from '../../stores';
 
-    let loaded = false;
-
-	onMount(async () => {
-        loaded = false;
+	onMount(() => {
         userStore.subscribe(user => {
             if (user?.token) {
                 sessionStorage.setItem('token', user.token);
             }
         });
-        loaded = true;
 	});
 
     $: if (!$userStore) goto('/login');

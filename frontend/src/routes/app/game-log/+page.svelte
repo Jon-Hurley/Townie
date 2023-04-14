@@ -8,11 +8,11 @@
 		redStyle,
 		greenStyle,
 		largeTitle,
+		hr,
 	} from '../../../css';
 	import { getGameLog } from '../../../requests/search';
 	import { rating } from '../../../requests/search';
 	const title = 'text-gray-700 font-semibold text-lg mt-2';
-	const hr = 'bg-gray-100 h-[2px] mt-4';
 
 	let loading = true;
 	let gameLog = [];

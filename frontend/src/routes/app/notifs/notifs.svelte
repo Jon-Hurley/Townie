@@ -5,7 +5,7 @@
     import Loading from '../../../general-components/loading.svelte';
 	
     import { acceptFriend, loadNotifications, rejectFriend } from '../../../requests/friend';	
-	import { largeTitle, listItem } from '../../../css';
+	import { hr, largeTitle, listItem } from '../../../css';
 	import { userStore } from '../../../stores';
 
     let notifs = [];
@@ -39,6 +39,7 @@
 <div class="{largeTitle}">
     Your Notifications
 </div>
+<hr class="{hr}"/>
 
 {#if loading}
     <Loading/>

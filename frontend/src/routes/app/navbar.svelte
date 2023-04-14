@@ -34,8 +34,8 @@
                 "
                 style="
                     background-image: url({Icon});
-                    width: 60px;
-                    height: 60px;
+                    width: 55px;
+                    height: 55px;
                     background-size: cover;
                 "
                 data-bs-toggle="tooltip" 

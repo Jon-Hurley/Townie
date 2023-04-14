@@ -71,7 +71,7 @@
         <div class="{largeTitle}">
             Chat
         </div>
-        <hr class="{hr} my-4">
+        <hr class="{hr}">
 
         <div
             class="
@@ -131,7 +131,7 @@
             </button>
         </form>
 
-        <hr class="{hr} my-4" />
+        <hr class="{hr}"/>
 		<div class="flex ">
 			<button
 				class="{buttonStyle} {grayStyle} w-full"

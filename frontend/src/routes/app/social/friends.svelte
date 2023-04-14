@@ -5,7 +5,7 @@
     
     import { userStore } from '../../../stores';
     import { getFriends } from '../../../requests/friend';
-	import { gridItem, largeTitle, listItem } from '../../../css';
+	import { gridItem, hr, largeTitle, listItem } from '../../../css';
 	import Username from '../../../general-components/username.svelte';
 
     let friends = [];
@@ -22,6 +22,8 @@
     Your Friends List
 </div>
 
+<hr class="{hr}"/>
+
 {#if loading}
     <Loading/>
 {:else}
@@ -30,7 +32,6 @@
             overflow-auto
             inline-flex flex-wrap justify-center
             gap-2
-            p-2
             w-full
         "
         style="max-height: 100%"

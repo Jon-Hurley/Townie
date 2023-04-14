@@ -10,6 +10,8 @@ export const updateAccessToken = (res) => {
     userStore.set({ ...get(userStore), token });
 };
 
+export const purchaseStore = writable([]);
+
 export const popupQueue = writable([]);
 
 // OPTIONS:
@@ -27,15 +29,15 @@ export const pushPopup = (popupObject) => {
         ...popupObject,
         onOk: () => {
             popPopup();
-            if (popupObject.onOk) onOk();
-            if (message.includes('Invalid token')) {
+            if (popupObject.onOk) popupObject.onOk();
+            if (popupObject.message.includes('Invalid token')) {
                 logout();
             }
         },
         onCancel: () => {
             popPopup();
-            if (popupObject.onCancel) onCancel();
-            if (message.includes('Invalid token')) {
+            if (popupObject.onCancel) popupObject.onCancel();
+            if (popupObject.message.includes('Invalid token')) {
                 logout();
             }
         }

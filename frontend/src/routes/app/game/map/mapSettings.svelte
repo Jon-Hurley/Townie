@@ -44,7 +44,7 @@
         "
 	>
 		<div class={largeTitle}>Settings</div>
-		<hr class="{hr} my-4" />
+		<hr class="{hr}"/>
 
 		<div
 			class="
@@ -91,7 +91,7 @@
 			{/if}
 		</div>
 
-		<hr class="{hr} my-4" />
+		<hr class="{hr}"/>
 		<div class="flex ">
 			<button
 				class="{buttonStyle} {blueStyle} w-full mr-2"

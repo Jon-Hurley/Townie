@@ -1,15 +1,14 @@
 <script>
-	import { buttonStyle, greenStyle, blueStyle } from '../../../css';
+	import { onMount } from 'svelte';
+	import { buttonStyle, greenStyle, blueStyle, hr } from '../../../css';
 	
 	import Username from '../../../general-components/username.svelte';
 	import Delete from './delete.svelte';
+	import Premium from '../../../general-components/premium.svelte';
 
 	import { pushPopup, userStore } from '../../../stores';
-	import Premium from '../../../general-components/premium.svelte';
-	import { onMount } from 'svelte';
 
 	const title = 'text-gray-700 font-semibold text-lg mt-6';
-	const hr = 'my-2 bg-gray-100 h-[2px]';
 
 	onMount(() => {
 		const urlParams = new URLSearchParams(window.location.search);

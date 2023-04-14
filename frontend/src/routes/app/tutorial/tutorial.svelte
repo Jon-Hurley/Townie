@@ -9,6 +9,7 @@
 	import Settings4 from '$lib/assets/Tutorial-Settings-4.jpg';
 	import Settings5 from '$lib/assets/Tutorial-Settings-5.jpg';
 	import Map from '$lib/assets/Tutorial-Map.jpg';
+	import { hr, largeTitle } from '../../../css';
 
 	const images = [
 		{
@@ -52,22 +53,29 @@
 	};
 </script>
 
+<div class="{largeTitle}">
+  Tutorial
+</div>
+<hr class="{hr}"/>
+
 {#each [images[currentSlideItem]] as item (currentSlideItem)}
   <img
     in:slide
     src={item.src}
     alt={item.description}
-    style="max-height: calc(100vh - 120px - 4rem); margin: auto;"
+    style="max-height: calc(100vh - 220px - 4rem); margin: auto;"
   />
 {/each}
 
 <div class="carousel-buttons">
   <!-- Previous Button -->
   <button
-    class="absolute bottom-[5rem] left-4 md:left-40  lg:left-96 z-10
+    class="
+      absolute bottom-[5rem] left-4 md:left-40 lg:left-96 z-10
       bg-gray-800 rounded-full
       px-1 py-1
-      opacity-50 text-gray-400"
+      opacity-50 text-gray-400
+    "
     on:click={() => prevImage()}
   >
     <svg

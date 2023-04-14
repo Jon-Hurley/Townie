@@ -1,9 +1,8 @@
 <script>
-	import { blueStyle, buttonStyle, redStyle } from '../../../../css';
+	import { blueStyle, buttonStyle, redStyle, hr } from '../../../../css';
 	import { updateAccount } from '../../../../requests/account';
 	import { userStore } from '../../../../stores';
 	const title = 'text-gray-700 font-semibold text-lg mt-4';
-	const hr = 'my-2 bg-gray-100 h-[2px]';
 
 	const form = {
 		password: '',

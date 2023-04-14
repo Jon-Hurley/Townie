@@ -84,11 +84,11 @@
         "
 	>
 		<div class={largeTitle}>Settings</div>
-		<hr class="{hr} my-4" />
+		<hr class="{hr}"/>
 
 		<div class={section}>Starting Location</div>
 		<Autocomplete settings={form} />
-		<hr class="{hr} my-4" />
+		<hr class="{hr}"/>
 
 		<div class={section}>Allowed Transport</div>
 		<div class="flex justify-center gap-2" style="max-height: 100%">
@@ -107,7 +107,7 @@
 			{/each}
 		</div>
 
-		<hr class="{hr} my-4" />
+		<hr class="{hr}"/>
 		<div
 			class="
                 flex justify-between items-center
@@ -312,7 +312,7 @@
 			{/if}
 		</div>
 
-		<hr class="{hr} my-4" />
+		<hr class="{hr}"/>
 		<div class="flex ">
 			<button
 				class="{buttonStyle} {blueStyle} w-full mr-2"

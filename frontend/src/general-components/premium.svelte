@@ -18,11 +18,7 @@
     }
 
     $: isPremium = !!$userStore?.isPremium;
-    $: handleClick = isPremium ? _openStripePortal : _initiatePremiumSession
-
-    // const handleCancelPremium = async() => {
-    //     await cancelPremium();
-    // }
+    $: handleClick = isPremium ? _openStripePortal : _initiatePremiumSession;
 </script>
 
 {#if simplified}

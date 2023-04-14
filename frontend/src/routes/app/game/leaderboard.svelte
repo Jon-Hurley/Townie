@@ -47,7 +47,7 @@
         <div class="{largeTitle}">
             Leaderboard
         </div>
-        <hr class="{hr} my-4">
+        <hr class="{hr}">
 
         <div class="p-2 mx-14 min-h-[50vh]">
             {#each players as player, i}
@@ -66,7 +66,7 @@
         </div>
         
 
-        <hr class="{hr} my-4" />
+        <hr class="{hr}"/>
 		<div class="flex ">
 			<button
 				class="{buttonStyle} {grayStyle} w-full"

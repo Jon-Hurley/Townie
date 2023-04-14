@@ -45,11 +45,11 @@ def getUserFromToken(token):
     if user['expiration'] > t:
         return user, None
     
-    # past expiration time by more than 30 minutes: log out
+    # past expiration time by more than 60 minutes: log out
     if user['expiration'] < t + dt:
         return None, None
     
-    # past expiration time by less than 30 minutes: refresh token
+    # past expiration time by less than 60 minutes: refresh token
     user['expiration'] = t + dt
     newToken = jwt.encode(
         user,

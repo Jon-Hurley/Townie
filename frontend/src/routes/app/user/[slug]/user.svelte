@@ -1,11 +1,10 @@
 <script>
 	import { acceptFriend, rejectFriend, sendFriendRequest } from "../../../../requests/friend";
 	import { userStore } from "../../../../stores";
-    import { buttonStyle, redStyle, greenStyle, blueStyle, indigoStyle } from '../../../../css'
+    import { buttonStyle, redStyle, greenStyle, blueStyle, hr } from '../../../../css'
 	import Username from "../../../../general-components/username.svelte";
 	
     const title = "text-gray-700 font-semibold text-lg mt-6";
-    const hr = "my-2 bg-gray-100 h-[2px]";
 
     export let user, reloadUser;
 
