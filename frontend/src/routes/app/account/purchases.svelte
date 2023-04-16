@@ -11,7 +11,7 @@
 
 {#if $userStore?.purchases?.length}
     <div class="{gridContainer}">
-        {#each $userStore.purchases as p}
+        {#each $userStore?.purchases as p}
             <Purchase
                 p={p}
                 onClick={() => _activatePurchase(p)}
