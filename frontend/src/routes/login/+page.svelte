@@ -19,7 +19,7 @@
 			return;
 		}
 
-		const res = await login(form.username, form.password, form.remember);
+		const res = await login(form.username, form.password, form.remember, false);
 		loading = false;
 		if (res?.verifyToken) {
 			// 2FA. Need to verify
