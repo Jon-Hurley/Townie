@@ -549,7 +549,7 @@ def getGameLog(userKey):
         ANY CONCAT("User/", @key)
         GRAPH Playerships
             LET rating = (
-                FOR t in Themes
+                FOR theme in Themes
                     SORT NGRAM_SIMILARITY(theme.name, v.settings.theme, 1) DESC
                     LIMIT 1
                     RETURN theme.rating

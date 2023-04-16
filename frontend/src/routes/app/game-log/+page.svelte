@@ -11,7 +11,7 @@
 		hr,
 	} from '../../../css';
 	import { getGameLog } from '../../../requests/search';
-	import { rating } from '../../../requests/search';
+
 	const title = 'text-gray-700 font-semibold text-lg mt-2';
 
 	let loading = true;
