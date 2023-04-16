@@ -540,22 +540,6 @@ def rejectFriendRequest(friendshipKey):
     )
 
 
-def getRating(theme):
-    return arango_con.db.aql.execute(
-        """
-        FOR theme IN Themes
-        SORT NGRAM_SIMILARITY(theme.name, @theme, 1) DESC
-        LIMIT 1
-        RETURN {
-            name: theme.name,
-            rating: theme.rating,
-            numRatings: theme.numRatings
-        }
-        """,
-        bind_vars={'theme': theme}
-    )
-
-
 def getGameLog(userKey):
     print(userKey)
     return arango_con.db.aql.execute(
@@ -564,9 +548,16 @@ def getGameLog(userKey):
         IN 1..1
         ANY CONCAT("User/", @key)
         GRAPH Playerships
+            LET rating = (
+                FOR t in Themes
+                    SORT NGRAM_SIMILARITY(theme.name, v.settings.theme, 1) DESC
+                    LIMIT 1
+                    RETURN theme.rating
+            )[0]
             RETURN {
                 game: v,
-                player: e
+                player: e,
+                themeRating: rating
             }
         """,
         bind_vars={'key': int(userKey)}

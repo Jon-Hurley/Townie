@@ -31,7 +31,7 @@
 			theme = summary.game.settings.theme;
 		}
 		console.log(summary);
-		ratings = await rating(summary.game.settings.theme);
+		ratings = null; //await rating(summary.game.settings.theme);
 		if (!ratings) {
 			ratings = {
 				rating: 0,

@@ -16,15 +16,10 @@
 
 	let loading = true;
 	let gameLog = [];
-	let themes = [];
 
 	onMount(async () => {
 		gameLog = await getGameLog();
-		for (let i = 0; i < gameLog.length; i++) {
-			themes[i] = await rating(gameLog[i].game.settings.theme);
-		}
 		console.log(gameLog);
-		console.log(themes);
 		loading = false;
 	});
 
@@ -87,7 +82,7 @@
 							Number of Destinations Completed: {log.player.destinationIndex + 1}
 						</div>
 						<div>
-							Theme: {log.game.settings.theme} (Rating: {themes[i].rating} / 5)
+							Theme: {log.game.settings.theme} (Rating: {log.themeRating} / 5)
 						</div>
 					</button>
 				{/each}

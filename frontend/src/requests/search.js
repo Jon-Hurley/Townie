@@ -53,26 +53,10 @@ export const getSummary = async (gameKey) => {
     }
 }
 
-export const rating = async (theme) => {
-    try {
-        console.log(theme);
-        const res = await axios.post(
-            PUBLIC_BACKEND_API + 'user/rating/',
-            {
-                theme,
-            }
-        );
-        return res.data;
-    } catch (err) {
-        console.log(err);
-        return false;
-    }
-}
-
 export const getGameLog = async () => {
     try {
         const res = await axios.post(
-            PUBLIC_BACKEND_API + 'user/gameLog/',
+            PUBLIC_BACKEND_API + 'user/game-log/',
             {
                 key: get(userStore).key
             }

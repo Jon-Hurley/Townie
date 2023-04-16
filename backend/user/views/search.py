@@ -31,20 +31,6 @@ def getSummary(gameID):
 
 
 @csrf_exempt
-def getRating(request):
-    data = json.loads(request.body)
-    theme = data['theme']
-    try:
-        res = queries.getRating(theme).batch()[0]
-    except:
-        return util.returnError("Invalid theme.", 404)
-    return JsonResponse({
-        "rating": res['rating'],
-        "numRatings": res['numRatings'],
-    })
-
-
-@csrf_exempt
 def getGameLog(request):
     userKey = json.loads(request.body)['key']
     res = queries.getGameLog(userKey).batch()
