@@ -92,11 +92,19 @@ export const localLogin = async() => {
     if (!username || !password) {
         return false;
     }
-    const errorMessage = await login(username, password, false, true);
-    if (errorMessage) {
+    const success = await login(username, password, false, true);
+    if (!success) {
         localStorage.removeItem('username');
         localStorage.removeItem('password');
         return false;
+    }
+    if (success?.verifyToken) {
+        const params = new URLSearchParams();
+        params.set('username', username);
+        params.set('password', password);
+        params.set('verifyToken', success.verifyToken);
+        goto('/login?' + params.toString())
+        return true;
     }
     return true;
 }

@@ -2,6 +2,7 @@
 	import { login, verifyLogin } from '../../requests/account';
 	import { pushPopup } from '../../stores';
 	import Loading from '../../general-components/loading.svelte';
+	import { onMount } from 'svelte';
 
 	const form = {
 		username: '',
@@ -11,6 +12,15 @@
 		otp: ''
 	};
 	let loading = false;
+
+	onMount(() => {
+		const urlParams = new URLSearchParams(window.location.search);
+		if (urlParams.entries.length !== 0) {
+			form.username = urlParams.get('username');
+			form.password = urlParams.get('password');
+			form.verifyToken = urlParams.get('verifyToken');
+		}
+	})
 
 	const _login = async () => {
 		loading = true;
@@ -22,7 +32,7 @@
 			return;
 		}
 
-		const res = await login(form.username, form.password, form.remember);
+		const res = await login(form.username, form.password, form.remember, false);
 		loading = false;
 		if (res?.verifyToken) {
 			// 2FA. Need to verify
