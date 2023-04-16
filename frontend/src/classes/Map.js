@@ -96,7 +96,6 @@ export class Map {
     static updateDestinationCircle() {
         const circle = Map.getDestinationCircle();
         const mapboxObj = Map.map.getMap();
-        console.log("RADIUS: ", get(Map.settings).destinationRadius);
         const src = mapboxObj.getSource("destCircleData");
         src?.setData(circle);
     }

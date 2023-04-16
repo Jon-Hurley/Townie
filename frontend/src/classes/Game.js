@@ -52,12 +52,8 @@ export class Game {
         let distance = turf.distance(from, to, {units: 'kilometers'}) / 2.0;
         const startTime = Game?.game?.createTime;
         const currTime = newTime;
-        console.log("START TIME:", startTime);
-        console.log("CURRENT TIME:", currTime);
         const timeLeft = Game?.nextDestination?.timeToCompletion * 1000;
-        console.log("TIME LEFT:", timeLeft);
         const radius = get(Map.settings).destinationRadius;
-        console.log("RADIUS:", radius);
         let timeComputation = -1;
         if (currTime > timeLeft) {
             timeComputation = currTime / timeLeft;
@@ -80,7 +76,6 @@ export class Game {
         else if  (timeComputation > 2) {
             distance = 0;
         }
-        console.log("FINAL DISTANCE:", distance);
 
 
         Map.updateDestinationRadius(x => x = distance);
