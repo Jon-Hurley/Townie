@@ -32,6 +32,7 @@ export class Map {
     static updateDestinationRadius(f) {
         Map.settings.update(settings => {
             settings.destinationRadius = f(settings.destinationRadius);
+            if (settings.destinationRadius < 0.1) settings.destinationRadius = 0;
             return settings;
         });
         Map.updateDestinationCircle();
@@ -49,11 +50,13 @@ export class Map {
 
     static updateExactLocation(f) {
         console.log("before " + Map.settings.exactLocation);
+        console.log(f(Map.settings.exactLocation))
         Map.settings.update(settings => {
-            settings.exactLocation = f(settings.exactLocation);
+            Map.settings.exactLocation = f(Map.settings.exactLocation);
             return settings;
         });
         console.log("after " + Map.settings.exactLocation);
+        Map.updateDestinationCircle();
     }
 
     static setCenter(loc) {
@@ -118,11 +121,12 @@ export class Map {
 
     static updateDestinationCircle() {
         console.log("UpdateCircle: exactLocation: " + Map.settings.exactLocation);
-        if (Map.settings.destinationRadius < 0.1 || Map.settings.exactLocation) {
-            const marker = Map.getDestinationMarker();
+        if (get(Map.settings).destinationRadius < 0.1 || Map.settings.exactLocation) {
+            console.log("Radius is: " + get(Map.settings).destinationRadius)
+            const point = Map.getDestinationMarker();
             const mapboxObj = Map.map.getMap();
             const src = mapboxObj.getSource("destData");
-            src?.setData(marker);
+            src?.setData(point);
         } else {
             const circle = Map.getDestinationCircle();
             const mapboxObj = Map.map.getMap();

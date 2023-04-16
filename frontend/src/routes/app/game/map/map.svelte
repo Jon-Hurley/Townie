@@ -48,12 +48,10 @@
     });
 
     const _skipLocation = () => {
-        console.log("Current radius: " + Map.settings.destinationRadius);
-        Map.updateExactLocation(x => false);
+        Map.settings.exactLocation = false;
         Map.updateDestinationRadius(x => 1);
         Map.updateDestinationRadiusScalar(x => 1);
-        console.log(Map.settings.destinationRadius);
-        console.log("Exact location is: " + Map.settings.exactLocation);
+        console.log("Exact location after skip is: " + Map.settings.exactLocation);
         skipPopupOpen = false;
         if (Game.player.destinationIndex === Game.destinations.length - 1) {
             Game.leave();
@@ -84,14 +82,16 @@
         }
         console.log("Points spent after peek: " + get(userStore).points);
         if (pointsSpent == 750) {
-            console.log("we shrinkin")
-            Map.updateDestinationRadiusScalar(x => x * 0.5);
-            Map.updateDestinationRadius(x => x * Map.updateDestinationRadiusScalar);
+            //Map.updateDestinationRadiusScalar(x => x * 0.5);
+            Map.updateDestinationRadius(x => x * 0.5);
+            console.log(get(Map.settings).destinationRadius);
+            //Map.settings.destinationRadius = Map.settings.destinationRadius * 0.5;
             Map.setCenterToCurrent();
             Map.updateDestinationCircle();
             Map.updateBounds();
         } else {
-            Map.settings.exactLocation = true;
+            //Map.settings.exactLocation = true;
+            Map.updateDestinationRadius(x => 0);
             Map.setCenterToCurrent();
             Map.updateDestinationCircle();
             Map.updateBounds();
@@ -353,7 +353,7 @@
         {/if}
     {/each}
 
-    {#if Map.settings.destinationRadius < 0.1 || Map.settings.exactLocation}
+    {#if $mapSettingsStore.destinationRadius === 0}
         <Marker
             lng={Game.nextDestination.lon}
             lat={Game.nextDestination.lat}
