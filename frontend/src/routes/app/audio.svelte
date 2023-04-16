@@ -9,8 +9,11 @@
     $: if ($primaryAudio) {
         if (audioElement) {
             audioElement.pause();
-            audioElement.src = $primaryAudio === 'Kahoot' ?
-                Kahoot : Moonshine;
+            audioElement.src = (
+                $primaryAudio === 'Kahoot' ? Kahoot
+                : $primaryAudio === 'Moonshine' ? Moonshine
+                : ''
+            );
             audioElement.play();
         }
     } else {
