@@ -62,6 +62,7 @@ export class Map {
         const nextDest = Game.nextDestination;
         const center = [ nextDest.lon, nextDest.lat ];
         const radius = get(Map.settings).destinationRadius;
+        if (radius < .1) return turf.point(center);
         const options = { steps: 50, units: 'kilometers' };
         return turf.circle(center, radius, options);
     }
@@ -70,7 +71,13 @@ export class Map {
         const circle = Map.getDestinationCircle();
         const mapboxObj = Map.map.getMap();
         console.log(mapboxObj);
-        
+        if (get(Map.settings).destinationRadius < .1) {
+            mapboxObj.addSource("destCircleData", {
+                "type": "geojson",
+                "data": circle
+            });
+            return;
+        }
         mapboxObj.addSource("destCircleData", {
             "type": "geojson",
             "data": circle
@@ -89,6 +96,7 @@ export class Map {
     static updateDestinationCircle() {
         const circle = Map.getDestinationCircle();
         const mapboxObj = Map.map.getMap();
+        console.log("RADIUS: ", get(Map.settings).destinationRadius);
         const src = mapboxObj.getSource("destCircleData");
         src?.setData(circle);
     }

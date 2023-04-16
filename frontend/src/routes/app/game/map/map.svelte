@@ -55,10 +55,24 @@
         {/if}
     {/each}
 
+    
+
     <Marker
         lng={$locationStore.lng}
         lat={$locationStore.lat}
         label={'You'}
         color="rgb(255,0,0)"
     />
+
+    {#if $mapSettingsStore.destinationRadius < .1}
+        
+        <Marker
+            lng={Game.nextDestination.lon}
+            lat={Game.nextDestination.lat}
+            label={'Next Destination'}
+            color="rgb(0,255,0)"
+        />
+    {/if}
+
+    
 </Mapbox>
