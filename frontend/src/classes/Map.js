@@ -2,7 +2,6 @@ import { writable, get } from 'svelte/store';
 import { Location } from './Location';
 import { Game } from './Game';
 import * as turf from '@turf/turf';
-import { shrinkFactor, showDestination } from "../routes/app/game/map/map.svelte";
 
 export class Map {
     static map = undefined;
@@ -10,9 +9,13 @@ export class Map {
         darkMode: true,
         snapLocation: false,
         zoom: 15,
-        destinationRadius: 1
+        destinationRadius: 1,
+        destinationRadiusScalar: 1,
+        exactLocation: false
     })
     static snapInterval = undefined;
+
+    static shrinkFactor = 1.0;
 
     static toggleSnapLocation() {}
     static toggleDarkMode() {}
@@ -32,6 +35,25 @@ export class Map {
             return settings;
         });
         Map.updateDestinationCircle();
+    }
+    
+    static updateDestinationRadiusScalar(f) {
+        Map.settings.update(settings => {
+            console.log("radius before: " + settings.destinationRadiusScalar);
+            settings.destinationRadiusScalar = f(settings.destinationRadiusScalar);
+            console.log("radius after: " + settings.destinationRadiusScalar);
+            return settings;
+        });
+        Map.updateDestinationCircle();
+    }
+
+    static updateExactLocation(f) {
+        console.log("before " + Map.settings.exactLocation);
+        Map.settings.update(settings => {
+            settings.exactLocation = f(settings.exactLocation);
+            return settings;
+        });
+        console.log("after " + Map.settings.exactLocation);
     }
 
     static setCenter(loc) {
@@ -60,11 +82,18 @@ export class Map {
     };
 
     static getDestinationCircle() {
+        const settings = get(Map.settings);
         const nextDest = Game.nextDestination;
         const center = [ nextDest.lon, nextDest.lat ];
-        const radius = get(Map.settings).destinationRadius;
+        const radius = settings.destinationRadius;
         const options = { steps: 50, units: 'kilometers' };
         return turf.circle(center, radius, options);
+    }
+
+    static getDestinationMarker() {
+        const nextDest = Game.nextDestination;
+        const center = [ nextDest.lon, nextDest.lat ];
+        return turf.point(center);
     }
 
     static setDestinationCircle() {
@@ -72,14 +101,14 @@ export class Map {
         const mapboxObj = Map.map.getMap();
         console.log(mapboxObj);
         
-        mapboxObj.addSource("destCircleData", {
+        mapboxObj.addSource("destData", {
             "type": "geojson",
             "data": circle
         });
         mapboxObj.addLayer({
             id: "destCircle",
             type: "fill",
-            source: "destCircleData",
+            source: "destData",
             paint: {
                 "fill-color": "red",
                 "fill-opacity": 0.25,
@@ -88,10 +117,18 @@ export class Map {
     }
 
     static updateDestinationCircle() {
-        const circle = Map.getDestinationCircle();
-        const mapboxObj = Map.map.getMap();
-        const src = mapboxObj.getSource("destCircleData");
-        src?.setData(circle);
+        console.log("UpdateCircle: exactLocation: " + Map.settings.exactLocation);
+        if (Map.settings.destinationRadius < 0.1 || Map.settings.exactLocation) {
+            const marker = Map.getDestinationMarker();
+            const mapboxObj = Map.map.getMap();
+            const src = mapboxObj.getSource("destData");
+            src?.setData(marker);
+        } else {
+            const circle = Map.getDestinationCircle();
+            const mapboxObj = Map.map.getMap();
+            const src = mapboxObj.getSource("destData");
+            src?.setData(circle);
+        }
     }
 
     static updateBounds() {

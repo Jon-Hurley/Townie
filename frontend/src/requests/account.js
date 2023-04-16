@@ -267,13 +267,23 @@ export const deleteUser = async() => {
     }
 }
 
-export const spendPoints = async(pointsSpent) => {
-    const res = axios.post(
-        PUBLIC_BACKEND_API + 'user/spend-points/',
-        {
-            token: get(userStore).token,
-            pointsSpent,
-            key: get(userStore).key
-        }
-    )
+export const spendPoints = async(option) => {
+    try {
+        const res = await axios.post(
+            PUBLIC_BACKEND_API + 'user/spend-points/',
+            {
+                token: get(userStore).token,
+                option: option
+            }
+        )
+        updateAccessToken(res);
+        console.log(res);
+        userStore.set(res.data);
+        return res;
+    } catch (err) {
+        const err_message = err?.response?.data?.errorMessage
+                            || 'Connection Refused. Failed to spend points. Please try again.';
+        pushPopup(0, err_message);
+        return false;
+    }
 }

@@ -51,7 +51,7 @@ export class Game {
             const achievedDest = Game.nextDestination;
             const displayTime = Math.round(10 * oldTime / (1000 * 60)) / 10;
             const displayDist = Math.round(oldDist / 100) / 10;
-           
+            Map.settings.exactLocation = false;
             pushPopup(
                 1,
                 `You reached destination: ${achievedDest.name}!\n

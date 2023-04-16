@@ -392,8 +392,20 @@ def incrementIndex(connectionID):
         bind_vars={'connectionId': connectionID}
     )
 
-def updatePoints(userKey, newPoints):
-    return arango_con.userCollection.update({
-        '_key': userKey,
-        'points': newPoints
-    })
+def updatePoints(userKey, option):
+    return arango_con.db.aql.execute(
+        """
+        FOR u IN User
+            FILTER u._key == @_key
+            LET dp = @option == 0 ? 750 : 1500
+            FILTER u.points >= dp
+            LET newPoints = u.points - dp
+            UPDATE u
+            WITH {
+                points: newPoints
+            }
+            IN User
+            RETURN NEW
+        """,
+        bind_vars={"_key": userKey, "option": option}
+    )

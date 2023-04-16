@@ -1,5 +1,5 @@
 <script>
-	import { completePasswordReset, initiatePasswordReset } from "../../../requests/account";
+	import { completePasswordReset, initiatePasswordReset } from "../../../../requests/account";
 	import ForgotPassword from "./forgotPassword.svelte";
 	import ResetPassword from "./resetPassword.svelte";
 	import { pushPopup } from "../../stores";

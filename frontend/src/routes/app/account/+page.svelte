@@ -96,7 +96,7 @@
 </div>
 
 <div>
-	<a href='/app/account/game_log'>
+	<a href='/app/game-log'>
 		<button class="{buttonStyle} {blueStyle}">
 			Go to Game Logs  
 		</button>
