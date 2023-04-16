@@ -6,7 +6,7 @@
 	import Summary from './summary.svelte';
 
 	import { getSummary } from '../../../../requests/search';
-	import { rating } from '../../../../requests/search';
+	
 	import { userStore } from '../../../../stores';
 	
 	let userInGame;
