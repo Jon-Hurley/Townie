@@ -54,6 +54,32 @@
 		url = "https://www.google.com/maps/dir/?api=1&dir_action=navigate&destination=" + exportNav;
 		window.open(url, "_blank");
 	}
+
+	const _getAccurateNavigation = () => {
+		console.log("Getting accurate navigation");
+		const currLat = Location.lat;
+		const currLng = Location.lng;
+		const destLat = Game.nextDestination.lat;
+		const destLng = Game.nextDestination.lon;
+		const from = turf.point([currLng, currLat]);
+		const to = turf.point([destLng, destLat]);
+		const distance = turf.distance(from, to, options);
+		const addLat = Math.random();
+
+		const randPos = (Math.random() * distance / 20.0);
+		let finalLat;
+		if (addLat > 0.5) {
+			finalLat = currLat + randPos;
+			console.log(finalLat);
+		} else {
+			finalLat = currLat - randPos;
+			console.log(finalLat);
+		}
+		
+		exportNav = finalLat + "," + destLng;
+		url = "https://www.google.com/maps/dir/?api=1&dir_action=navigate&destination=" + exportNav;
+		window.open(url, "_blank");
+	}
 </script>
 
 <button type="button" class="{buttonStyle} {grayStyle} w-full" on:click={() => (isOpen = true)}>
@@ -171,6 +197,18 @@
 			}>
 			Get navigation
 			</button>
+			<button
+				class="{buttonStyle} {blueStyle} w-full mr-2"
+				on:click={() => {
+					pushPopup(
+						2, 'This will be an exact navigation.',
+						() => {
+							isOpen = false;
+							_getAccurateNavigation();
+						}
+					)
+				}
+			}>
 		</div>
 	</div>
 </div>
