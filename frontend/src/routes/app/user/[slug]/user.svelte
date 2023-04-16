@@ -1,8 +1,9 @@
 <script>
 	import { acceptFriend, rejectFriend, sendFriendRequest } from "../../../../requests/friend";
 	import { userStore } from "../../../../stores";
-    import { buttonStyle, redStyle, greenStyle, blueStyle, hr } from '../../../../css'
+    import { buttonStyle, redStyle, greenStyle, blueStyle, hr, gridContainer } from '../../../../css'
 	import Username from "../../../../general-components/username.svelte";
+	import Purchase from "../../../../general-components/purchase.svelte";
 	
     const title = "text-gray-700 font-semibold text-lg mt-6";
 
@@ -103,47 +104,17 @@
 
 
 <div class={title}>
-    Badges
+    Purchases
 </div>
 <hr class={hr}>
-<div class="h-full overflow-auto">
-    <div class="flex flex-wrap justify-center gap-2 px-2 py-4">
-        {#if !user.purchases.length}
-            <div>
-                No badges to display.
-            </div>
-        {/if}
-        {#each user.purchases as p}
-            <div
-                class="
-                    border-gray-200 border-4 rounded-full
-                    p-3 m-0
-                    text-indigo-500 font-semibold
-                    w-24 h-24
-                    flex flex-col items-center justify-center
-                    text-xs
-                    hover:scale-110 duration-200
-                    z-100
-                    overflow-visible
-                    cursor-pointer
-                "
-            >
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.5"
-                    stroke="currentColor"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d={p.badge}
-                    />
-                </svg>
-            
-                {p.name}
-            </div>
+{#if user?.purchases?.length}
+    <div class="{gridContainer}">
+        {#each user?.purchases as p}
+            <Purchase p={p}/>
         {/each}
     </div>
-</div>
+{:else}
+    <div class="flex gap-2">
+        <div>You have no purchases</div>
+    </div>
+{/if}

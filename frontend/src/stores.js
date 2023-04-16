@@ -10,7 +10,35 @@ export const updateAccessToken = (res) => {
     userStore.set({ ...get(userStore), token });
 };
 
-export const purchaseStore = writable([]);
+export const primaryColor = writable('indigo');
+export const primaryAudio = writable(null);
+
+export const handlePurchaseUpdates = (user) => {
+    let newPrimaryColor = 'indigo';
+    let newPrimaryAudio = null;
+
+    for (const p of user.purchases) {
+        if (!p?.isActive) continue;
+        switch (p.category) {
+            case 'Color': {
+                newPrimaryColor = p.name.toLowerCase();
+                break;
+            }
+            case 'Music': {
+                newPrimaryAudio = p.name;
+                break;
+            }
+            default: {
+                console.log("Unrecognized purchase category:", p.category);
+            }
+        }
+    }
+
+    if (get(primaryColor) !== newPrimaryColor)
+        primaryColor.set(newPrimaryColor);
+    if (get(primaryAudio) !== newPrimaryAudio)
+        primaryAudio.set(newPrimaryAudio);
+}
 
 export const popupQueue = writable([]);
 

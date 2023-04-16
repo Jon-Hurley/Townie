@@ -1,7 +1,7 @@
 <script>
 	import { blueStyle, buttonStyle, redStyle, hr } from '../../../../css';
 	import { updateAccount } from '../../../../requests/account';
-	import { userStore } from '../../../../stores';
+	import { primaryColor, userStore } from '../../../../stores';
 	const title = 'text-gray-700 font-semibold text-lg mt-4';
 
 	const form = {
@@ -42,7 +42,7 @@
 		bind:value={form.newUsername}
 		type="newUsername"
 		id="newUsername"
-		class="relative block w-full appearance-none rounded-t-md rounded-b-md mt-2 border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+		class="relative block w-full appearance-none rounded-t-md rounded-b-md mt-2 border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-{$primaryColor}-500 focus:outline-none focus:ring-{$primaryColor}-500 sm:text-sm"
 		placeholder="New Username"
 	/>
 </div>
@@ -54,7 +54,7 @@
 		bind:value={form.newPhone}
 		type="newPhone"
 		id="newPhone"
-		class="relative block w-full appearance-none rounded-t-md rounded-b-md mt-2 border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+		class="relative block w-full appearance-none rounded-t-md rounded-b-md mt-2 border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-{$primaryColor}-500 focus:outline-none focus:ring-{$primaryColor}-500 sm:text-sm"
 		placeholder="New Phone Number"
 	/>
 </div>
@@ -82,7 +82,7 @@
 	<input
 		bind:value={form.password}
 		type="password"
-		class="relative block w-full appearance-none rounded-t-md rounded-b-md mt-2 border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+		class="relative block w-full appearance-none rounded-t-md rounded-b-md mt-2 border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-{$primaryColor}-500 focus:outline-none focus:ring-{$primaryColor}-500 sm:text-sm"
 		placeholder="Enter Password to Proceed"
 	/>
 </div>

@@ -17,3 +17,11 @@ html, body {
 @keyframes shimmer {
    100% {-webkit-mask-position:left}
 }
+
+.scrollbar-hide {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}

@@ -32,5 +32,6 @@ urlpatterns = [
     path('cancel-subscription/', store.cancelStripeSubscription),
 
     path('purchase/', store.makePurchase),
-    path('purchasables/', store.getPurchasables)
+    path('purchasables/', store.getPurchasables),
+    path('activate-purchase/', store.activatePurchase),
 ]

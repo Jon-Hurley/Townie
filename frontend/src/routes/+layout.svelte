@@ -10,6 +10,7 @@
     
 	import { popupQueue, userStore } from '../stores';
     import { autoLogin } from '../requests/account';
+	import ColorLoader from './color-loader.svelte';
     $: console.log('NEW USER: ', $userStore);
 
     let loaded = false;
@@ -54,3 +55,5 @@
         {...$popupQueue[0]}
     />
 {/if}
+
+<ColorLoader/>

@@ -3,6 +3,7 @@
     import { page } from '$app/stores';
     import { pages, getHighlight } from './navbar';
     import Icon from '$lib/assets/townie-icon.jpg';
+	import { primaryColor } from '../../stores';
 
     let currentPage;
     let highlightedPage;
@@ -30,7 +31,8 @@
                     rounded-full p-4 mb-6
                     transition-colors duration-500 transition duration-150 ease-in-out
                     ring-4 ring-white
-                    border-4 border-indigo-700
+                    border-4
+                    border-{$primaryColor}-{highlightedPage === page ? '500' : '700'}
                 "
                 style="
                     background-image: url({Icon});
@@ -50,8 +52,8 @@
                     rounded-full p-4
                     transition-colors duration-500 transition duration-150 ease-in-out
                     {highlightedPage === page ? 
-                        'text-white bg-indigo-700'
-                        : 'text-gray-400 hover:text-white hover:bg-indigo-700'
+                        'text-white bg-' + $primaryColor + '-700'
+                        : 'text-gray-400 hover:text-white hover:bg-' + $primaryColor + '-700'
                     }
                 "
                 data-bs-toggle="tooltip" 

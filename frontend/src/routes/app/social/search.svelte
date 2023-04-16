@@ -3,6 +3,7 @@
 	import { inputStyle } from '../../../css';
     import { getUsers } from '../../../requests/search';
 	import Username from '../../../general-components/username.svelte';
+	import { primaryColor } from '../../../stores';
 
     let userSearch = '';
     let results = [];
@@ -30,7 +31,7 @@
     class="
         w-full mb-4
         flex justify-end items-center
-        focus:indigo-500
+        focus:{$primaryColor}-500
         text-gray-400
     "
 >
@@ -61,7 +62,7 @@
 </div>
 
 {#if displayResults}
-    <div class="absolute top-28 m-0 w-full left-0 p-4">
+    <div class="absolute top-28 m-0 w-full left-0 p-4 z-50">
         <ul
             class="w-full rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
             tabindex="-1"
@@ -88,7 +89,7 @@
                                         w-1 h-8 mr-3
                                         {
                                             r.isFriend ? 'bg-green-500'
-                                            : r.jaccardIndex >= 0.25 ? 'bg-indigo-500'
+                                            : r.jaccardIndex >= 0.25 ? `bg-${$primaryColor}-500`
                                             : 'bg-gray-300'
                                         }
                                         rounded-full

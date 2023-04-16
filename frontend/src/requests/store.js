@@ -13,6 +13,7 @@ export const makePurchase = async (purchasableKey) => {
             }
         );
         updateAccessToken(res);
+        userStore.set(res.data);
         return true;
     } catch (err) {
         console.log(err);
@@ -43,21 +44,22 @@ export const getPurchasables = async () => {
     }
 }
 
-export const getPurchases = async () => {
+export const activatePurchase = async (purchasableKey) => {
     try {
         const res = await axios.post(
-            PUBLIC_BACKEND_API + 'user/purchases/',
+            PUBLIC_BACKEND_API + 'user/activate-purchase/',
             {
-                token: get(userStore).token
+                token: get(userStore).token,
+                purchasableKey
             }
         );
         updateAccessToken(res);
-        console.log(res.data)
-        return res.data.purchases;
+        userStore.set(res.data);
+        return true;
     } catch (err) {
         console.log(err);
         const errMessage = err?.response?.data?.errorMessage
-                            || "Unable to retrive purchasables. Please try again.";
+                            || "Unable to activate purchase. Please try again.";
         pushPopup({ status: 0, message: errMessage })
         return [];
     }

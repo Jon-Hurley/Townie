@@ -1,5 +1,5 @@
 <script>
-	import { gridItem, largeTitle } from "../../../../css";
+	import { gridContainer, gridItem, hr, largeTitle } from "../../../../css";
 	import { Game } from "../../../../classes/Game";
 	import Username from "../../../../general-components/username.svelte";
     const title = "text-gray-700 font-semibold text-lg mt-2";
@@ -18,13 +18,7 @@
     <hr class={hr}>
     <div class="rounded h-full overflow-auto p-2">
         <div
-            class="
-                overflow-auto
-                inline-flex flex-wrap justify-center
-                gap-2
-                p-2
-                w-full
-            "
+            class="{gridContainer}"
             style="max-height: 100%"
         >
             {#each $gameStore.players as player}

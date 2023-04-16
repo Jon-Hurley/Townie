@@ -1,3 +1,6 @@
+import { get } from "svelte/store";
+import { primaryColor } from "./stores";
+
 export const buttonBaseStyle = `
     border-[1px] rounded
     font-medium
@@ -35,12 +38,12 @@ export const amberStyle = `
     text-amber-500
 `;
 
-export const inputStyle = `
+export let inputStyle = `
     m-0 w-full p-3 pl-8
     rounded border border-gray-200
     bg-gray-200
     focus:bg-white focus:outline-none
-    focus:ring-2 focus:ring-indigo-500
+    focus:ring-2 focus:ring-${get(primaryColor)}-500
     focus:border-transparent
 `;
 
@@ -52,6 +55,14 @@ export const largeTitle = `
 `;
 
 export const hr = "bg-gray-100 h-[2px] mb-4 mt-2";
+
+export const gridContainer = `
+    overflow-y-auto scrollbar-hide
+    inline-flex flex-wrap justify-center
+    gap-2
+    p-2
+    w-full
+`;
 
 export const gridItem = `
     p-3 h-[51px] m-0

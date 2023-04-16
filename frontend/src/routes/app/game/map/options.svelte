@@ -1,6 +1,7 @@
 <script>
     import { Map } from '../../../../classes/Map';
-    const settingsStore = Map.settings;
+	import { primaryColor } from '../../../../stores';
+	const settingsStore = Map.settings;
 
     const checkboxes = [
         {
@@ -51,7 +52,7 @@
                 type="checkbox"
                 class="
                     w-3 h-3
-                    checked:bg-indigo-500
+                    checked:bg-{$primaryColor}-500
                     border:none
                     rounded
                     appearance-none

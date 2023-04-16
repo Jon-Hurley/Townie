@@ -7,8 +7,9 @@
 	import Premium from '../../../general-components/premium.svelte';
 
 	import { pushPopup, userStore } from '../../../stores';
+	import Purchases from './purchases.svelte';
 
-	const title = 'text-gray-700 font-semibold text-lg mt-6';
+	const title = 'font-semibold text-lg mt-6';
 
 	onMount(() => {
 		const urlParams = new URLSearchParams(window.location.search);
@@ -69,14 +70,12 @@
 	<Premium simplified={false}/>
 </div>
 
-<div class={title}>Phone Number</div>
-<hr class={hr} />
-<div class="p-2 uppercase">
-	{$userStore?.phone}
-</div>
-
 <div class={title}>Rank</div>
 <hr class={hr} />
-<div class="p-2 uppercase">
+<div class="pl-2 uppercase">
 	{$userStore?.rank}
 </div>
+
+<div class={title}>Purchases</div>
+<hr class={hr} />
+<Purchases/>

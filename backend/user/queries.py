@@ -27,7 +27,8 @@ def getUserByUsername(username):
             FILTER user.username == @username
             LET purchases = (
                 FOR v, e IN 1..1 ANY user._id GRAPH Consumerships
-                    RETURN v
+                    SORT v.category ASC, e.purchaseTime DESC
+                    RETURN MERGE(v, { isActive: e.isActive })
             )
             RETURN MERGE(user, { purchases })
         """,
@@ -43,7 +44,8 @@ def getUserFromPhone(phone):
             FILTER user.phone == @phone
             LET purchases = (
                 FOR v, e IN 1..1 ANY user._id GRAPH Consumerships
-                    RETURN v
+                    SORT v.category ASC, e.purchaseTime DESC
+                    RETURN MERGE(v, { isActive: e.isActive })
             )
             RETURN MERGE(user, { purchases })
         """,
@@ -74,7 +76,8 @@ def updateInfo(userKey, newUsername, newPhone, newPasswordHash,
                 FOR v, e IN 1..1 ANY
                 CONCAT("User/", @userKey)
                 GRAPH Consumerships
-                    RETURN v
+                    SORT v.category ASC, e.purchaseTime DESC
+                    RETURN MERGE(v, { isActive: e.isActive })
             )
             
             UPDATE {
@@ -105,7 +108,8 @@ def UpdatePlayableInfo(userKey, weeklyGamePlayed, newTime):
             FOR v, e IN 1..1 ANY
             CONCAT("User/", @userKey)
             GRAPH Consumerships
-                RETURN v
+                SORT v.category ASC, e.purchaseTime DESC
+                RETURN MERGE(v, { isActive: e.isActive })
         )
 
         FOR user IN User
@@ -225,7 +229,8 @@ def getUserWithFriendship(userKey, targetKey):
 
         LET purchases = (
             FOR v, e IN 1..1 ANY userId GRAPH Consumerships
-                RETURN v
+                SORT v.category ASC, e.purchaseTime DESC
+                RETURN MERGE(v, { isActive: e.isActive })
         )
 
         FOR user IN User
@@ -236,7 +241,7 @@ def getUserWithFriendship(userKey, targetKey):
                 username: user.username,
                 points: user.points,
                 isPremium: user.isPremium,
-                purchases: purchases,
+                purchases,
                 friendship: f,
                 mutualFriends,
                 networkDistance
@@ -257,7 +262,8 @@ def getUser(targetKey):
 
             LET purchases = (
                 FOR v, e IN 1..1 ANY user._id GRAPH Consumerships
-                    RETURN v
+                    SORT v.category ASC, e.purchaseTime DESC
+                    RETURN MERGE(v, { isActive: e.isActive })
             )
 
             RETURN {
@@ -610,6 +616,7 @@ def getPurchasables(userKey):
                     RETURN x
             )
             FILTER LENGTH(matches) == 0
+            SORT p.isPremium ASC, p.cost ASC
             RETURN p
         """,
         bind_vars={
@@ -649,7 +656,8 @@ def makePurchase(userKey, purchasableKey):
                 INSERT {
                     _from: CONCAT("User/", @userKey),
                     _to: p._id,
-                    purchaseTime: DATE_NOW()
+                    purchaseTime: DATE_NOW(),
+                    isActive: false
                 }
                 INTO Purchases
                 RETURN NEW
@@ -662,6 +670,35 @@ def makePurchase(userKey, purchasableKey):
             enoughPoints: user.points - item.cost,
             alreadyPurchased: res == null
         }
+        """,
+        bind_vars={
+            'userKey': userKey,
+            'purchasableKey': purchasableKey
+        }
+    )
+
+def activatePurchase(userKey, purchasableKey):
+    return arango_con.db.aql.execute(
+        """
+        LET user = (
+            FOR user IN User
+                FILTER user._key == @userKey
+                RETURN user
+        )[0]
+
+        LET purchase = (
+            FOR p IN Purchasables
+                FILTER p._key == @purchasableKey
+                return p
+        )[0]
+
+        FOR v, e IN 1..1 ANY user._id GRAPH Consumerships
+            FILTER purchase.category == v.category
+            UPDATE e._key WITH {
+                isActive: @purchasableKey == v._key ? !e.isActive : false
+            }
+            IN Purchases
+            RETURN NEW
         """,
         bind_vars={
             'userKey': userKey,

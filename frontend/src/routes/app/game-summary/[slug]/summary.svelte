@@ -1,5 +1,5 @@
 <script>
-	import { pushPopup } from '../../../../stores';
+	import { pushPopup, primaryColor } from '../../../../stores';
 	import {
 		buttonStyle,
 		redStyle,
@@ -159,7 +159,7 @@
 			class="
 			border-gray-400 border-2 rounded-full
 			p-3 m-0
-			text-indigo-500 font-semibold
+			text-{$primaryColor}-500 font-semibold
 			w-24 h-24
 			flex flex-col items-center justify-center
 			text-xs
@@ -226,7 +226,15 @@
 		<input
 			type="number"
 			placeholder="0-5"
-			style="border:2px;color:indigo;border-color:indigo;border-radius:5px;padding:5px;width:40px;text-align:center;"
+			style="
+				border:2px;
+				color:{$primaryColor};
+				border-color:{$primaryColor};
+				border-radius:5px;
+				padding:5px;
+				width:40px;
+				text-align:center;
+			"
 			id="userRatingField"
 			name="userRatingField"
 			min="0.0"
@@ -263,7 +271,7 @@
 				class="
                     border-gray-200 border-4 rounded-full
                     p-3 m-0
-                    text-indigo-500 font-semibold
+                    text-{$primaryColor}-500 font-semibold
                     w-24 h-24
                     flex flex-col items-center justify-center
                     text-xs
@@ -300,7 +308,7 @@
 						p-2
 						flex
 						justify-between
-                        {listItem}{greenStyle}
+                        {listItem} {greenStyle}
 					"
 					style="font-size:larger"
 				>
@@ -320,7 +328,7 @@
 						p-2
 						flex
 						justify-between
-						{listItem}{redStyle}
+						{listItem} {redStyle}
 					"
 					style="font-size:larger"
 				>

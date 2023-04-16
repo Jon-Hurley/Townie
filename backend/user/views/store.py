@@ -10,15 +10,13 @@ import stripe_con
 @csrf_exempt
 def makePurchase(request):
     data = json.loads(request.body)
+    purchasableKey = data['purchasableKey']
 
     user, newToken = util.getUserFromToken(data['token'])
     if user is None:
         return util.returnError("Invalid token.", 401)
 
-    purchasableKey = data['purchasableKey']
-
     docs = queries.makePurchase(user['key'], purchasableKey).batch()
-
     if len(docs) == 0:
         return util.returnError("Unable to purchase item. Unknown error.", 404)
     if docs[0]['foundItem'] == False:
@@ -31,10 +29,32 @@ def makePurchase(request):
     if docs[0]['alreadyPurchased'] == True:
         return util.returnError("Unable to purchase item. You have already purchased this item.", 404)
 
-    return JsonResponse({
-        'token': newToken,
-        'purchased': docs[0]
-    })
+    userDocs = queries.getUserByUsername(user['username']).batch()
+    if len(userDocs) == 0:
+        return util.returnError("Unable to purchase item. Your account seems to have been terminated.", 404)
+
+    return util.returnUserPrivate(userDocs[0])
+
+@csrf_exempt
+def activatePurchase(request):
+    data = json.loads(request.body)
+    purchasableKey = data['purchasableKey']
+
+    user, newToken = util.getUserFromToken(data['token'])
+    if user is None:
+        return util.returnError("Invalid token.", 401)
+
+    print(user['key'], purchasableKey)
+
+    docs = queries.activatePurchase(user['key'], purchasableKey).batch()
+    if len(docs) == 0:
+        return util.returnError("Unable to activate purchase. You have not purchased this item.", 404)
+
+    userDocs = queries.getUserByUsername(user['username']).batch()
+    if len(userDocs) == 0:
+        return util.returnError("Unable to activate item. Your account seems to have been terminated.", 404)
+
+    return util.returnUserPrivate(userDocs[0])
 
 @csrf_exempt
 def getPurchasables(request):

@@ -1,8 +1,8 @@
 <script>
-	import { onDestroy, onMount } from "svelte";
+	import { onDestroy } from "svelte";
 	import { Game } from "../../../classes/Game";
 	import { blueStyle, buttonStyle, grayStyle, hr, inputStyle, largeTitle } from "../../../css";
-	import { userStore } from "../../../stores";
+	import { primaryColor, userStore } from "../../../stores";
 	import Username from "../../../general-components/username.svelte";
     let messages = Game.messageStore;
     $: console.log($messages);
@@ -88,7 +88,7 @@
                         </div>
                         <div class="
                                 flex flex-col p-2 px-4 
-                                {$userStore.isPremium ? 'bg-amber-100' : 'bg-indigo-100'}
+                                {$userStore.isPremium ? 'bg-amber-100' : `bg-${$primaryColor}-100`}
                                 rounded-bl-2xl rounded-tr-2xl rounded-tl-2xl
                                 text-right
                             "
