@@ -34,12 +34,25 @@
 	<Username boldness={'bold'}/>
 </div>
 
-<div class="flex justify-center gap-2">
-	<!-- Edit account button -->
+<div class="flex flex-wrap justify-center gap-2">
+	<!-- Game Log Button -->
+	<a href='/app/game-log'>
+		<button class="{buttonStyle} {blueStyle}" title="Game Log">
+			<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+				<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z" />
+			</svg>
+		</button>
+	</a>
+
+	<!-- Edit Account Button -->
 	<a href="/app/account/edit">
-		<button name="edit" class="{buttonStyle} {greenStyle} flex align-center">
+		<button
+			name="edit"
+			class="{buttonStyle} {greenStyle} flex align-center"
+			title="Edit Account"
+		>
 			<!-- Heroicon name: pencil -->
-			<div class="mr-2">Edit Account</div>
+			<!-- <div class="mr-2">Edit Account</div> -->
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				fill="none"
@@ -57,16 +70,10 @@
 		</button>
 	</a>
 
-	<!-- Delete User Function -->
+	<!-- Delete Account Button -->
 	<Delete/>
-</div>
 
-<div class="flex justify-center mt-2 gap-2">
-	<a href='/app/game-log'>
-		<button class="{buttonStyle} {blueStyle}">
-			Game Logs  
-		</button>
-	</a>
+	<!-- Premium Button -->
 	<Premium simplified={false}/>
 </div>
 

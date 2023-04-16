@@ -43,7 +43,7 @@
 			<h3 class="text-lg leading-6 font-medium text-gray-900 mt-2">
 				{name}
 			</h3>
-			<div class="px-7 text-left">
+			<div class="px-4 mt-2 text-left">
 				{#each message.split('\n') as str}
 					<p class="text-sm text-gray-500">
 						{str}

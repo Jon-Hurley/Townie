@@ -9,19 +9,30 @@
 		{
 			page: '/app/account/',
 			tooltip: 'Account',
-			styles: `text-${$primaryColor}-500 w-full bg-gray-100 p-1`,
 			svg: 'M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z',
             text: 'username',
-            svgStyle: 'hover:scale-125 transition-scale duration-200 m-1 mr-3'
-		},
+            svgStyle: 'scale-110 hover:scale-125 transition-scale duration-200 mr-4',
+			styles: `
+                text-${$primaryColor}-500
+                p-2 m-2 w-full
+                hover:bg-${$primaryColor}-50
+            `,
+        },
         {
 			Component: Premium,
-            styles: 'hover:bg-gray-100 p-1 ml-4 hover:scale-125 transition-scale duration-200',
-            tooltop: 'Premium'
+            styles: `
+                text-${$primaryColor}-500
+                hover:scale-125 hover:bg-${$primaryColor}-50
+                p-2 m-2
+            `
         },
         {
 			page: '/logout',
-			styles: 'text-gray-500 hover:scale-125 hover:bg-gray-100 p-1 ml-4',
+			styles: `
+                text-gray-500
+                hover:scale-125 hover:bg-${$primaryColor}-50
+                p-2 m-2
+            `,
 			tooltip: 'Logout',
 			svg: 'M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75'
 		}
@@ -30,10 +41,10 @@
 
 <nav
 	class="
-        w-full p-4 h-[60px] min-h-[60px]
+        w-full h-[60px] min-h-[60px]
         flex items-center justify-between
         overflow-hidden
-        border-b-[1px] border-gray-500 
+        border-b-2 border-gray-200
     "
 >
 	{#each pages as { Component, page, tooltip, svg, text, styles, svgStyle, onClick }}
@@ -89,9 +100,9 @@
                 </svg>
 
                 {#if text}
-                    <div class="text-2xl font h-[33px]">
+                    <div class="text-2xl h-[34px] text-bold">
                         {#if text === 'username'}
-                            <Username/>
+                            <Username boldness="bold"/>
                         {:else if text}
                             {text}
                         {/if}
