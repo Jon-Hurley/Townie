@@ -6,19 +6,18 @@
 	import Summary from './summary.svelte';
 
 	import { getSummary } from '../../../../requests/search';
-	
 	import { userStore } from '../../../../stores';
 	
-	let summary;
 	let loading = false;
+
+	let summary;
 	$: userInGame = !!summary?.players?.find(x => x?.username == $userStore.username);
 
 	const _loadGameSummary = async () => {
 		loading = true;
-		let gameKey = $page.params.slug;
+		const gameKey = $page.params.slug;
 		summary = await getSummary(gameKey);
 		summary.destinations.sort((a, b) => a.index - b.index);
-		console.log(summary);
 		loading = false;
 	};
 
@@ -36,9 +35,7 @@
 		/>
 	</div>
 {:else}
-	<div class="h-full flex flex-col">
-		<h1 class="text-lg mt-4 text-center text-gray-700">
-			No game summary found.
-		</h1>
+	<div class="mt-4 flex justify-center">
+		No game summary found.
 	</div>
 {/if}

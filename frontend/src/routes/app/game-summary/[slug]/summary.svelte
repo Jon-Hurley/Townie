@@ -4,7 +4,7 @@
 	import Rating from './rating.svelte';
 
 	import { primaryColor } from '../../../../stores';
-	import { redStyle, greenStyle, listItem, hr, largeTitle } from '../../../../css';
+	import { redStyle, greenStyle, hr, largeTitle } from '../../../../css';
 	const title = 'font-semibold text-lg mt-6';
 
 	export let summary, userInGame, reloadGameSummary;
@@ -29,8 +29,6 @@
 		</div>
 	</div>
 </div>
-
-
 
 <Share/>
 
@@ -68,7 +66,6 @@
 				<div class="text-sm">
 					{p.points} points | {getTime(p.timeToCompletion)}s away
 				</div>
-
 				<div class="absolute left-[-12px] bg-white px-1">
 					#{p.index + 1}
 				</div>

@@ -63,8 +63,7 @@
 
 <div class="flex gap-2 justify-center">
 	{#each media as media}
-		<!-- svelte-ignore a11y-click-events-have-key-events -->
-		<div
+		<button
 			class="
 				border-[2px] border-{media.color}-500
                 text-{media.color}-500
@@ -84,6 +83,6 @@
 			>
                 <path stroke-linecap="round" stroke-linejoin="round" d={media.icon} />
             </svg>              
-		</div>
+		</button>
 	{/each}
 </div>
