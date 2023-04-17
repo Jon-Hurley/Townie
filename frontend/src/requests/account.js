@@ -109,11 +109,12 @@ export const localLogin = async() => {
     return true;
 }
 
-export const logout = () => {
+export const logout = async () => {
     Game.leave();
     console.log("logging out")
     sessionStorage.removeItem('token');
     userStore.set(null);
+    await localLogin();
 };
 
 export const signup = async (phone, username) => {
