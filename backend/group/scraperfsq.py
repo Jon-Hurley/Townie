@@ -2,7 +2,7 @@ import requests
 import json
 import os
 import dotenv
-import mapbox
+# import mapbox --> Do not need for now
 from . import queries
 import googlemaps
 
@@ -108,7 +108,8 @@ def generate(settings, gameKey):
         if new_name == True:
             list.append(new_loc)
 
-    assert(len(list) > 0)
+    if (len(list) == 0):
+        return 0
         
     for i in range(len(list)):
         print(list[i]['name']) 
@@ -145,7 +146,6 @@ def generate(settings, gameKey):
     # print("MAPBOX: " + str(mapbox_loaded))
 
 
-        
     queries.insertIntoUnusedItinerary(unusedList, gameKey)
 
     min_times = []

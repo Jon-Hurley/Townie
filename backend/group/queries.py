@@ -130,6 +130,11 @@ def startGame(gameKey, settings):
 
     # TRIGGER WEB-SCRAPER: (get destinations & auto add to the DB)
     trueCompletionTime = scraperfsq.generate(settings, gameKey)
+
+    # IF NO DESTINATIONS FOUND, THROW ERROR
+    if (trueCompletionTime == 0):
+        raise Exception("No destinations found")
+    
     # trueCompletionTime = 100
 
     return arango_con.db.aql.execute(
