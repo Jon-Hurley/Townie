@@ -2,16 +2,11 @@
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
     import { pages, getHighlight } from './navbar';
-    import Icon from '$lib/assets/townie-icon.jpg';
 	import { primaryColor } from '../../stores';
 
-    let currentPage;
-    let highlightedPage;
+    import Icon from '$lib/assets/townie-icon.jpg';
 
-    page.subscribe(v => {
-        currentPage = v.route.id;
-        highlightedPage = getHighlight(currentPage);
-    });
+    $: highlightedPage = getHighlight($page.route.id);
 </script>
 
 <div
@@ -25,26 +20,26 @@
 >
     {#each pages as { page, tooltip, svg }, i}
         {#if i == 2}
-            <button
-                type="button"
-                class="
-                    rounded-full p-4 mb-6
-                    transition-colors duration-500 transition duration-150 ease-in-out
-                    ring-4 ring-white
-                    border-4
-                    border-{$primaryColor}-{highlightedPage === page ? '500' : '700'}
-                "
-                style="
-                    background-image: url({Icon});
-                    width: 55px;
-                    height: 55px;
-                    background-size: cover;
-                "
-                data-bs-toggle="tooltip" 
-                data-bs-placement="top"
-                title={tooltip}
-                on:click={() => goto(page)}
-            />
+            <div class="bg-white ring-4 ring-white mb-6 rounded-b-full">
+                <button
+                    type="button"
+                    class="
+                        p-4 transition-colors duration-500 transition duration-150 ease-in-out
+                        border-4 border-{$primaryColor}-{highlightedPage === page ? '500' : '700'}
+                    "
+                    style="
+                        background-image: url({Icon});
+                        width: 55px;
+                        height: 55px;
+                        background-size: cover;
+                        border-radius: 8px 8px 50% 50%;
+                    "
+                    data-bs-toggle="tooltip" 
+                    data-bs-placement="top"
+                    title={tooltip}
+                    on:click={() => goto(page)}
+                />
+            </div>
         {:else}
             <button
                 type="button"
