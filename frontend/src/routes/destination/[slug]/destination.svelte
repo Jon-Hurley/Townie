@@ -18,6 +18,7 @@
 
 	export let destination;
 	let rated = false;
+	let selectedIndex = 0;
 
 	onMount(async () => {
 		console.log(destination);
@@ -240,19 +241,39 @@
 	<div class="flex flex-wrap justify-center gap-2 px-2 py-4">
 		{#if !destination.tips.length}
 			<div>No tips to display.</div>
+		{:else}
+			<ul>
+				{#each destination.tips as t, i}
+					{#if i === selectedIndex}
+						<li class={buttonStyle} style="display:block;margin:5px">{t}</li>
+					{/if}
+				{/each}
+				<!-- <li class={buttonStyle} style="display:block;margin:5px">Another one</li> -->
+			</ul>
+			<div style="display:block;">
+				<button
+					class="{buttonStyle}{indigoStyle}"
+					style="float:left;"
+					on:click={() =>
+						(selectedIndex =
+							(selectedIndex - 1 + destination.tips.length) % destination.tips.length)}
+				>
+					&larr;
+				</button>
+				<button
+					class="{buttonStyle}{indigoStyle}"
+					style="float:right;"
+					on:click={() =>
+						(selectedIndex =
+							(selectedIndex + 1 + destination.tips.length) % destination.tips.length)}
+				>
+					&rarr;
+				</button>
+				<div class={title} style="display:block;text-align:center;">
+					Tip {selectedIndex + 1} of {destination.tips.length}
+				</div>
+			</div>
 		{/if}
-		<ul>
-			{#each destination.tips as t}
-				<li class={buttonStyle} style="display:block;margin:5px">{t}</li>
-				<!-- <div
-				
-                "
-			>
-				Points: {t.points}
-				{t.name}
-			</div> -->
-			{/each}
-		</ul>
 	</div>
 </div>
 
