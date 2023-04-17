@@ -73,6 +73,7 @@ def generate(settings, gameKey):
 
     response = requests.request("GET", url, params=params, headers=headers)
     response1 = json.loads(response.text)
+    print(response1)
     # for i in range(len(response1['results'])):
     #     print(response1['results'][i]['name'])
     # print(response1) SAI: This is the response from the FSQ call. You can use this to get the data you need.
@@ -81,7 +82,15 @@ def generate(settings, gameKey):
         name_dest = response1['results'][i]['name']
         latitude = response1['results'][i]['geocodes']['main']['latitude']
         longitude = response1['results'][i]['geocodes']['main']['longitude']
-        queries.createDestination(latitude,longitude,name_dest, settings['theme'])
+        tip_array = []
+
+        for j in range(len(response1['results'][i]['tips'])):
+            if (j > 2):
+                break
+            if (response1['results'][i]['tips'][j]['text'] != ""):
+                tip_array.append(response1['results'][i]['tips'][j]['text'])
+        
+        queries.createDestination(latitude, longitude, name_dest, settings['theme'], tip_array)
         destination = dict(name=name_dest, location=[latitude, longitude])
         new_name = True
         for j in range(len(list)):
@@ -111,8 +120,9 @@ def generate(settings, gameKey):
     if (len(list) == 0):
         return 0
         
-    for i in range(len(list)):
-        print(list[i]['name']) 
+    # for i in range(len(list)):
+    #     print(list[i]['name']) 
+
     locationList = []
     list_copy = []
     origin = dict(lat=settings['lat'], lng=settings['lon'])

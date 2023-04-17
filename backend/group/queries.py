@@ -418,17 +418,56 @@ def getGameForPlayer(gameKey, connectionId):
     )
 
 
-def createDestination(lat, lng, name, theme):
-    try:
-        list = [lat, lng]
-        return arango_con.destinationCollection.insert({
-            'latitude': lat,
-            'longitude': lng,
-            'name': name,
-            'theme': theme
-        })
-    except:
-        pass
+def createDestination(lat, lng, name, theme, tips):
+    
+    # list = [lat, lng]
+    # arango_con.destinationCollection.insert(
+    #     {
+    #     'latitude': lat,
+    #     'longitude': lng,
+    #     'name': name,
+    #     'theme': theme,
+    #     'tips': [tips]
+    #     }, 
+    #     False, 
+    #     True, 
+    #     True, 
+    #     True, 
+    #     False, 
+    #     "update"
+    # )
+    arango_con.db.aql.execute(
+            """
+        UPSERT {
+            name: @name
+        }
+        INSERT {
+            name: @name,
+            latitude: @lat,
+            longitude: @lng,
+            theme: @theme,
+            tips: @tips
+        }
+        UPDATE {
+            name: @name,
+            latitude: @lat,
+            longitude: @lng,
+            theme: @theme,
+            tips: @tips
+        }
+        IN Destinations
+        RETURN {
+            oldDoc: OLD
+        }
+        """,
+            bind_vars={
+                'name': name,
+                'lat': lat,
+                'lng': lng,
+                'theme': theme,
+                'tips': tips
+            }
+        )
 
 
 def getNearbyDestinations(lat, lng, radius, theme):
