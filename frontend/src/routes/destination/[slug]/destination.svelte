@@ -17,6 +17,7 @@
 	const hr = 'my-1 bg-gray-100 h-[2px]';
 
 	export let destination;
+	let rated = false;
 
 	onMount(async () => {
 		console.log(destination);
@@ -69,6 +70,7 @@
 		await submitDestRating(destination._key, newRating, newNumRatings);
 		destination.rating = newRating;
 		destination.numRatings = newNumRatings;
+		rated = true;
 		_setRating();
 	};
 
@@ -196,47 +198,48 @@
 	/>
 	<hr class={hr} />
 </div>
-
-<form>
-	<label for="userRatingField">Rating:</label>
-	<button
-		class="{buttonStyle}{redStyle}"
-		style="padding: 5px;"
-		onclick="this.parentNode.querySelector('#userRatingField').stepDown()">-</button
-	>
-	<input
-		type="number"
-		placeholder="0-5"
-		style="border:2px;color:indigo;border-color:indigo;border-radius:5px;padding:5px;width:40px;text-align:center;"
-		id="userRatingField"
-		name="userRatingField"
-		min="0.0"
-		max="5.0"
-		step="0.1"
-		value="0.0"
-	/>
-	<button
-		class="{buttonStyle}{greenStyle}"
-		style="padding: 5px;"
-		onclick="this.parentNode.querySelector('#userRatingField').stepUp()">+</button
-	>
-	<button
-		type="submit"
-		class="{buttonStyle}{indigoStyle}"
-		style="float: right;"
-		on:click={() => {
-			let temp = document.getElementById('userRatingField').value;
-			_submitRating(temp);
-		}}>Submit</button
-	>
-</form>
+{#if !rated}
+	<form>
+		<label for="userRatingField">Rating:</label>
+		<button
+			class="{buttonStyle}{redStyle}"
+			style="padding: 5px;"
+			onclick="this.parentNode.querySelector('#userRatingField').stepDown()">-</button
+		>
+		<input
+			type="number"
+			placeholder="0-5"
+			style="border:2px;color:indigo;border-color:indigo;border-radius:5px;padding:5px;width:40px;text-align:center;"
+			id="userRatingField"
+			name="userRatingField"
+			min="0.0"
+			max="5.0"
+			step="0.1"
+			value="0.0"
+		/>
+		<button
+			class="{buttonStyle}{greenStyle}"
+			style="padding: 5px;"
+			onclick="this.parentNode.querySelector('#userRatingField').stepUp()">+</button
+		>
+		<button
+			type="submit"
+			class="{buttonStyle}{indigoStyle}"
+			style="float: right;"
+			on:click={() => {
+				let temp = document.getElementById('userRatingField').value;
+				_submitRating(temp);
+			}}>Submit</button
+		>
+	</form>
+{/if}
 
 <div class={title}>Tips</div>
 <hr class={hr} />
 <div class="h-full">
 	<div class="flex flex-wrap justify-center gap-2 px-2 py-4">
 		{#if !destination.tips.length}
-			<div>No destinations to display.</div>
+			<div>No tips to display.</div>
 		{/if}
 		<ul>
 			{#each destination.tips as t}
