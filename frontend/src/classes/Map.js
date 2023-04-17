@@ -71,13 +71,7 @@ export class Map {
         const circle = Map.getDestinationCircle();
         const mapboxObj = Map.map.getMap();
         console.log(mapboxObj);
-        if (get(Map.settings).destinationRadius < .1) {
-            mapboxObj.addSource("destCircleData", {
-                "type": "geojson",
-                "data": circle
-            });
-            return;
-        }
+        
         mapboxObj.addSource("destCircleData", {
             "type": "geojson",
             "data": circle

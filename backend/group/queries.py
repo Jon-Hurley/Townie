@@ -446,14 +446,16 @@ def createDestination(lat, lng, name, theme, tips):
             latitude: @lat,
             longitude: @lng,
             theme: @theme,
-            tips: @tips
+            tips: @tips,
+            rating: 0,
+            numRatings: 0
         }
         UPDATE {
             name: @name,
             latitude: @lat,
             longitude: @lng,
             theme: @theme,
-            tips: @tips
+            tips: @tips,
         }
         IN Destinations
         RETURN {
