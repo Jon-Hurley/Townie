@@ -1,6 +1,7 @@
 <script>
 	import { gridItem, largeTitle } from "../../../../css";
 	import { Game } from "../../../../classes/Game";
+	import Username from "../../../../general-components/username.svelte";
     const title = "text-gray-700 font-semibold text-lg mt-2";
     const hr = "bg-gray-100 h-[2px] mt-4";
 
@@ -30,7 +31,7 @@
             {#each $gameStore.players as player}
                 <div class="{gridItem}">
                     <a href={"/app/user/" + player.key}>
-                        {player.username} 
+                        <Username user={player}/>
                     </a>
                 </div>
             {/each}

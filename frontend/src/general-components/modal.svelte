@@ -2,7 +2,7 @@
 	import { buttonStyle, grayStyle, greenStyle, redStyle } from '../css';
 	import { popPopup } from '../stores';
 
-	export let status, message, onOk;
+	export let status, message, onOk, onCancel;
 
 	const colorStyle = [redStyle, greenStyle, grayStyle][status];
 	const color = ['red', 'green', 'gray'][status];
@@ -46,7 +46,7 @@
 
 			<div class="flex gap-2">
 				{#if status === 2}
-					<button id="cancel-btn" on:click={popPopup} class="w-full mt-6 {buttonStyle} {redStyle}">
+					<button id="cancel-btn" on:click={onCancel} class="w-full mt-6 {buttonStyle} {redStyle}">
 						Cancel
 					</button>
 				{/if}

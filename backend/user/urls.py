@@ -20,10 +20,15 @@ urlpatterns = [
 
     path('friends/', friend.getFriends),
     path('pending-friends/', friend.getPendingFriends),
+    path('online-users/', friend.getUsersInGames),
     path('accept-friend/', friend.acceptFriend),
     path('reject-friend/', friend.rejectFriend),
     path('request-friend/', friend.requestFriend),
 
     path('updateTime/', account.updatePlayableTime),
     path('submit-rating/', search.submitRating),
+
+    path('stripe-web-hook/', account.handleStripeWebhookEvent),
+    path('initiate-subscription/', account.initiateStripeSession),
+    path('cancel-subscription/', account.cancelStripeSubscription)
 ]

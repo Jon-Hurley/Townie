@@ -12,6 +12,7 @@
     const loadUser = async() => {
         const key = $page.params.slug;
         user = await getUser(key);
+        console.log({user})
     }
 
     onMount(loadUser);

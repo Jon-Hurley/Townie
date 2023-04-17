@@ -2,6 +2,8 @@ import user.queries as queries
 import util as accUtil
 import arango_con
 import datetime
+import stripe_con
+import redis_con
 
 usersToCreate = [
     {
@@ -54,16 +56,16 @@ friendsToCreate = [
     }
 ]
 
-for user in usersToCreate:
-    username = user['username']
-    password = user['password']
-    phone = user['phone']
-    res = queries.createUser(
-        username,
-        passwordHash=accUtil.getPasswordHash(password, username),
-        phoneNumber=phone
-    )
-    user['_key'] = res['new']['_key']
+# for user in usersToCreate:
+#     username = user['username']
+#     password = user['password']
+#     phone = user['phone']
+#     res = queries.createUser(
+#         username,
+#         passwordHash=accUtil.getPasswordHash(password, username),
+#         phoneNumber=phone
+#     )
+#     user['_key'] = res['new']['_key']
 
 # for friend in friendsToCreate:
 #     fromKey = friend['_from']
@@ -87,7 +89,10 @@ for user in usersToCreate:
 #     )
 
 
-t = datetime.datetime.utcnow()
-dt = datetime.timedelta(minutes=30)
+# t = datetime.datetime.utcnow()
+# dt = datetime.timedelta(minutes=30)
 
-print(t, dt)
+# print(t, dt)
+
+
+redis_con.deletePaymentSessionViaUser("10507679")

@@ -266,3 +266,41 @@ export const deleteUser = async() => {
         return false;
     }
 }
+
+export const initiatePremiumSession = async() => {
+    try {
+        const res = await axios.post(
+            PUBLIC_BACKEND_API + 'user/initiate-subscription/',
+            {
+                token: get(userStore).token
+            }
+        );
+        updateAccessToken(res);
+        const url = res.data.url;
+        if (url) {
+            window.open(url, '_blank').focus();
+        }
+    } catch (err) {
+        console.log(err)
+        const err_message = err?.response?.data?.errorMessage
+                            || "Unable to process payments at this time. Please try again later.";
+        pushPopup(0, err_message);
+    }
+}
+
+export const cancelPremium = async() => {
+    try {
+        const res = await axios.post(
+            PUBLIC_BACKEND_API + 'user/cancel-subscription/',
+            {
+                token: get(userStore).token
+            }
+        );
+        updateAccessToken(res);
+    } catch (err) {
+        console.log(err)
+        const err_message = err?.response?.data?.errorMessage
+                            || "Unable to process cancelation at this time. Please contact customer support at (123)456-7890.";
+        pushPopup(0, err_message);
+    }
+}

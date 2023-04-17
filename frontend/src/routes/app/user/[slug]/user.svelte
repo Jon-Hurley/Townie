@@ -2,6 +2,7 @@
 	import { acceptFriend, rejectFriend, sendFriendRequest } from "../../../../requests/friend";
 	import { userStore } from "../../../../stores";
     import { buttonStyle, redStyle, greenStyle, blueStyle, indigoStyle } from '../../../../css'
+	import Username from "../../../../general-components/username.svelte";
 	
     const title = "text-gray-700 font-semibold text-lg mt-6";
     const hr = "my-2 bg-gray-100 h-[2px]";
@@ -9,12 +10,13 @@
     export let user, reloadUser;
 
     const _acceptFriend = async() => {
-        const success = await acceptFriend(user.friendship[0].key);
+        const success = await acceptFriend(user.friendship.key);
         reloadUser();
     };
 
     const _rejectFriend = async() => {
-        const success = await rejectFriend(user.friendship[0].key);
+        console.log(user)
+        const success = await rejectFriend(user.friendship.key);
         reloadUser();
     };
 
@@ -22,41 +24,53 @@
         const res = await sendFriendRequest(user.key);
         reloadUser();
     };
+
+    const getNetworkDistanceStr = () => {
+        const dist = user.networkDistance;
+        switch (dist) {
+            case 1: return "1st";
+            case 2: return "2nd";
+            case 3: return "3rd";
+            case 4: return "4th";
+            default: return "5th+";
+        }
+    };
 </script>
 
-<div class="my-5 w-full">
+<div class="my-5 w-full pb-4">
     <div class="text-gray-700 font-bold text-3xl text-center">
-        {user.username}
+        <Username boldness={'bold'} user={user}/>
     </div>
-    <div class="text-gray-700 text-md text-center">
-        #{user.key}
+    <div class="text-gray-700 text-md text-center mt-1">
+        {getNetworkDistanceStr()} &bull;  
+        {user.mutualFriends} Mutual Friend{user.mutualFriends == 1 ? '' : 's'}
     </div>
 </div>
 
 {#if user.key !== $userStore.key}
     <div class="flex justify-center flex-wrap">
-        <button
+        <!-- <button
             disabled
             class="{indigoStyle} {buttonStyle} m-1"
         >
             Message
-        </button>
+        </button> -->
 
-        {#if !user?.friendship?.length}
+        {#if !user?.friendship}
             <button
                 class="{blueStyle} {buttonStyle} m-1"
                 on:click={_sendFriendRequest}
             >
                 Send Friend Request
             </button>
-        {:else if user.friendship[0].status}
+        {:else if user.friendship.status}
             <button
                 class="{redStyle} {buttonStyle} m-1"
                 on:click={_rejectFriend}
             >
                 Remove Friend
             </button>
-        {:else if user.friendship[0].inbound}
+        {:else if user.friendship.inbound}
             <button
                 class="{greenStyle} {buttonStyle} m-1"
                 on:click={_acceptFriend}

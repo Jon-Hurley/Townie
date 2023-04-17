@@ -43,10 +43,10 @@ def propogateUpdate(connectionId, player, data):
         print(err)
         return None
 
-def propogateNewMessage(message, connectionIds):
+def propogateNewMessage(messageObj, connectionIds):
     data = json.dumps({
         'method': 'new-message',
-        'data': message
+        'data': messageObj
     })
     for connectionId in connectionIds:
         try:

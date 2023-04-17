@@ -1,10 +1,8 @@
 import { writable, get } from 'svelte/store';
 import { pushPopup, userStore } from '../stores.js';
 import { PUBLIC_BACKEND_WS } from '$env/static/public';
-import { Map } from './Map.js';
 import { Location } from './Location.js';
 import { goto } from '$app/navigation';
-import { logout } from '../requests/account.js';
 
 export class Game {
     static store = writable();

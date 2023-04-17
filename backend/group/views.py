@@ -4,6 +4,7 @@ import json
 import group.queries as queries
 from ws_con import propogateUpdates, forceDisconnect, propogateNewMessage
 import util
+import time
 
 # CONNECT: JOIN GAME
 
@@ -114,10 +115,19 @@ def onDefault(request):
         })
     
     if method == 'new-message':
+        token = body['token']
         connectionIds = body['connectionIds']
-        message = body['message']
-        print(message, connectionIds)
-        propogateNewMessage(message, connectionIds)
+
+        user = util.getUserFromTokenNoCheck(token)
+        messageObj = {
+            'message': body['message'],
+            'key': user['key'],
+            'username': user['username'],
+            'isPremium': user['isPremium'],
+            'timestamp': int(time.time() * 1000)
+        }
+
+        propogateNewMessage(messageObj, connectionIds)
         return JsonResponse({})
 
     if method == 'update-location':

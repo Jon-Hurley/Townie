@@ -1,5 +1,4 @@
 <script>
-    import { PUBLIC_GOOGLE_MAPS_API_KEY } from '$env/static/public';
     import { onMount } from 'svelte';
     import { goto } from '$app/navigation';
 
@@ -9,7 +8,6 @@
   
 	import { userStore } from '../../stores';
 
-	let mounted = false;
     let loaded = false;
 
 	onMount(async () => {
