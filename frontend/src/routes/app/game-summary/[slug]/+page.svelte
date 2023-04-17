@@ -17,7 +17,7 @@
 		loading = true;
 		const gameKey = $page.params.slug;
 		summary = await getSummary(gameKey);
-		summary.destinations.sort((a, b) => a.index - b.index);
+		summary?.destinations.sort((a, b) => a.index - b.index);
 		loading = false;
 	};
 
