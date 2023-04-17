@@ -540,49 +540,160 @@ def rejectFriendRequest(friendshipKey):
     )
 
 
-def getGameLog(userKey):
-    print(userKey)
+def getGameLog(targetKey):
     return arango_con.db.aql.execute(
         """
-        FOR v, e
-        IN 1..1
-        ANY CONCAT("User/", @key)
+        FOR v, e IN 1..1 ANY
+        CONCAT("User/", @targetKey)
         GRAPH Playerships
-            LET rating = (
+            LET theme = (
                 FOR theme in Themes
                     SORT NGRAM_SIMILARITY(theme.name, v.settings.theme, 1) DESC
                     LIMIT 1
-                    RETURN theme.rating
+                    RETURN theme
             )[0]
+
             RETURN {
                 game: v,
                 player: e,
-                themeRating: rating
+                theme
             }
         """,
-        bind_vars={'key': int(userKey)}
+        bind_vars={
+            'targetKey': str(targetKey)
+        }
     )
 
 
-def submitRating(theme, rating, numRatings):
+def getSummary(gameKey, userKey):
     return arango_con.db.aql.execute(
         """
-        LET x = (
-            FOR theme IN Themes
-            FILTER theme.name == @theme
-            UPDATE theme._key WITH {
-                rating: @rating,
-                numRatings: @numRatings
-            } IN Themes
-            RETURN NEW
-        )[0]
-        RETURN {
-            name: x.name,
-            rating: x.rating,
-            numRatings: x.numRatings
+        WITH User, Destinations
+
+        LET destinations = (
+            FOR v, e IN 1..1 OUTBOUND CONCAT("Games/", @gameKey) Itineraries
+                RETURN {
+                    index: e.index,
+                    points: e.points,
+                    name: v.name,
+                    lon: v.longitude,
+                    lat: v.latitude,
+                    timeToCompletion: e.timeToCompletion
+                }
+        )
+
+        LET players = (
+            FOR v, e IN 1..1 INBOUND CONCAT("Games/", @gameKey) Players
+                FILTER v != null
+                RETURN {
+                    key: v._key,
+                    username: v.username,
+                    isPremium: v.isPremium,
+                    destinationIndex: e.destinationIndex,
+                    points: e.points,
+                    totalDistance: e.totalDistance,
+                    totalTime: e.totalTime,
+                    isFinished: e.destinationIndex == LENGTH(destinations)
+                }
+        )
+
+        LET numFinished = LENGTH(
+            FOR p IN Players
+                FILTER p.isFinished
+                RETURN p
+        )
+
+        FOR game IN Games
+            FILTER game._key == @gameKey
+            LET theme = (
+                FOR theme in Themes
+                    SORT NGRAM_SIMILARITY(theme.name, game.settings.theme, 1) DESC
+                    LIMIT 1
+                    RETURN theme
+            )[0]
+
+            LET userRating = (
+                FOR r IN ThemeRatings
+                    FILTER r._from == CONCAT("User/", @userKey)
+                        && r._to == theme._id
+                    RETURN {
+                        rating: r.rating,
+                        lastUpdated: r.lastUpdated
+                    }
+            )[0]
+            
+            RETURN {
+                game,
+                players,
+                destinations,
+                theme,
+                numFinished,
+                userRating
+            }
+    """,
+        bind_vars={
+            'gameKey': str(gameKey),
+            'userKey': str(userKey)
         }
+    )
+
+
+def getThemeList():
+    return arango_con.db.aql.execute(
+        """
+        FOR theme IN Themes
+            SORT theme.rating DESC
+            RETURN {
+                'theme': theme.name
+            }
+        """
+    )
+
+
+def submitRating(userKey, themeKey, newRating):
+    return arango_con.db.aql.execute(
+        """
+        LET res = (
+            UPSERT {
+                _from: CONCAT("User/", @userKey),
+                _to: CONCAT("Themes/", @themeKey)
+            }
+            INSERT {
+                _from: CONCAT("User/", @userKey),
+                _to: CONCAT("Themes/", @themeKey),
+                rating: @newRating,
+                lastUpdated: DATE_NOW()
+            }
+            UPDATE {
+                rating: @newRating,
+                lastUpdated: DATE_NOW()
+            }
+            IN ThemeRatings
+            RETURN OLD
+        )[0]
+
+        LET ratingAdded = res == null ? 1 : 0
+        LET ratingDelta = ratingAdded ? @newRating : @newRating - res.rating
+
+        FOR theme IN Themes
+            FILTER theme._key == @themeKey
+
+            UPDATE theme
+            WITH {
+                ratingPoints: theme.ratingPoints + ratingDelta,
+                numRatings: theme.numRatings + ratingAdded
+            }
+            IN Themes
+            RETURN {
+                ratingAdded,
+                ratingDelta
+            }
         """,
-        bind_vars={'theme': theme, 'rating': rating, 'numRatings': numRatings}
+        bind_vars={
+            'userKey': userKey,
+            'themeKey': themeKey,
+            'newRating': newRating
+        }
     )
 
 
@@ -614,6 +725,7 @@ def getPurchasables(userKey):
             'userKey': userKey
         }
     )
+
 
 def makePurchase(userKey, purchasableKey):
     return arango_con.db.aql.execute(

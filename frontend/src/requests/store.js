@@ -3,6 +3,45 @@ import { PUBLIC_BACKEND_API } from '$env/static/public';
 import { pushPopup, updateAccessToken, userStore } from '../stores';
 import { get } from 'svelte/store';
 
+export const initiatePremiumSession = async() => {
+    try {
+        const res = await axios.post(
+            PUBLIC_BACKEND_API + 'user/initiate-subscription/',
+            {
+                token: get(userStore).token
+            }
+        );
+        updateAccessToken(res);
+        const url = res.data.url;
+        if (url) {
+            const winder = window.open(url, '_blank');
+            if (winder?.focus) winder.focus();
+        }
+    } catch (err) {
+        console.log(err)
+        const err_message = err?.response?.data?.errorMessage
+                            || "Unable to process payments at this time. Please try again later.";
+        pushPopup({status: 0, message: err_message});
+    }
+}
+
+export const cancelPremium = async() => {
+    try {
+        const res = await axios.post(
+            PUBLIC_BACKEND_API + 'user/cancel-subscription/',
+            {
+                token: get(userStore).token
+            }
+        );
+        updateAccessToken(res);
+    } catch (err) {
+        console.log(err)
+        const err_message = err?.response?.data?.errorMessage
+                            || "Unable to process cancelation at this time. Please contact customer support at (123)456-7890.";
+        pushPopup({status: 0, message: err_message});
+    }
+}
+
 export const makePurchase = async (purchasableKey) => {
     try {
         const res = await axios.post(

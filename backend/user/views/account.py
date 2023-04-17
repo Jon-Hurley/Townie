@@ -247,3 +247,25 @@ def completePasswordReset(request):
             return util.returnError("Invalid user key.", 500)
 
     return JsonResponse({})
+
+@csrf_exempt
+def submitRating(request):
+    data = json.loads(request.body)
+    themeKey = data['themeKey']
+    newRating = data['newRating']
+    print(themeKey, newRating)
+
+    token = data['token']
+    user, newToken = util.getUserFromToken(token)
+    if user is None:
+        return util.returnError('Invalid token.', 401)
+
+    try:
+        docs = queries.submitRating(user['key'], themeKey, newRating).batch()
+        doc = docs[0]
+    except Exception as e:
+        return util.returnError("Invalid theme or rating.", 400)
+    
+    return JsonResponse({
+        "token": newToken
+    })

@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { PUBLIC_BACKEND_API } from '$env/static/public';
-import { userStore } from '../stores';
+import { updateAccessToken, userStore } from '../stores';
 import { get } from 'svelte/store';
 
 // NOTE: ALL REQUESTS HERE SHOULD BE PUBLIC (NOT AUTH NEEDED).
@@ -27,7 +27,7 @@ export const getUser = async (targetKey) => {
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'user/profile/' + targetKey + '/',
             {
-                key: get(userStore).key,
+                key: get(userStore).key, // Note: here non-token key passing is fine since getUser since information is not sensitive.
                 targetKey: targetKey
             }
         );
@@ -41,24 +41,28 @@ export const getUser = async (targetKey) => {
 export const getSummary = async (gameKey) => {
     try {
         const res = await axios.post(
-            PUBLIC_BACKEND_API + 'group/get-summary/',
+            PUBLIC_BACKEND_API + 'user/get-summary/',
             {
                 gameKey,
+                token: get(userStore)?.token || undefined
             }
         );
-        return res.data;
+        updateAccessToken(res);
+        return res.data.summary;
     } catch (err) {
-        console.log(err);
+        const err_message = err?.response?.data?.errorMessage
+                            || 'Connection Refused. Failed to delete user. Please try again.';
+        pushPopup({status: 0, message: err_message});
         return false;
     }
 }
 
-export const getGameLog = async () => {
+export const getGameLog = async (targetKey) => {
     try {
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'user/game-log/',
             {
-                key: get(userStore).key
+                key: targetKey
             }
         );
         console.log(res.data);
@@ -69,19 +73,14 @@ export const getGameLog = async () => {
     }
 }
 
-export const submitRating = async (theme, rating, numRatings) => {
+export const getThemeList = async() => {
     try {
-        const res = await axios.post(
-            PUBLIC_BACKEND_API + 'user/submit-rating/',
-            {
-                theme,
-                rating,
-                numRatings,
-            }
+        const res = await axios.get(
+            PUBLIC_BACKEND_API + 'user/get-theme-list/'
         );
         return res.data;
     } catch (err) {
         console.log(err);
-        return false;
+        return null;
     }
-}
+};

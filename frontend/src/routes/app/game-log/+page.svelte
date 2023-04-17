@@ -1,38 +1,31 @@
 <script>
 	import { onMount } from 'svelte';
-	import Loading from '../../../general-components/loading.svelte';
 	import { goto } from '$app/navigation';
-	import {
-		buttonStyle,
-		indigoStyle,
-		redStyle,
-		greenStyle,
-		largeTitle,
-		hr,
-	} from '../../../css';
+
+	import Loading from '../../../general-components/loading.svelte';
+
+	import { buttonStyle, indigoStyle, redStyle, greenStyle, largeTitle, hr } from '../../../css';
 	import { getGameLog } from '../../../requests/search';
+	import { userStore } from '../../../stores';
 
 	const title = 'text-gray-700 font-semibold text-lg mt-2';
 
-	let loading = true;
+	let loading = false;
 	let gameLog = [];
 
-	onMount(async () => {
-		gameLog = await getGameLog();
-		console.log(gameLog);
+	const _getGameLog = async () => {
+		loading = true;
+		gameLog = await getGameLog($userStore.key);
 		loading = false;
-	});
+	}
 
-	function getTime(totalSeconds) {
-		totalSeconds = Math.floor(totalSeconds / 1000);
-		let hours = Math.floor(totalSeconds / 3600);
-		totalSeconds %= 3600;
-		let minutes = Math.floor(totalSeconds / 60);
-		let seconds = totalSeconds % 60;
-		let tmpHour = hours == 1 ? 'hour' : 'hours';
-		let tmpMinute = minutes == 1 ? 'minute' : 'minutes';
-		let tmpSecond = seconds == 1 ? 'second' : 'seconds';
-		return `${hours} ${tmpHour} : ${minutes} ${tmpMinute} : ${seconds} ${tmpSecond}`;
+	onMount(_getGameLog);
+
+	const getTime = (totalMilliseconds) => {
+		const date = new Date(null);
+		const totalSeconds = Math.floor(totalMilliseconds / 1000);
+		date.setSeconds(totalSeconds);
+		return date.toISOString().slice(11, 19);
 	}
 </script>
 
@@ -61,28 +54,25 @@
 			>
 				{#each gameLog as log, i}
 					<button
-						class="{log.player.finished ? greenStyle : redStyle}
-                                border-2
-                                {log.player.finished ? 'border-green-600' : 'border-red-600'}
-                                p-2
-                                rounded
-                                {log.player.finished ? 'bg-green-100/50' : 'bg-red-100/50'}         
-                    "
+						class="
+							{log.player.finished ? greenStyle : redStyle}
+							{log.player.finished ? 'border-green-600' : 'border-red-600'}
+							{log.player.finished ? 'bg-green-100/50' : 'bg-red-100/50'}         
+							rounded border-2 p-2 flex justify-between w-56
+						"
 						on:click={() => goto('/app/game-summary/' + log.game._key)}
 					>
-						<div class="{buttonStyle} {indigoStyle}" style="padding:2px;">
-							Elapsed Time:
-							<br />
-							{getTime(log.player.totalTime)}
+						<div class="flex flex-col items-start">
+							<div class="{indigoStyle}">Points Gained</div>
+							<div>Elapsed Time</div>
+							<div>Dest Completed</div>
+							<div>Theme</div>
 						</div>
-						<div>
-							Points Gained: {log.player.points}
-						</div>
-						<div>
-							Number of Destinations Completed: {log.player.destinationIndex + 1}
-						</div>
-						<div>
-							Theme: {log.game.settings.theme} (Rating: {log.themeRating} / 5)
+						<div class="flex flex-col items-end">
+							<div class="{indigoStyle}">{log.player.points}</div>
+							<div>{getTime(log.player.totalTime)}</div>
+							<div>{log.player.destinationIndex + 1}</div>
+							<div>{log.game.settings.theme}</div>
 						</div>
 					</button>
 				{/each}
@@ -94,7 +84,9 @@
 	<div class="flex flex-col h-full">
 		<div class={largeTitle}>
 			Previous Games
-			<div class="{title} text-center">You have no games played.</div>
+			<div class="{title} text-center">
+				You have no games played.
+			</div>
 		</div>
 	</div>
 {/if}

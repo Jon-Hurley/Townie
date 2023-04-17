@@ -9,54 +9,36 @@
 	
 	import { userStore } from '../../../../stores';
 	
-	let userInGame;
 	let summary;
-	let ratings;
+	let loading = false;
+	$: userInGame = !!summary?.players?.find(x => x?.username == $userStore.username);
 
-	onMount(async () => {
+	const _loadGameSummary = async () => {
+		loading = true;
 		let gameKey = $page.params.slug;
-		if (!gameKey) {
-			const url = window.location.href;
-			gameKey = url.substring(url.lastIndexOf('/') + 1);
-		}
-		
 		summary = await getSummary(gameKey);
-		summary.numFinished = summary.players.filter(
-			(player) => player.destinationIndex === summary.destinations.length - 1
-		).length;
+		summary.destinations.sort((a, b) => a.index - b.index);
 		console.log(summary);
+		loading = false;
+	};
 
-		let theme = 'error';
-		if (summary) {
-			theme = summary.game.settings.theme;
-		}
-		console.log(summary);
-		ratings = null; //await rating(summary.game.settings.theme);
-		if (!ratings) {
-			ratings = {
-				rating: 0,
-				numRatings: 0
-			};
-		}
-
-		let players = summary.players;
-		let username = $userStore?.username;
-		userInGame = !!players.find(x => x?.username == username);
-	});
+	onMount(_loadGameSummary);
 </script>
 
-{#if summary}
-	{#if ratings}
-		<div class="h-full flex flex-col">
-			<Summary {summary} {ratings} {userInGame} />
-		</div>
-	{:else}
-		<Loading />
-	{/if}
-{:else if summary === false}
+{#if loading}
+	<Loading/>
+{:else if summary}
 	<div class="h-full flex flex-col">
-		<h1 class="text-2xl mt-4 text-center text-gray-700">No game summary found.</h1>
+		<Summary
+			{summary}
+			{userInGame}
+			reloadGameSummary={_loadGameSummary}
+		/>
 	</div>
 {:else}
-	<Loading />
+	<div class="h-full flex flex-col">
+		<h1 class="text-lg mt-4 text-center text-gray-700">
+			No game summary found.
+		</h1>
+	</div>
 {/if}

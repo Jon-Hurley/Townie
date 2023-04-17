@@ -24,7 +24,7 @@ urlpatterns = [
     path('request-friend/', friend.requestFriend),
 
     path('updateTime/', account.updatePlayableTime),
-    path('submit-rating/', search.submitRating),
+    path('submit-rating/', account.submitRating),
 
     path('stripe-web-hook/', store.handleStripeWebhookEvent),
     path('initiate-subscription/', store.initiateStripeSession),
@@ -33,4 +33,7 @@ urlpatterns = [
     path('purchase/', store.makePurchase),
     path('purchasables/', store.getPurchasables),
     path('activate-purchase/', store.activatePurchase),
+
+    path('get-theme-list/', search.getThemeList),
+    path('get-summary/', search.getSummary),
 ]

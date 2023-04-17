@@ -29,7 +29,6 @@
 {:else}
     <div
         class="
-            overflow-auto
             inline-flex flex-wrap justify-center
             gap-2
             w-full

@@ -1,7 +1,7 @@
 <script>
 	import { blueStyle, buttonStyle, grayStyle, hr, largeTitle } from '../../../../css';
 	import { Game } from '../../../../classes/Game';
-	import { getThemeList } from '../../../../requests/group';
+	import { getThemeList } from '../../../../requests/search';
 	import Autocomplete from '../autocomplete.svelte';
 	const section = 'font-semibold text-lg text-center mb-3';
 

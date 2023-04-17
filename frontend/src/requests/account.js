@@ -279,41 +279,23 @@ export const deleteUser = async() => {
     }
 }
 
-export const initiatePremiumSession = async() => {
+export const submitRating = async (themeKey, newRating) => {
     try {
+        console.log({ themeKey, newRating })
         const res = await axios.post(
-            PUBLIC_BACKEND_API + 'user/initiate-subscription/',
+            PUBLIC_BACKEND_API + 'user/submit-rating/',
             {
-                token: get(userStore).token
+                token: get(userStore).token,
+                themeKey,
+                newRating
             }
         );
         updateAccessToken(res);
-        const url = res.data.url;
-        if (url) {
-            const winder = window.open(url, '_blank');
-            if (winder?.focus) winder.focus();
-        }
+        return true;
     } catch (err) {
-        console.log(err)
         const err_message = err?.response?.data?.errorMessage
-                            || "Unable to process payments at this time. Please try again later.";
+                            || 'Connection Refused. Failed to delete user. Please try again.';
         pushPopup({status: 0, message: err_message});
-    }
-}
-
-export const cancelPremium = async() => {
-    try {
-        const res = await axios.post(
-            PUBLIC_BACKEND_API + 'user/cancel-subscription/',
-            {
-                token: get(userStore).token
-            }
-        );
-        updateAccessToken(res);
-    } catch (err) {
-        console.log(err)
-        const err_message = err?.response?.data?.errorMessage
-                            || "Unable to process cancelation at this time. Please contact customer support at (123)456-7890.";
-        pushPopup({status: 0, message: err_message});
+        return false;
     }
 }

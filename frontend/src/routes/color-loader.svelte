@@ -22,4 +22,12 @@
     <div class="border-blue-500"></div>
     <div class="border-blue-700"></div>
     <div class="ring-blue-700"></div>
+
+    <div class="bg-orange-100"></div>
+    <div class="bg-orange-500"></div>
+    <div class="bg-orange-700"></div>
+    <div class="text-orange-500"></div>
+    <div class="border-orange-500"></div>
+    <div class="border-orange-700"></div>
+    <div class="ring-orange-700"></div>
 </div>

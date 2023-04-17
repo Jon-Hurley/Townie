@@ -41,6 +41,14 @@ if not db.has_collection('Destinations'):
         unique=True
     )
 
+if not db.has_collection('ThemeRatings'):
+    db.create_collection('ThemeRatings', edge=True)
+    themeRatingCollection = db.collection('ThemeRatings')
+    themeRatingCollection.add_persistent_index(
+        fields=['_from', '_to'],
+        unique=True
+    )
+
 if not db.has_collection('Purchases'):
     db.create_collection('Purchases', edge=True)
     purchaseCollection = db.collection('Purchases')
@@ -103,6 +111,14 @@ if not db.has_graph('Playerships'):
         edge_collection='Players',
         from_vertex_collections=['User'],
         to_vertex_collections=['Games']
+    )
+
+if not db.has_graph('ThemeRatingships'):
+    consumershipGraph = db.create_graph('ThemeRatingships')
+    consumershipGraph.create_edge_definition(
+        edge_collection='ThemeRatings',
+        from_vertex_collections=['User'],
+        to_vertex_collections=['Themes']
     )
 
 userCollection = db.collection('User')

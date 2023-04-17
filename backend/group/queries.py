@@ -301,51 +301,6 @@ def getGame(gameKey):
     )
 
 
-def getSummary(gameKey):
-    return arango_con.db.aql.execute(
-        """
-        WITH User, Destinations
-
-        LET players = (
-            FOR v, e IN 1..1 INBOUND CONCAT("Games/", @key) Players
-                RETURN {
-                    key: v._key,
-                    username: v.username,
-                    connectionId: e.connectionId,
-                    lon: e.lon,
-                    lat: e.lat,
-                    destinationIndex: e.destinationIndex,
-                    points: e.points,
-                    hidingState: v.hidingState,
-                    isPremium: v.isPremium
-                }
-        )
-
-        LET destinations = (
-            FOR v, e IN 1..1 OUTBOUND CONCAT("Games/", @key) Itineraries
-                RETURN {
-                    index: e.index,
-                    points: e.points,
-                    name: v.name,
-                    lon: v.longitude,
-                    lat: v.latitude
-                }
-        )
-
-        FOR game IN Games
-        FILTER game._key == @key
-        RETURN {
-            game,
-            players,
-            destinations
-        }
-    """,
-        bind_vars={
-            'key': str(gameKey),
-        }
-    )
-
-
 def getGameForPlayer(gameKey, connectionId):
     return arango_con.db.aql.execute(
         """
@@ -591,20 +546,6 @@ def removeUnusedItinerary(itinerary, gameKey):
     old_itinerary = arango_con.unusedItineraryCollection.delete_match(
         dict(_to=itinerary['_id'], _from="Games/" + str(gameKey)))
 
-# def getHighestIndex(gameKey):
-#     game = arango_con.gameCollection.find(dict(_id=("Games/" + str(gameKey))))
-#     game1 = [doc for doc in game]
-#     edges = arango_con.itineraryCollection.edges(game1[0]['game']['_id'])
-#     edges1 = [doc for doc in edges]
-#     num_index = len(edges1)
-#     return num_index
-
-# def getItinerary(game):
-#     print(game)
-#     edges = arango_con.itineraryCollection.edges(game['game']['_id'])
-#     edges1 = [doc for doc in edges]
-#     return edges1
-
 
 def updateTrueTime(gameKey, settings):
     new_desired_time = settings['desiredCompletionTime']
@@ -651,16 +592,4 @@ def getItinerary(gameKey):
         bind_vars={
             'key': str(gameKey),
         }
-    )
-
-
-def getThemeList():
-    return arango_con.db.aql.execute(
-        """
-        FOR theme IN Themes
-            SORT theme.rating DESC
-            RETURN {
-                'theme': theme.name
-            }
-        """
     )

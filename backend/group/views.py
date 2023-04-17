@@ -198,18 +198,3 @@ def getGame(request):
 #         'password': password,
 #         'token': newToken
 #     })
-
-# THESE SHOULD NOT BE HERE!!!
-@csrf_exempt
-def getThemeList(request):
-    res = queries.getThemeList().batch()
-    print(res)
-    return JsonResponse({'themes': list(res)})
-
-@csrf_exempt
-def getSummary(request):
-    data = json.loads(request.body)
-    print(data)
-    gameKey = data['gameKey']
-    data = queries.getSummary(gameKey).batch()[0]
-    return JsonResponse(data)
