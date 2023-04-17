@@ -1,5 +1,5 @@
 <script>
-	import { pushPopup } from '../../../../stores';
+	import { pushPopup, userStore } from '../../../../stores';
 	import {
 		buttonStyle,
 		redStyle,
@@ -17,11 +17,26 @@
 	export let ratings;
 	export let userInGame;
 
+	let playerIndex = -1;
+
+
+
 	onMount(async () => {
 		console.log(summary);
 		console.log(ratings);
+		console.log(userInGame);
+		getPlayerIndex();
 		_setRating();
 	});
+
+	function getPlayerIndex() {
+		for (let i = 0; i < summary.players.length; i++) {
+			if (summary.players[i].key == $userStore.key) {
+				playerIndex = i;
+				break;
+			}
+		}
+	}
 
 	function getTime(totalSeconds) {
 		let hours = Math.floor(totalSeconds / 3600);
@@ -147,6 +162,11 @@
 	</div>
 	<div class="text-gray-700 text-md text-center">
 		{new Date(summary.game.startTime).toLocaleString()}
+	</div>
+	<div class="text-gray-700 text-md text-center">
+		{#if playerIndex !== -1}
+			Total Points: {summary.players[playerIndex].points}
+		{/if}
 	</div>
 </div>
 
