@@ -10,12 +10,13 @@
     export let user, reloadUser;
 
     const _acceptFriend = async() => {
-        const success = await acceptFriend(user.friendship[0].key);
+        const success = await acceptFriend(user.friendship.key);
         reloadUser();
     };
 
     const _rejectFriend = async() => {
-        const success = await rejectFriend(user.friendship[0].key);
+        console.log(user)
+        const success = await rejectFriend(user.friendship.key);
         reloadUser();
     };
 

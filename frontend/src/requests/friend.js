@@ -104,8 +104,8 @@ const processPending = (pendingRes) => {
     return pendingList;
 };
 
-const processPendingGame = (pendingRes) => {  
-    const pendingList = pendingRes?.data?.pending || [];
+const processPendingUsersInGame = (onlineRes) => {  
+    const pendingList = onlineRes?.value?.data?.onlinePlayers || [];
     console.log({pendingList})
     pendingList.forEach(
         x => {
@@ -117,19 +117,30 @@ const processPendingGame = (pendingRes) => {
 
 export const loadNotifications = async() => {
     try {
-        const [ pendingRes ] = await Promise.all([
-            axios.post(
-                PUBLIC_BACKEND_API + 'user/pending-friends/',
-                {
-                    key: get(userStore).key,
-                    token: get(userStore).token
-                }
-            )
-        ]);
+        const [ pendingRes, onlinePlayerRes ] = await Promise.allSettled(
+            [
+                axios.post(
+                    PUBLIC_BACKEND_API + 'user/pending-friends/',
+                    {
+                        key: get(userStore).key,
+                        token: get(userStore).token
+                    }
+                ),
+                axios.post(
+                    PUBLIC_BACKEND_API + 'user/online-users/',
+                    {
+                        key: get(userStore).key,
+                        token: get(userStore).token
+                    }
+                )
+            ]
+        );
+        console.log({onlinePlayerRes})
         updateAccessToken(pendingRes);
 
         const notifs = [
-            ...processPending(pendingRes)
+            ...processPending(pendingRes),
+            ...processPendingUsersInGame(onlinePlayerRes)
         ];
         notifs.sort((a, b) => b.timestamp - a.timestamp);
         

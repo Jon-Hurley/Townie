@@ -15,8 +15,7 @@ def createUser(username, passwordHash, phoneNumber):
             'weeklyGamePlayed': False,
             'nextAvailableGame': 0,
             'hidingState': False,
-            'isPremium': False,
-            'inGame' : 'null',
+            'isPremium': False
         },
         return_new=True
     )
@@ -393,19 +392,68 @@ def getFriendsList(key):
         bind_vars={'key': key}
     )
 
-def getFriendsInGame(key):
+def getUsersInGame(userKey):
     return arango_con.db.aql.execute(
         """
-        FOR v, e IN 1..1 ANY CONCAT("User/", @key) GRAPH Friendships
-            FILTER e.status
-            FILTER v.inGame != 'null'
-            RETURN {
-                game: v.inGame,
-                username: v.username
-            }
-            
+        LET userId = CONCAT("User/", @userKey)
+
+        LET friends = (
+            FOR friend, e IN 1..1 ANY userId GRAPH Friendships
+                FILTER e.status
+                RETURN friend
+        )
+
+        LET onlineFriends = (
+            FOR friend in friends
+                LET isOnline = (
+                    FOR v, e IN 1..1 ANY friend._id GRAPH Playerships
+                        FILTER e.connectionId != NULL
+                        FILTER v != NULL
+                        RETURN v._key
+                )
+                FILTER LENGTH(isOnline) != 0
+                
+                RETURN {
+                    username: friend.username,
+                    key: friend._key,
+                    isPremium: friend.isPremium,
+                    gameKey: isOnline[0]
+                }
+        )
+
+        LET prevPlayers = (
+            FOR playerUser IN 2..2 ANY userId GRAPH Playerships
+                RETURN DISTINCT playerUser
+        )
+
+        LET onlinePrevPlayers = (
+            FOR playerUser IN prevPlayers
+                LET isFriend = LENGTH(
+                    FOR f in friends
+                        FILTER f._key == playerUser._key
+                        RETURN f
+                ) != 0
+                FILTER !isFriend
+                
+                LET isOnline = (
+                    FOR v, e IN 1..1 ANY playerUser._id GRAPH Playerships
+                        FILTER e.connectionId != NULL
+                        FILTER v != NULL
+                        RETURN v._key
+                )
+                FILTER LENGTH(isOnline) != 0
+                
+                RETURN {
+                    username: playerUser.username,
+                    key: playerUser._key,
+                    isPremium: playerUser.isPremium,
+                    gameKey: NULL
+                }
+        )
+
+        RETURN APPEND(onlinePrevPlayers, onlineFriends)
         """,
-        bind_vars={'key': key}
+        bind_vars={'userKey': userKey}
     )
 
 

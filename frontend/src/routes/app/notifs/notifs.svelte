@@ -1,12 +1,14 @@
 <script>
     import { onMount } from 'svelte';
     
+    import { goto } from '$app/navigation';
     import Notif from './notif.svelte';
     import Loading from '../../../general-components/loading.svelte';
 	
     import { acceptFriend, loadNotifications, rejectFriend } from '../../../requests/friend';	
 	import { largeTitle, listItem } from '../../../css';
-	import { userStore } from '../../../stores';
+	import { pushPopup, userStore } from '../../../stores';
+	import { Game } from '../../../classes/Game';
 
     let notifs = [];
     let loading = true;
@@ -30,23 +32,29 @@
     }
 
     const _closeJoin = async(i) => {
-        if (success) {
-            notifs.splice(i, 1);
-            notifs = notifs;
-        }
+        notifs.splice(i, 1); // DOES NOT CLOSE MIDDLE NOTIFS
+        notifs = notifs;
     }
 
     const _joinGame = async(lobbyInput) => {
-        loading = true;
+        // goto('/app/game');
+        // pushPopup(
+        //     0,
+        //     "Are you sure about that?",
+        //     () => {
+        //         Game.join(lobbyInput);
+        //     }
+        // );
         const res = await Game.join(lobbyInput);
-        console.log("Err:", res);
-        loading = false;
+        if (!res) {
+            goto('/app/game');
+        }
     }
 
     onMount(async() => {
         if (!$userStore) return;
         notifs = await loadNotifications();
-        notifs.push(await loadFriendsInGameNotifs());
+        console.log({notifs})
         loading = false;
     });
 </script>
@@ -71,8 +79,8 @@
                         n={n}
                         acceptFriend={() => _acceptFriend(i, n.key)}
                         rejectFriend={() => _rejectFriend(i, n.key)}
-                        closeJoin={() => _closeJoin(i)}
-                        joinGame={() => _joinGame(lobbyInput)}
+                        closeJoin={() => _closeJoin()}
+                        joinGame={() => _joinGame(n.gameKey)}
                     />
                 {/each}
             {:else}

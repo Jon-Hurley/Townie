@@ -20,7 +20,7 @@ urlpatterns = [
 
     path('friends/', friend.getFriends),
     path('pending-friends/', friend.getPendingFriends),
-    path('friends-game/', friend.getFriendsInGames),
+    path('online-users/', friend.getUsersInGames),
     path('accept-friend/', friend.acceptFriend),
     path('reject-friend/', friend.rejectFriend),
     path('request-friend/', friend.requestFriend),

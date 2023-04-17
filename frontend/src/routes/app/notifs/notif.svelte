@@ -16,9 +16,16 @@
         <div class="font-semibold mb-1">
             {n.title}
         </div>
-        <a href={"/app/user/" + n.friend.key}>
-            <Username user={n.friend}/>
-        </a>
+
+        {#if n.title === 'Your friend is in a game'}
+            <a href={"/app/user/" + n.key}>
+                <Username user={n}/>
+            </a>
+        {:else}
+            <a href={"/app/user/" + n.friend.key}>
+                <Username user={n.friend}/>
+            </a>
+        {/if}
     </div>
 
     <div class="flex">
@@ -51,14 +58,19 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </button>
-        {:else if n.title === 'Join game'}
-            <button
-                type="button"
-                class="{indigoStyle} {buttonStyle}"
-                on:click={joinGame}
-            >
-            Join
-            </button>
+        {:else if n.title === 'Your friend is in a game'}
+            {#if n.gameKey}
+                <button
+                    type="button"
+                    class="{indigoStyle} px-3 py-1 m-1 ml-2 text-sm
+                    border-2 rounded
+                    ${buttonBaseStyle}"
+                    on:click={joinGame}
+                >
+                    Join
+                </button>
+            {/if}
+            
             <button
                 type="button"
                 class="{redStyle} {buttonStyle}"
