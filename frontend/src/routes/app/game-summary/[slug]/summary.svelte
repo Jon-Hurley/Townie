@@ -10,6 +10,7 @@
 	import { submitRating } from '../../../../requests/search';
 	import { onMount } from 'svelte';
 	import Username from '../../../../general-components/username.svelte';
+	import { Game } from '../../../../classes/Game';
 	const title = 'text-gray-700 font-semibold text-lg mt-6';
 	const hr = 'my-1 bg-gray-100 h-[2px]';
 
@@ -165,7 +166,11 @@
 	</div>
 	<div class="text-gray-700 text-md text-center">
 		{#if playerIndex !== -1}
-			Total Points: {summary.players[playerIndex].points}
+			{#if !summary.game.settings.casual}
+				Total Points: {summary.players[playerIndex].points} Points
+			{:else}
+				Casual Mode: 0 Points
+			{/if} 
 		{/if}
 	</div>
 </div>
