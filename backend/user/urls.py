@@ -17,6 +17,7 @@ urlpatterns = [
     path('profile/<str:key>/', search.getUser),
     path('rating/', search.getRating),
     path('gameLog/', search.getGameLog),
+    path('increment-index/', search.incrementIndex),
 
     path('friends/', friend.getFriends),
     path('pending-friends/', friend.getPendingFriends),
@@ -26,4 +27,5 @@ urlpatterns = [
 
     path('updateTime/', account.updatePlayableTime),
     path('submit-rating/', search.submitRating),
+    path('spend-points/', account.updatePoints),
 ]

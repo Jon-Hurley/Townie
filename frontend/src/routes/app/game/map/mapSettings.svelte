@@ -3,9 +3,11 @@
 	import { Game } from '../../../../classes/Game';
 	import { Map } from '../../../../classes/Map';
 	import { Location } from '../../../../classes/Location'; 
-	import { pushPopup } from '../../../../stores';
+	import { pushPopup, userStore } from '../../../../stores';
 	import { get } from 'svelte/store';
 	import * as turf from '@turf/turf';
+	import { spendPoints } from '../../../../requests/account';
+	import { incrementDestinationIndex } from '../../../../requests/search';
 
 	const settingsStore = Map.settings;
 
@@ -16,6 +18,13 @@
 
 	let otherCompletionTime = false;
 	let isOpen = false;
+
+	let skipPopupOpen = false;
+    let shrinkPopupOpen = false;
+    let exactLocationPopupOpen = false;
+    let errorPopupOpen = false;
+
+	let tempText = (Game.player.destinationIndex === Game.destinations.length - 1) ? "WARNING: This is the final destination! If you skip this, you will be sent to the game summary page!" : "Do you want to skip this destination? If you do, you will not gain points for this destination."; 
 
 	const _updateSettings = () => {
 		Game.updateTime(form);
@@ -80,6 +89,54 @@
 		url = "https://www.google.com/maps/dir/?api=1&dir_action=navigate&destination=" + exportNav;
 		window.open(url, "_blank");
 	}
+
+	const _skipLocation = () => {
+        Map.settings.exactLocation = false;
+        Map.updateDestinationRadius(x => 1);
+        Map.updateDestinationRadiusScalar(x => 1);
+        console.log("Exact location after skip is: " + Map.settings.exactLocation);
+        skipPopupOpen = false;
+		isOpen = false;
+        if (Game.player.destinationIndex === Game.destinations.length - 1) {
+            Game.leave();
+            return;
+        }
+        console.log(Game.player.connectionId);
+        incrementDestinationIndex(Game.player.connectionId);
+        Game.player.destinationIndex++;
+        Map.setCenterToCurrent();
+        Map.updateDestinationCircle();
+        Map.updateBounds();
+        tempText = (Game.player.destinationIndex === Game.destinations.length - 1) ? "WARNING: This is the final destination! If you skip this, you will be sent to the game summary page!" 
+                    : "Do you want to skip this destination? If you do, you will not gain points for this destination.";
+    }
+
+    const peekAtLocation = async(pointsSpent) => {
+        let user = get(userStore);
+
+        let option = pointsSpent == 750 ? 0 : 1;
+
+        let success = await spendPoints(option);
+        if (!success) {
+            return -1;
+        }
+		user.points -= pointsSpent;
+        if (pointsSpent == 750) {
+			isOpen = false;
+            Map.updateDestinationRadiusScalar(x => x * 0.5);
+            Map.setCenterToCurrent();
+            Map.updateDestinationCircle();
+            Map.updateBounds();
+        } else {
+			isOpen = false;
+            Map.updateDestinationRadius(x => 0);
+            Map.setCenterToCurrent();
+            Map.updateDestinationCircle();
+            Map.updateBounds();
+        }
+        
+        return 0;
+    }
 </script>
 
 <button type="button" class="{buttonStyle} {grayStyle} w-full" on:click={() => (isOpen = true)}>
@@ -94,6 +151,192 @@
         {isOpen ? 'bg-opacity-75' : 'bg-opacity-0'}
     "
 />
+
+{#if skipPopupOpen}
+<!--skipLocation popup-->
+	<div
+		class="z-50 fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full "
+		id="skipLocation-popup"
+	>
+		<div class="relative top-60 mx-auto p-3 border w-80 shadow-lg rounded-md bg-white">
+			<div class="mt-3 text-center">
+				<div class="mx-auto flex items-center justify-center rounded-full">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						fill="none"
+						viewBox="0 0 24 24"
+						stroke-width="1.5"
+						stroke="currentColor"
+						class="w-12 h-12 text-red-600"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+						/>
+					</svg>
+				</div>
+				<h3 class="text-lg leading-6 font-medium text-gray-900">Are you sure?</h3>
+				<div class="px-7 py-3">
+					<p class="text-sm text-gray-500">
+						{tempText}
+					</p>
+				</div>
+
+				<div class="mr-2 ml-2 grid grid-cols-2 gap-4 flex items-center px-4 py-3">
+					<div>
+						<button
+							id="cancel-btn"
+							on:click={() => {
+								skipPopupOpen = false;
+							}}
+							class="px-4 py-2 border border-red-600 text-red-600 text-base font-medium rounded-md w-full shadow-sm hover:border-red-800 focus:outline-none focus:ring-2 focus:ring-red-400"
+						>
+							CANCEL
+						</button>
+					</div>
+					<div>
+						<button
+							id="skip-btn"
+							on:click={_skipLocation}
+							class="px-4 py-2 bg-red-600 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-400"
+						>
+							SKIP
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{:else if shrinkPopupOpen}
+    <!--skipLocation popup-->
+	<div
+    class="z-50 fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full "
+    id="skipLocation-popup"
+>
+    <div class="relative top-60 mx-auto p-3 border w-80 shadow-lg rounded-md bg-white">
+        <div class="mt-3 text-center">
+            <div class="mx-auto flex items-center justify-center rounded-full">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="w-12 h-12 text-red-600"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                </svg>
+            </div>
+            <h3 class="text-lg leading-6 font-medium text-gray-900">Are you sure?</h3>
+            <div class="px-7 py-3">
+                <p class="text-sm text-gray-500">
+                    Do you want to shrink the destination radius for 750 points?
+                </p>
+            </div>
+
+            <div class="mr-2 ml-2 grid grid-cols-2 gap-4 flex items-center px-4 py-3">
+                <div>
+                    <button
+                        id="cancel-btn"
+                        on:click={() => {
+                            shrinkPopupOpen = false;
+                        }}
+                        class="px-4 py-2 border border-red-600 text-red-600 text-base font-medium rounded-md w-full shadow-sm hover:border-red-800 focus:outline-none focus:ring-2 focus:ring-red-400"
+                    >
+                        CANCEL
+                    </button>
+                </div>
+                <div>
+                    <button
+                        id="skip-btn"
+                        on:click={() => {
+                            shrinkPopupOpen = false;
+                            let res = peekAtLocation(750);
+                            // if (res == -1) {
+                            //     pushPopup(0, 
+                            //     "You don't have enough points to shrink the destination radius.",
+                            //     () => {} );
+                            // }
+                        }}
+                        class="px-4 py-2 bg-red-600 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-400"
+                    >
+                        YES
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{:else if exactLocationPopupOpen}
+<!--skipLocation popup-->
+	<div
+		class="z-50 fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full "
+		id="skipLocation-popup"
+	>
+		<div class="relative top-60 mx-auto p-3 border w-80 shadow-lg rounded-md bg-white">
+			<div class="mt-3 text-center">
+				<div class="mx-auto flex items-center justify-center rounded-full">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						fill="none"
+						viewBox="0 0 24 24"
+						stroke-width="1.5"
+						stroke="currentColor"
+						class="w-12 h-12 text-red-600"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+						/>
+					</svg>
+				</div>
+				<h3 class="text-lg leading-6 font-medium text-gray-900">Are you sure?</h3>
+				<div class="px-7 py-3">
+					<p class="text-sm text-gray-500">
+						Do you want to show the exact location for 1500 points?
+					</p>
+				</div>
+
+				<div class="mr-2 ml-2 grid grid-cols-2 gap-4 flex items-center px-4 py-3">
+					<div>
+						<button
+							id="cancel-btn"
+							on:click={() => {
+								skipPopupOpen = false;
+							}}
+							class="px-4 py-2 border border-red-600 text-red-600 text-base font-medium rounded-md w-full shadow-sm hover:border-red-800 focus:outline-none focus:ring-2 focus:ring-red-400"
+						>
+							CANCEL
+						</button>
+					</div>
+					<div>
+						<button
+							id="skip-btn"
+							on:click={() => {
+                                exactLocationPopupOpen = false;
+                                let res = peekAtLocation(1500);
+                                // if (res == -1) {
+                                //     pushPopup(0, 
+                                //     "You don't have enough points to show the exact location.",
+                                //     () => {} );
+                                // }
+                            }}
+							class="px-4 py-2 bg-red-600 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-400"
+						>
+							Yes
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{/if}
 
 <div
 	class="
@@ -209,6 +452,51 @@
 					)
 				}
 			}>
+		</div>
+
+		<div>
+			<div class="flex flex-cols justify-center items-center">
+				<button
+				on:click={() => {
+					skipPopupOpen = true;
+				}}
+				name="skipLocationButton"
+				id="skipLocation-btn"
+				class="{buttonStyle} {blueStyle} flex z-500"
+			>
+				<div class="px-4">Skip Location</div>
+			</button>
+			</div>
+		</div>
+		
+		<div>
+			<div class="flex flex-cols justify-center items-center">
+				<button
+				on:click={() => {
+					shrinkPopupOpen = true;
+				}}
+				name="shrinkRadiusButton"
+				id="shrinkRadius-btn"
+				class="{buttonStyle} {blueStyle} flex z-500"
+			>
+				<div class="px-4">Shrink Radius</div>
+			</button>
+			</div>
+		</div>
+		
+		<div>
+			<div class="flex flex-cols justify-center items-center">
+				<button
+				on:click={() => {
+					exactLocationPopupOpen = true;
+				}}
+				name="showExactButton"
+				id="showExact-btn"
+				class="{buttonStyle} {blueStyle} flex z-500"
+			>
+				<div class="px-4">Show Exact Location</div>
+			</button>
+			</div>
 		</div>
 	</div>
 </div>

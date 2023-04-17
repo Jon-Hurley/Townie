@@ -2,8 +2,10 @@
 	import { PUBLIC_MAPBOX_TOKEN } from '$env/static/public';
     import { onDestroy, onMount } from 'svelte';
     import { Map as Mapbox, Marker } from '@beyonk/svelte-mapbox';
-    import { userStore } from '../../../../stores';
+    import { userStore, pushPopup } from '../../../../stores';
+    import { buttonStyle, blueStyle } from '../../../../css';
     import * as turf from '@turf/turf';
+    import { get } from 'svelte/store';
 
     import Timer from './timer.svelte';
     import Options from './options.svelte';
@@ -17,6 +19,14 @@
     const locationStore = Location.store;
 
     const title = 'text-gray-700 font-semibold text-lg mt-4';
+    //let showDestination = false;
+
+    let skipPopupOpen = false;
+    let shrinkPopupOpen = false;
+    let exactLocationPopupOpen = false;
+    let errorPopupOpen = false;
+
+    let tempText = (Game.player.destinationIndex === Game.destinations.length - 1) ? "WARNING: This is the final destination! If you skip this, you will be sent to the game summary page!" : "Do you want to skip this destination? If you do, you will not gain points for this destination."; 
 
     const onMapReady = async() => {
         const mapboxObj = Map.map.getMap();

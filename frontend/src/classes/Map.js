@@ -9,7 +9,9 @@ export class Map {
         darkMode: true,
         snapLocation: false,
         zoom: 15,
-        destinationRadius: 1
+        destinationRadius: 1,
+        destinationRadiusScalar: 1
+        // exactLocation: false
     })
     static snapInterval = undefined;
 
@@ -28,10 +30,28 @@ export class Map {
     static updateDestinationRadius(f) {
         Map.settings.update(settings => {
             settings.destinationRadius = f(settings.destinationRadius);
+            if (settings.destinationRadius < 0.1) settings.destinationRadius = 0;
             return settings;
         });
         Map.updateDestinationCircle();
     }
+    
+    static updateDestinationRadiusScalar(f) {
+        Map.settings.update(settings => {
+            settings.destinationRadiusScalar = f(settings.destinationRadiusScalar);
+            return settings;
+        });
+        Map.updateDestinationCircle();
+    }
+
+    // static updateExactLocation(f) {
+    //     console.log(f(Map.settings.exactLocation))
+    //     Map.settings.update(settings => {
+    //         Map.settings.exactLocation = f(Map.settings.exactLocation);
+    //         return settings;
+    //     });
+    //     Map.updateDestinationCircle();
+    // }
 
     static setCenter(loc) {
         if (!loc || !loc.lat || !loc.lng || !Map.map) return;
@@ -59,9 +79,10 @@ export class Map {
     };
 
     static getDestinationCircle() {
+        const settings = get(Map.settings);
         const nextDest = Game.nextDestination;
         const center = [ nextDest.lon, nextDest.lat ];
-        const radius = get(Map.settings).destinationRadius;
+        const radius = get(Map.settings).destinationRadius * get(Map.settings).destinationRadiusScalar;
         if (radius < .1) return turf.point(center);
         const options = { steps: 50, units: 'kilometers' };
         return turf.circle(center, radius, options);
@@ -71,13 +92,7 @@ export class Map {
         const circle = Map.getDestinationCircle();
         const mapboxObj = Map.map.getMap();
         console.log(mapboxObj);
-        if (get(Map.settings).destinationRadius < .1) {
-            mapboxObj.addSource("destCircleData", {
-                "type": "geojson",
-                "data": circle
-            });
-            return;
-        }
+        
         mapboxObj.addSource("destCircleData", {
             "type": "geojson",
             "data": circle
@@ -110,6 +125,7 @@ export class Map {
         ]
         
         const nextDest = Game.nextDestination;
+        console.log(nextDest);
         if (nextDest) {
             features.push(turf.point([ nextDest.lon, nextDest.lat ]));
         }

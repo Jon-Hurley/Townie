@@ -101,7 +101,7 @@ export class Game {
             const achievedDest = Game.nextDestination;
             const displayTime = Math.round(10 * oldTime / (1000 * 60)) / 10;
             const displayDist = Math.round(oldDist / 100) / 10;
-           
+            Map.settings.exactLocation = false;
             pushPopup(
                 1,
                 `You reached destination: ${achievedDest.name}!\n
@@ -230,6 +230,10 @@ export class Game {
                 Game.ws.onerror = () => rej({ message: 'Unable to connect to web-socket.' });
                 Game.ws.onopen = (e) => res(e);
             });
+
+            if (!Game.ws) {
+                throw { message: "Unable to create websocket. Try again." }
+            }
 
             const res = await Game.getGame(gameKey);
             if (!res?.player) {

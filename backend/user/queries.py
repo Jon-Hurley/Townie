@@ -220,19 +220,19 @@ username: v.username
 def getPendingFriendsList(key):
     return arango_con.db.aql.execute(
         """
-WITH User
-FOR v, e IN 1..1 ANY CONCAT("User/", @key) Friends
-FILTER NOT e.status
-RETURN {
-key: e._key,
-friend: {
-key: v._key,
-username: v.username
-},
-'inbound': e._from == v._id,
-timestamp: e.timestamp
-}
-""",
+            WITH User
+            FOR v, e IN 1..1 ANY CONCAT("User/", @key) Friends
+                FILTER NOT e.status
+                RETURN {
+                    key: e._key,
+                    friend: {
+                    key: v._key,
+                    username: v.username
+                    },
+                    'inbound': e._from == v._id,
+                    timestamp: e.timestamp
+                }
+        """,
         bind_vars={'key': key}
     )
 
@@ -378,4 +378,37 @@ def submitRating(theme, rating, numRatings):
         }
         """,
         bind_vars={'theme': theme, 'rating': rating, 'numRatings': numRatings}
+    )
+
+def incrementIndex(connectionID):
+    return arango_con.db.aql.execute(
+        """
+        FOR p IN Players
+            FILTER p.connectionId == @connectionId && p.connectionId != null
+            LET newIndex = p.destinationIndex + 1
+            UPDATE p
+            WITH {
+                destinationIndex: newIndex
+            }
+            IN Players
+        """,
+        bind_vars={'connectionId': connectionID}
+    )
+
+def updatePoints(userKey, option):
+    return arango_con.db.aql.execute(
+        """
+        FOR u IN User
+            FILTER u._key == @_key
+            LET dp = @option == 0 ? 750 : 1500
+            FILTER u.points >= dp
+            LET newPoints = u.points - dp
+            UPDATE u
+            WITH {
+                points: newPoints
+            }
+            IN User
+            RETURN NEW
+        """,
+        bind_vars={"_key": userKey, "option": option}
     )
