@@ -73,7 +73,7 @@ def generate(settings, gameKey):
 
     response = requests.request("GET", url, params=params, headers=headers)
     response1 = json.loads(response.text)
-    print(response1)
+    # print(response1)
     # for i in range(len(response1['results'])):
     #     print(response1['results'][i]['name'])
     # print(response1) SAI: This is the response from the FSQ call. You can use this to get the data you need.
