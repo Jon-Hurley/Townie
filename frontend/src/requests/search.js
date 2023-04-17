@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { PUBLIC_BACKEND_API } from '$env/static/public';
-import { updateAccessToken, userStore } from '../stores';
+import { pushPopup, updateAccessToken, userStore } from '../stores';
 import { get } from 'svelte/store';
 
 // NOTE: ALL REQUESTS HERE SHOULD BE PUBLIC (NOT AUTH NEEDED).
