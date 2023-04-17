@@ -152,7 +152,7 @@ export const verifySignup = async (username, password, phone, otp) => {
     }
 }
 
-export const updateAccount = async (password, newUsername, newPhone, newLogin2FA, newHidingState) => {
+export const updateAccount = async (password, newUsername, newPhone, newLogin2FA, newHidingState, newShowTimes) => {
     try {
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'user/update/',
@@ -162,7 +162,8 @@ export const updateAccount = async (password, newUsername, newPhone, newLogin2FA
                 newUsername,
                 newPhone,
                 newLogin2FA,
-                newHidingState
+                newHidingState,
+                newShowTimes
             }
         );
         userStore.set(res.data);

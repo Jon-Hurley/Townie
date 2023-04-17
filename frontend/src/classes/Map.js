@@ -126,6 +126,6 @@ export class Map {
             features
         });
         console.log({bbox, features});
-        Map.map.fitBounds(bbox);
+        Map.map.fitBounds(bbox, {padding: 50});
     }
 }

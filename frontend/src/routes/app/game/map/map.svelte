@@ -2,6 +2,7 @@
 	import { PUBLIC_MAPBOX_TOKEN } from '$env/static/public';
     import { onDestroy, onMount } from 'svelte';
     import { Map as Mapbox, Marker } from '@beyonk/svelte-mapbox';
+    import { userStore } from '../../../../stores';
     import * as turf from '@turf/turf';
 
     import Timer from './timer.svelte';
@@ -15,12 +16,18 @@
     const mapSettingsStore = Map.settings;
     const locationStore = Location.store;
 
+    const title = 'text-gray-700 font-semibold text-lg mt-4';
+
     const onMapReady = async() => {
         const mapboxObj = Map.map.getMap();
         Map.setCenterToCurrent();
         Map.setDestinationCircle();
         // mapboxObj.setStyle('mapbox://styles/arnavmehra/cle7jp4jn003b01ntixmh28ea');
-        gameStore.subscribe(Map.updateDestinationCircle);
+        gameStore.subscribe(() => {
+            if (Map.map) {
+                Map.updateDestinationCircle();
+            }
+        });
         locationStore.subscribe(Map.updateBounds);
     }
 
@@ -32,6 +39,7 @@
         Location.unsubscribe();
         // Map.cancelSnapLocation();
     });
+
 </script>
 
 <Timer/>

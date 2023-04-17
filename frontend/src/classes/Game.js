@@ -14,6 +14,7 @@ export class Game {
     static interval = undefined;
     static timeStore = writable(null);
     static messageStore = writable([]);
+    static formatStore = writable("");
 
     static send(method, data) {
         const objStr = JSON.stringify({ method, ...data });
@@ -109,6 +110,7 @@ export class Game {
                 Your total time has been paused and will resume once you leave the destination.`,
                 () => {
                     Game.player.destinationIndex++;
+                    Game.formatStore.set(Game.updateDestTime());
                 }
             );
             if (achievedDest.index === Game.destinations.length - 1) {
@@ -118,6 +120,22 @@ export class Game {
                 );
             }
         }
+    }
+
+    static updateDestTime() {
+        const totalTime = Game.nextDestination.timeToCompletion;
+        const gHours = `00${Math.floor((totalTime / 60 / 60) % 60)}`.slice(-2);
+        const gMinutes = `00${Math.floor((totalTime / 60) % 60)}`.slice(-2);
+        const gSeconds = `00${Math.floor((totalTime) % 60)}`.slice(-2);
+        let formattedTime = "";
+        if (gHours !== '00')
+            formattedTime = `${gHours}:${gMinutes}:${gSeconds}`;
+        else if (gHours === '00' && gMinutes !== '00')
+            formattedTime = `${gMinutes}:${gSeconds}`;
+        else if (gHours === '00' && gMinutes === '00')
+            formattedTime = `${gSeconds} seconds`;
+
+        return formattedTime;
     }
 
     static setDefaultEvents() {

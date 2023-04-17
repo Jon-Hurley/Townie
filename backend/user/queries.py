@@ -14,7 +14,8 @@ def createUser(username, passwordHash, phoneNumber):
             'login2FA': False,
             'weeklyGamePlayed': False,
             'nextAvailableGame': 0,
-            'hidingState': True
+            'hidingState': True,
+            'showTimes': False
         },
         return_new=True
     )
@@ -27,7 +28,7 @@ def getUserByUsername(username):
 
 
 def updateInfo(userKey, newUsername, newPhone, newPasswordHash,
-               newLogin2FA, newHidingState):
+               newLogin2FA, newHidingState, newShowTimes):
     return arango_con.db.aql.execute(
         """
             UPDATE {
@@ -36,7 +37,8 @@ def updateInfo(userKey, newUsername, newPhone, newPasswordHash,
                 phone: @newPhone,
                 passwordHash: @newPasswordHash,
                 login2FA: @newLogin2FA,
-                hidingState: @newHidingState
+                hidingState: @newHidingState,
+                showTimes: @newShowTimes
             } IN User
             RETURN NEW
         """,
@@ -46,7 +48,8 @@ def updateInfo(userKey, newUsername, newPhone, newPasswordHash,
             'newPhone': newPhone,
             'newPasswordHash': newPasswordHash,
             'newLogin2FA': newLogin2FA,
-            'newHidingState': newHidingState
+            'newHidingState': newHidingState,
+            'newShowTimes': newShowTimes
         }
     )
 

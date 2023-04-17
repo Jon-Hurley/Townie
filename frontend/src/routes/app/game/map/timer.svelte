@@ -1,9 +1,12 @@
 <script>
 	import { onMount } from 'svelte';
 	import { Game } from '../../../../classes/Game';
-	import { pushPopup } from '../../../../stores';
+	import { pushPopup, userStore } from '../../../../stores';
 
 	let timeStore = Game.timeStore;
+	let formattedDestTime = Game.formatStore;
+	let user = userStore;
+
 	$: paused = $timeStore;
     $: console.log({paused})
 	$: if (paused) {
@@ -25,6 +28,7 @@
 	}
 
 	onMount(() => {
+		formattedDestTime.set(Game.updateDestTime());
 		prev = null;
 	})
 
@@ -73,4 +77,11 @@
 		{showPausedTime ? 'Location' : 'Total'} Time:
 	</h1>
 	{showPausedTime ? formattedPausedTime : formattedTotalTime}
+
+	{#if $user.showTimes}
+	<h1 class="border-b border-gray-400">
+		Estimated Time:
+	</h1>
+	{$formattedDestTime}
+	{/if}
 </button>

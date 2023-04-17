@@ -132,6 +132,7 @@ def updateInfo(request):
     newLogin2FA = data['newLogin2FA']
     newPhone = data['newPhone']
     newHidingState = data['newHidingState']
+    newShowTimes = data['newShowTimes']
     
     user, newToken = util.getUserFromToken(data['token'])
     if user is None:
@@ -150,7 +151,7 @@ def updateInfo(request):
     try:
         docs = queries.updateInfo(
             key, newUsername, newPhone, newPasswordHash, newLogin2FA,
-            newHidingState
+            newHidingState, newShowTimes
         ).batch()
     except Exception as e:
         em = e.error_message
