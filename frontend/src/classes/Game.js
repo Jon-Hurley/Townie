@@ -53,7 +53,6 @@ export class Game {
         const startTime = Game?.game?.createTime;
         const currTime = newTime;
         const timeLeft = Game?.nextDestination?.timeToCompletion * 1000;
-        const radius = get(Map.settings).destinationRadius;
         let timeComputation = -1;
         if (currTime > timeLeft) {
             timeComputation = currTime / timeLeft;
@@ -77,8 +76,10 @@ export class Game {
             distance = 0;
         }
 
-
-        Map.updateDestinationRadius(x => x = distance);
+        if (get(Map.settings).destinationRadius) {
+            Map.updateDestinationRadius(x => x = distance);
+        }
+        
     }
 
     static handleLocationUpdate(data) {
