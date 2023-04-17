@@ -26,7 +26,7 @@ export class Game {
 
     static handleGameUpdate(data) {
         if (!data) return;
-        data.destinations.sort((a, b) => a.index - b.index);    
+        data.destinations.sort((a, b) => a.index - b.index);
         Game.store.set(data);
     }
 
@@ -40,7 +40,7 @@ export class Game {
             arrived, atPrevDest,
             potentialPoints, points
         } = data;
-        
+
         if (get(Game.timeStore) != atPrevDest) {
             Game.timeStore.set(atPrevDest)
         }
@@ -50,6 +50,11 @@ export class Game {
             const displayTime = Math.round(10 * oldTime / (1000 * 60)) / 10;
             const displayDist = Math.round(oldDist / 100) / 10;
            
+            // open destination page.
+            const baseUrl = window.location.protocol + "//" + window.location.host + "/";
+            console.log(baseUrl);
+            window.open(baseUrl + 'destination/' + achievedDest._key, '_blank');
+
             pushPopup({
                 status: 1,
                 message: `
@@ -62,6 +67,7 @@ export class Game {
                     Game.player.destinationIndex++;
                 }
             });
+
             if (achievedDest.index === Game.destinations.length - 1) {
                 pushPopup({
                     status: 1,
@@ -112,11 +118,11 @@ export class Game {
             Game.store.set(null);
         }
     }
-    
+
     static resumePolling() {
         Game.setDefaultEvents();
         Game.stopPolling();
-        
+
         Game.interval = setInterval(() => {
             if (get(Game?.store)?.game) {
                 Game.send('get-game', {
@@ -125,7 +131,7 @@ export class Game {
             }
         }, 10000);
     }
-    
+
     static stopPolling() {
         clearInterval(Game.interval);
         Game.interval = undefined;
@@ -163,7 +169,7 @@ export class Game {
             }
             const urlParams = new URLSearchParams(params).toString();
             Game.ws = new WebSocket(`${PUBLIC_BACKEND_WS}?${urlParams}`);
-            await new Promise((res, rej) => { 
+            await new Promise((res, rej) => {
                 Game.ws.onerror = () => rej({ message: 'Unable to connect to web-socket.' });
                 Game.ws.onopen = (e) => res(e);
             });
@@ -201,7 +207,7 @@ export class Game {
             return false;
         }
     }
-    
+
     static async start() {
         try {
             Game.stopPolling();
@@ -212,7 +218,7 @@ export class Game {
             const res = await new Promise((res, rej) => {
                 Game.ws.onmessage = (m) => {
                     try {
-                        console.log({m})
+                        console.log({ m })
                         const { method, data } = JSON.parse(m.data);
                         if (method === 'update-game') {
                             Game.handleGameUpdate(data);
@@ -235,7 +241,7 @@ export class Game {
             return false;
         }
     }
-    
+
     static updateLocation(lat, lon) {
         try {
             Game.send('update-location', {
@@ -247,11 +253,11 @@ export class Game {
             console.log(err);
         }
     }
-    
+
     static async updateSettings(form) {
         try {
             Game.stopPolling();
-            console.log({form})
+            console.log({ form })
             console.log(Game.game._key)
             Game.send('update-settings', {
                 gameKey: Game.game._key,
@@ -260,7 +266,7 @@ export class Game {
             const res = await new Promise((res, rej) => {
                 Game.ws.onmessage = (m) => {
                     try {
-                        console.log({m})
+                        console.log({ m })
                         const { method, data } = JSON.parse(m.data);
                         if (method === 'update-game') {
                             Game.handleGameUpdate(data);

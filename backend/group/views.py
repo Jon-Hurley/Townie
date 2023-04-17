@@ -136,7 +136,8 @@ def onDefault(request):
 
         for i in range(3):
             try:
-                res = queries.updatePlayerLocation(connectionId, lon, lat).batch()[0]
+                res = queries.updatePlayerLocation(
+                    connectionId, lon, lat).batch()[0]
                 break
             except Exception as err:
                 print(err)
@@ -166,7 +167,7 @@ def createGame(request):
     user, newToken = util.getUserFromToken(data['token'])
     if user is None:
         return util.returnError('Invalid token', 401)
-    
+
     res = queries.createGame(lon, lat).batch()[0]
     print(res)
     return JsonResponse({
@@ -198,3 +199,11 @@ def getGame(request):
 #         'password': password,
 #         'token': newToken
 #     })
+
+@csrf_exempt
+def getDestination(request):
+    data = json.loads(request.body)
+    print(data)
+    destKey = data['destKey']
+    data = queries.getDestination(destKey).batch()[0]
+    return JsonResponse(data)

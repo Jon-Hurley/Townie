@@ -9,6 +9,7 @@ def createUser(username, passwordHash, phoneNumber):
             'passwordHash': passwordHash,
             'phone': phoneNumber,
             'points': 0,
+            'cumPoints': 0,
             'rank': 'beginner',
             'login2FA': False,
             'weeklyGamePlayed': False,
@@ -807,4 +808,26 @@ def activatePurchase(userKey, purchasableKey):
             'userKey': userKey,
             'purchasableKey': purchasableKey
         }
+    )
+
+def submitDestRating(destKey, rating, numRatings):
+    return arango_con.db.aql.execute(
+        """
+        LET x = (
+            FOR dest IN Destinations
+            FILTER dest._key == @destKey
+            UPDATE dest._key WITH {
+                rating: @rating,
+                numRatings: @numRatings
+            } IN Destinations
+            RETURN NEW
+        )[0]
+        RETURN {
+            name: x.name,
+            rating: x.rating,
+            numRatings: x.numRatings
+        }
+        """,
+        bind_vars={'destKey': destKey,
+                   'rating': rating, 'numRatings': numRatings}
     )

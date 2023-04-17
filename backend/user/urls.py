@@ -36,4 +36,7 @@ urlpatterns = [
 
     path('get-theme-list/', search.getThemeList),
     path('get-summary/', search.getSummary),
+
+    path('submit-rating/', search.submitRating),
+    path('submit-dest-rating/', search.submitDestRating),
 ]

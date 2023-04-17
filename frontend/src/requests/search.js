@@ -83,4 +83,21 @@ export const getThemeList = async() => {
         console.log(err);
         return null;
     }
-};
+}
+
+export const submitDestRating = async (destKey, rating, numRatings) => {
+    try {
+        const res = await axios.post(
+            PUBLIC_BACKEND_API + 'user/submit-dest-rating/',
+            {
+                destKey,
+                rating,
+                numRatings,
+            }
+        );
+        return res.data;
+    } catch (err) {
+        console.log(err);
+        return false;
+    }
+}

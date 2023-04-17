@@ -2,22 +2,24 @@
 	import { acceptFriend, rejectFriend, sendFriendRequest } from "../../../../requests/friend";
 	import { userStore } from "../../../../stores";
     import { buttonStyle, redStyle, greenStyle, blueStyle, hr, gridContainer } from '../../../../css'
-	import Username from "../../../../general-components/username.svelte";
+	
+    import Username from "../../../../general-components/username.svelte";
 	import Purchase from "../../../../general-components/purchase.svelte";
 	
     const title = "text-gray-700 font-semibold text-lg mt-6";
 
-    export let user, reloadUser;
 
-    const _acceptFriend = async() => {
-        const success = await acceptFriend(user.friendship[0].key);
-        reloadUser();
-    };
+	export let user, reloadUser, rank;
 
-    const _rejectFriend = async() => {
-        const success = await rejectFriend(user.friendship[0].key);
-        reloadUser();
-    };
+	const _acceptFriend = async () => {
+		const success = await acceptFriend(user.friendship[0].key);
+		reloadUser();
+	};
+
+	const _rejectFriend = async () => {
+		const success = await rejectFriend(user.friendship[0].key);
+		reloadUser();
+	};
 
     const _sendFriendRequest = async() => {
         const res = await sendFriendRequest(user.key);
@@ -93,13 +95,10 @@
     </div>
 {/if}
 
-
-<div class={title}>
-    Rank
-</div>
-<hr class={hr}>
+<div class={title}>Rank</div>
+<hr class={hr} />
 <div class="px-2 py-4 uppercase">
-    {user.rank}
+	{rank}
 </div>
 
 
