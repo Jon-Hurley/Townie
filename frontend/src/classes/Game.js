@@ -32,6 +32,18 @@ export class Game {
         data.destinations.sort((a, b) => a.index - b.index);    
         Game.store.set(data);
     }
+    // TODO: continue experimenting with this
+    static shrinkRadius() {
+        const period = 100;
+        const t = 100_000; // in 100 seconds, shrink radius to 0
+        const rad = get(Map.settings).destinationRadius;
+        const reps = t / period;
+        let i = 0;
+        let interval = setInterval(() => {
+            Map.updateDestinationRadius(x => x - rad / reps);
+            if (i++ === reps) clearInterval(interval);
+        }, period)
+    }
 
     static handleRadiusUpdate(data) {
         const {
@@ -270,6 +282,7 @@ export class Game {
                 Game.ws.onerror = rej;
             });
             Game.resumePolling();
+            Game.shrinkRadius(); // TODO: continue experimenting with this
             return true;
         } catch (err) {
             pushPopup(
