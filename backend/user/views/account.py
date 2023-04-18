@@ -368,6 +368,7 @@ def cancelStripeSubscription(request):
         'token': newToken
     })
 
+@csrf_exempt
 def updatePoints(request):
     data = json.loads(request.body)
     option = data['option']

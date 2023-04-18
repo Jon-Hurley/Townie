@@ -91,9 +91,8 @@
 	}
 
 	const _skipLocation = () => {
-        Map.settings.exactLocation = false;
-        Map.updateDestinationRadius(x => 1);
         Map.updateDestinationRadiusScalar(x => 1);
+		Game.handleRadiusUpdate();
         console.log("Exact location after skip is: " + Map.settings.exactLocation);
         skipPopupOpen = false;
 		isOpen = false;
@@ -125,12 +124,13 @@
         if (pointsSpent == 750) {
 			isOpen = false;
             Map.updateDestinationRadiusScalar(x => x * 0.5);
+			console.log($settingsStore.destinationRadiusScalar);
             Map.setCenterToCurrent();
             Map.updateDestinationCircle();
             Map.updateBounds();
         } else {
 			isOpen = false;
-            Map.updateDestinationRadius(x => 0);
+            Map.updateDestinationRadiusScalar(x => 0);
             Map.setCenterToCurrent();
             Map.updateDestinationCircle();
             Map.updateBounds();

@@ -82,7 +82,7 @@
         color="rgb(255,0,0)"
     />
 
-    {#if $mapSettingsStore.destinationRadius < .1}
+    {#if $mapSettingsStore.destinationRadius * $mapSettingsStore.destinationRadiusScalar < .1}
         
         <Marker
             lng={Game.nextDestination.lon}
