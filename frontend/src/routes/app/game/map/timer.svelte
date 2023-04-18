@@ -54,7 +54,6 @@
 		interval = setInterval(() => {
 			if (paused) {
 				shrinkingRadius = false;
-				console.log('paused')
 				locationTime++;
 			} else {
 				if (!shrinkingRadius) {
