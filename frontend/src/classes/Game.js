@@ -5,6 +5,7 @@ import { Location } from './Location.js';
 import { goto } from '$app/navigation';
 import { logout } from '../requests/account.js';
 import * as turf from '@turf/turf';
+import { Map } from './Map.js';
 
 export class Game {
     static store = writable();
@@ -32,17 +33,17 @@ export class Game {
         Game.store.set(data);
     }
     // TODO: continue experimenting with this
-    static shrinkRadius() {
-        const period = 100;
-        const t = 100_000; // in 100 seconds, shrink radius to 0
-        const rad = get(Map.settings).destinationRadius;
-        const reps = t / period;
-        let i = 0;
-        let interval = setInterval(() => {
-            Map.updateDestinationRadius(x => x - rad / reps);
-            if (i++ === reps) clearInterval(interval);
-        }, period)
-    }
+    // static shrinkRadius() {
+    //     const period = 100;
+    //     const t = 100_000; // in 100 seconds, shrink radius to 0
+    //     const rad = get(Map.settings).destinationRadius;
+    //     const reps = t / period;
+    //     let i = 0;
+    //     let interval = setInterval(() => {
+    //         Map.updateDestinationRadius(x => x - rad / reps);
+    //         if (i++ === reps) clearInterval(interval);
+    //     }, period)
+    // }
 
     static handleRadiusUpdate(data) {
         const {
@@ -284,7 +285,7 @@ export class Game {
                 Game.ws.onerror = rej;
             });
             Game.resumePolling();
-            Game.shrinkRadius(); // TODO: continue experimenting with this
+            //Game.shrinkRadius(); // TODO: continue experimenting with this
             return true;
         } catch (err) {
             pushPopup(

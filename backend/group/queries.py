@@ -106,7 +106,7 @@ def leaveGame(connectionId):
                         FILTER u._id == p._from
                         UPDATE u
                         WITH {
-                            points: u.points + dp
+                            points: u.points + dp,
                             cumPoints: u.cumPoints + dp
                         }
                         IN User
