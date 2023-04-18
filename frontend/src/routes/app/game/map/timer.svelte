@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { Game } from '../../../../classes/Game';
 	import { pushPopup, userStore } from '../../../../stores';
+	import Map from './map.svelte';
 
 	let timeStore = Game.timeStore;
 	let formattedDestTime = Game.formatStore;
@@ -37,6 +38,7 @@
 	let locationTime = 0;
 	let totalTime = 0;
 	let showPausedTime = false;
+	let shrinkingRadius = true;
 
 	$: lHours = `00${Math.floor((locationTime / 60 / 60) % 60)}`.slice(-2);
 	$: lMinutes = `00${Math.floor((locationTime / 60) % 60)}`.slice(-2);
@@ -51,8 +53,14 @@
 	onMount(() => {
 		interval = setInterval(() => {
 			if (paused) {
+				shrinkingRadius = false;
+				console.log('paused')
 				locationTime++;
 			} else {
+				if (!shrinkingRadius) {
+					shrinkingRadius = true;
+					Game.shrinkRadius();
+				}
 				totalTime++;
 			}
 		}, 1000);

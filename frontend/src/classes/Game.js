@@ -42,8 +42,17 @@ export class Game {
         let currTime = startTime;
         let interval = setInterval(() => {
             currTime += timeLeft / 5.0;
+            console.log("DESTINATION SCALAR:", get(Map.settings).destinationRadiusScalar);
             console.log("Time left:", (startTime + timeLeft));
             console.log("Current time:", currTime);
+            console.log("RADIUS AS I KNOW IT:", get(Map.settings).destinationRadius);
+            if (get(Map.settings).destinationRadius * get(Map.settings).destinationRadiusScalar < 0.1 || get(Game).timeStore == true) {
+                if (get(Game).timeStore == true) { 
+                    console.log("TIME STORE IS TRUE");
+                }
+                console.log("CLEARING INTERVAL");
+                clearInterval(interval);
+            }
             if (currTime > (timeLeft + startTime)) {
                 timeComputation = (currTime - startTime) / timeLeft;
                 console.log("MADE IT");
@@ -65,6 +74,8 @@ export class Game {
             }
             else if  (timeComputation > 2) {
                 Map.updateDestinationRadiusScalar(x => x = 0);
+                Map.updateDestinationCircle();
+                clearInterval(interval);
             }
             
             Map.updateDestinationCircle();
@@ -72,12 +83,6 @@ export class Game {
     }
 
     static handleRadiusUpdate() {
-        // const {
-        //     newTime, newDist, oldTime, oldDist,
-        //     totalTime, totalDist,
-        //     arrived, atPrevDest,
-        //     potentialPoints, points
-        // } = data;
 
         const currLat = Location.lat;
         const currLng = Location.lng;
@@ -89,9 +94,11 @@ export class Game {
         const to = turf.point([destLng, destLat]);
         let distance = turf.distance(from, to, {units: 'kilometers'}) / 2.0;
 
-        if (get(Map.settings).destinationRadius) {
-            Map.updateDestinationRadius(x => x = distance);
-        }
+        console.log("DISTANCE:", distance);
+
+        console.log("SUCCESSFULLY UPDATED RADIUS");
+        Map.updateDestinationRadius(x => x = distance);
+
         
     }
 
@@ -126,8 +133,7 @@ export class Game {
                 () => {
                     Game.player.destinationIndex++;
                     Game.formatStore.set(Game.updateDestTime());
-                    Map.updateDestinationRadiusScalar(x => 1);
-                    Game.shrinkRadius();
+                    Game.updateDestinationRadiusScalar(x => x = 1);
                 }
             );
             if (achievedDest.index === Game.destinations.length - 1) {
@@ -312,7 +318,6 @@ export class Game {
             });
             Game.resumePolling();
              // TODO: continue experimenting with this
-            console.log("CALLING SHRINK RADIUS");
             Game.shrinkRadius();
             return true;
         } catch (err) {
