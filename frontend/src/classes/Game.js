@@ -101,7 +101,6 @@ export class Game {
             const achievedDest = Game.nextDestination;
             const displayTime = Math.round(10 * oldTime / (1000 * 60)) / 10;
             const displayDist = Math.round(oldDist / 100) / 10;
-            Map.settings.exactLocation = false;
             pushPopup(
                 1,
                 `You reached destination: ${achievedDest.name}!\n
@@ -124,16 +123,19 @@ export class Game {
 
     static updateDestTime() {
         const totalTime = Game.nextDestination.timeToCompletion;
-        const gHours = `00${Math.floor((totalTime / 60 / 60) % 60)}`.slice(-2);
-        const gMinutes = `00${Math.floor((totalTime / 60) % 60)}`.slice(-2);
-        const gSeconds = `00${Math.floor((totalTime) % 60)}`.slice(-2);
+
+        const dHours = `00${Math.floor((totalTime / 60 / 60) % 60)}`.slice(-2);
+        const dMinutes = `00${Math.floor((totalTime / 60) % 60)}`.slice(-2);
+        const dSeconds = `00${Math.floor((totalTime) % 60)}`.slice(-2);
+
         let formattedTime = "";
-        if (gHours !== '00')
-            formattedTime = `${gHours}:${gMinutes}:${gSeconds}`;
-        else if (gHours === '00' && gMinutes !== '00')
-            formattedTime = `${gMinutes}:${gSeconds}`;
-        else if (gHours === '00' && gMinutes === '00')
-            formattedTime = `${gSeconds} seconds`;
+
+        if (dHours !== '00')
+            formattedTime = `${dHours}:${dMinutes}:${dSeconds}`;
+        else if (dHours === '00' && dMinutes !== '00')
+            formattedTime = `${dMinutes}:${dSeconds}`;
+        else if (dHours === '00' && dMinutes === '00')
+            formattedTime = `${dSeconds} seconds`;
 
         return formattedTime;
     }

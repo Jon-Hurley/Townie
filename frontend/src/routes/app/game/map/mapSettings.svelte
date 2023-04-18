@@ -104,6 +104,7 @@
         console.log(Game.player.connectionId);
         incrementDestinationIndex(Game.player.connectionId);
         Game.player.destinationIndex++;
+		Game.formatStore.set(Game.updateDestTime());
         Map.setCenterToCurrent();
         Map.updateDestinationCircle();
         Map.updateBounds();
