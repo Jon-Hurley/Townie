@@ -46,8 +46,8 @@ export class Game {
             console.log("Time left:", (startTime + timeLeft));
             console.log("Current time:", currTime);
             console.log("RADIUS AS I KNOW IT:", get(Map.settings).destinationRadius);
-            if (get(Map.settings).destinationRadius * get(Map.settings).destinationRadiusScalar < 0.1 || get(Game).timeStore == true) {
-                if (get(Game).timeStore == true) { 
+            if (get(Map.settings).destinationRadius * get(Map.settings).destinationRadiusScalar < 0.1 || Game.timeStore) {
+                if (Game.timeStore) { 
                     console.log("TIME STORE IS TRUE");
                 }
                 console.log("CLEARING INTERVAL");
@@ -55,7 +55,6 @@ export class Game {
             }
             if (currTime > (timeLeft + startTime)) {
                 timeComputation = (currTime - startTime) / timeLeft;
-                console.log("MADE IT");
             }
             if (timeComputation < 1.2 && timeComputation > 1) {
                 Map.updateDestinationRadiusScalar(x => x * 0.85);
@@ -133,7 +132,7 @@ export class Game {
                 () => {
                     Game.player.destinationIndex++;
                     Game.formatStore.set(Game.updateDestTime());
-                    Game.updateDestinationRadiusScalar(x => x = 1);
+                    //Map.updateDestinationRadiusScalar(x => x = 1);
                 }
             );
             if (achievedDest.index === Game.destinations.length - 1) {
