@@ -401,6 +401,87 @@
 		</div>
 
 		<hr class="{hr} my-4" />
+
+		<div class="flex flex-cols justify-center items-center">
+			<div>
+				<div class="flex flex-cols justify-center items-center">
+					<button
+					on:click={() => {
+						shrinkPopupOpen = true;
+					}}
+					name="shrinkRadiusButton"
+					id="shrinkRadius-btn"
+					class="{buttonStyle} {blueStyle} flex z-500"
+				>
+					<div class="px-4">Shrink Radius</div>
+				</button>
+				</div>
+			</div>
+			
+			<div>
+				<div class="flex flex-cols justify-center items-center">
+					<button
+					on:click={() => {
+						exactLocationPopupOpen = true;
+					}}
+					name="showExactButton"
+					id="showExact-btn"
+					class="{buttonStyle} {blueStyle} flex z-500"
+				>
+					<div class="px-4">Show Exact Location</div>
+				</button>
+				</div>
+			</div>
+
+			<div>
+				<div class="flex flex-cols justify-center items-center">
+					<button
+					on:click={() => {
+						skipPopupOpen = true;
+					}}
+					name="skipLocationButton"
+					id="skipLocation-btn"
+					class="{buttonStyle} {blueStyle} flex z-500"
+				>
+					<div class="px-4">Skip Location</div>
+				</button>
+				</div>
+			</div>
+		</div>
+
+		
+
+		<div>
+			<button
+				class="{buttonStyle} {blueStyle} w-full mr-2"
+				on:click={() => {
+					pushPopup(
+						2, 'This will not be an exact navigation.',
+						() => {
+							isOpen = false;
+							_getNavigation();
+						}
+					)
+				}
+			}>
+			Get Navigation
+			</button>
+			<button
+				class="{buttonStyle} {blueStyle} w-full mr-2"
+				on:click={() => {
+					pushPopup(
+						2, 'This will be an exact navigation.',
+						() => {
+							isOpen = false;
+							_getAccurateNavigation();
+						}
+					)
+				}
+			}>
+			Get Exact Navigation
+			</button>
+		</div>
+
 		<div class="flex ">
 			<button
 				class="{buttonStyle} {blueStyle} w-full mr-2"
@@ -425,78 +506,6 @@
 				Cancel
 			</button>
 		</div>
-		<div>
-			<button
-				class="{buttonStyle} {blueStyle} w-full mr-2"
-				on:click={() => {
-					pushPopup(
-						2, 'This will not be an exact navigation.',
-						() => {
-							isOpen = false;
-							_getNavigation();
-						}
-					)
-				}
-			}>
-			Get navigation
-			</button>
-			<button
-				class="{buttonStyle} {blueStyle} w-full mr-2"
-				on:click={() => {
-					pushPopup(
-						2, 'This will be an exact navigation.',
-						() => {
-							isOpen = false;
-							_getAccurateNavigation();
-						}
-					)
-				}
-			}>
-		</div>
 
-		<div>
-			<div class="flex flex-cols justify-center items-center">
-				<button
-				on:click={() => {
-					skipPopupOpen = true;
-				}}
-				name="skipLocationButton"
-				id="skipLocation-btn"
-				class="{buttonStyle} {blueStyle} flex z-500"
-			>
-				<div class="px-4">Skip Location</div>
-			</button>
-			</div>
-		</div>
-		
-		<div>
-			<div class="flex flex-cols justify-center items-center">
-				<button
-				on:click={() => {
-					shrinkPopupOpen = true;
-				}}
-				name="shrinkRadiusButton"
-				id="shrinkRadius-btn"
-				class="{buttonStyle} {blueStyle} flex z-500"
-			>
-				<div class="px-4">Shrink Radius</div>
-			</button>
-			</div>
-		</div>
-		
-		<div>
-			<div class="flex flex-cols justify-center items-center">
-				<button
-				on:click={() => {
-					exactLocationPopupOpen = true;
-				}}
-				name="showExactButton"
-				id="showExact-btn"
-				class="{buttonStyle} {blueStyle} flex z-500"
-			>
-				<div class="px-4">Show Exact Location</div>
-			</button>
-			</div>
-		</div>
 	</div>
 </div>
