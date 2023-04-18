@@ -7,8 +7,13 @@ import util
 
 @csrf_exempt
 def searchUsers(request):
-    substr = json.loads(request.body)['substr']
-    res = queries.getUsersBySubstring(substr).batch()
+    body = json.loads(request.body)
+    substr = body['substr']
+    userKey = body['key']
+    if len(substr) != 0:
+        res = queries.getUsersBySubstring(substr, userKey).batch()
+    else:
+        res = queries.getOnlySuggestedUsers(userKey).batch()
     return JsonResponse({'users': list(res)})
 
 

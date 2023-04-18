@@ -46,7 +46,7 @@
 {:else if gameLog.length}
 	<div class="flex flex-col h-full">
 		<div class={largeTitle}>
-			Previous Games:
+			Previous Games
 			<div class="{title} text-center">
 				{gameLog.length} Game(s) Played
 			</div>
@@ -98,7 +98,7 @@
 {:else}
 	<div class="flex flex-col h-full">
 		<div class={largeTitle}>
-			Previous Games:
+			Previous Games
 			<div class="{title} text-center">You have no games played.</div>
 		</div>
 	</div>

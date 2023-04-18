@@ -15,7 +15,7 @@
 <div
     class="
         bg-gray-800
-        w-full
+        w-screen
         px-2
         h-[60px] min-h-[60px]
         flex items-center justify-around

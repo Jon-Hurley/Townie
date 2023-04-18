@@ -12,22 +12,7 @@ db = client.db('_system', username='root', password=password)
 
 if not db.has_collection('User'):
     db.create_collection('User')
-    db.create_collection('Games')
-    db.create_collection('Destinations')
-
-    db.create_collection('Friends', edge=True)
-    db.create_collection('Players', edge=True)
-    db.create_collection('Itineraries', edge=True)
-    db.create_collection('UnusedItineraries', edge=True)
-
     userCollection = db.collection('User')
-    friendsCollection = db.collection('Friends')
-    gameCollection = db.collection('Games')
-    playerCollection = db.collection('Players')
-    destinationCollection = db.collection('Destinations')
-    itineraryCollection = db.collection('Itineraries')
-    unusedItineraryCollection = db.collection('UnusedItineraries')
-
     userCollection.add_hash_index(
         fields=['username'],
         unique=True
@@ -37,6 +22,13 @@ if not db.has_collection('User'):
         unique=True
     )
 
+if not db.has_collection('Games'):
+    db.create_collection('Games')
+    gameCollection = db.collection('Games')
+
+if not db.has_collection('Destinations'):
+    db.create_collection('Destinations')
+    destinationCollection = db.collection('Destinations')
     destinationCollection.add_geo_index(
         fields=['lon', 'lat']
     )
@@ -45,6 +37,13 @@ if not db.has_collection('User'):
         unique=True
     )
 
+if not db.has_collection('Friends'):
+    db.create_collection('Friends', edge=True)
+    friendsCollection = db.collection('Friends')
+
+if not db.has_collection('Players'):
+    db.create_collection('Players', edge=True)
+    playerCollection = db.collection('Players')
     playerCollection.add_hash_index(
         fields=['connectionId'],
         unique=True,
@@ -53,37 +52,37 @@ if not db.has_collection('User'):
         in_background=True
     )
 
-    db.create_graph(
-        'Friendships',
-        edge_definitions={
-            'edge_collection': 'Friends',
-            'from_vertex_collections': ['User'],
-            'to_vertex_collections': ['User']
-        },
-        shard_count=1,
-        replication_factor=3,
-        write_concern=3
-    )
-    db.create_graph(
-        'Playerships',
-        edge_definitions={
-            'edge_collection': 'Players',
-            'from_vertex_collections': ['User'],
-            'to_vertex_collections': ['Games']
-        },
-        shard_count=1,
-        replication_factor=3,
-        write_concern=3
-    )
+if not db.has_collection('Itineraries'):
+    db.create_collection('Itineraries', edge=True)
+    itineraryCollection = db.collection('Itineraries')
+
+if not db.has_collection('Themes'):
+    db.create_collection('Themes')
+    themeCollection = db.collection('Themes')
+
+if not db.has_collection('UnusedItineraries'):
+    db.create_collection('UnusedItineraries', edge=True)
+    unusedItineraryCollection = db.collection('UnusedItineraries')
     unusedItineraryCollection.add_persistent_index(
         fields=['_from', 'index'],
         unique=True,
         sparse=True
     )
-    unusedItineraryCollection.add_persistent_index(
-        fields=['_from', '_to'],
-        unique=True,
-        sparse=True
+
+if not db.has_graph('Friendships'):
+    friendshipGraph = db.create_graph('Friendships')
+    friendshipGraph.create_edge_definition(
+        edge_collection='Friends',
+        from_vertex_collections=['User'],
+        to_vertex_collections=['User']
+    )
+
+if not db.has_graph('Playerships'):
+    playershipGraph = db.create_graph('Playerships')
+    playershipGraph.create_edge_definition(
+        edge_collection='Players',
+        from_vertex_collections=['User'],
+        to_vertex_collections=['Games']
     )
 
 userCollection = db.collection('User')

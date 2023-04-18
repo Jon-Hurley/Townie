@@ -19,7 +19,8 @@ def createGame(lon, lat):
                 desiredCompletionTime: 180,
                 budget: 1,
                 lon: @lon,
-                lat: @lat
+                lat: @lat,
+                casual: False
             }
         }
         INTO Games
@@ -93,12 +94,20 @@ def leaveGame(connectionId):
                 FILTER p.connectionId == @connectionId
                     && p.connectionId != null
 
+                LET casual = (
+                    FOR g IN Games
+                        FILTER g._id == p._to
+                        RETURN g.settings.casual
+                )[0]
+
+                LET dp = casual ? 0 : p.points - p.addedPoints
                 LET u = (
                     FOR u in User
                         FILTER u._id == p._from
                         UPDATE u
                         WITH {
-                            points: p.points - p.addedPoints
+                            points: u.points + dp
+                            cumPoints: u.cumPoints + dp
                         }
                         IN User
                         RETURN NEW
@@ -281,7 +290,8 @@ def getGame(gameKey):
                     lat: v.hidingState ? null : e.lat,
                     destinationIndex: e.destinationIndex,
                     points: e.points,
-                    hidingState: v.hidingState
+                    hidingState: v.hidingState,
+                    isPremium: v.isPremium
                 }
         )
 
@@ -326,7 +336,8 @@ def getSummary(gameKey):
                     lat: e.lat,
                     destinationIndex: e.destinationIndex,
                     points: e.points,
-                    hidingState: v.hidingState
+                    hidingState: v.hidingState,
+                    isPremium: v.isPremium
                 }
         )
 
@@ -371,7 +382,8 @@ def getGameForPlayer(gameKey, connectionId):
                     lat: v.hidingState ? null : e.lat,
                     destinationIndex: e.destinationIndex,
                     points: e.points,
-                    hidingState: v.hidingState
+                    hidingState: v.hidingState,
+                    isPremium: v.isPremium
                 }
         )
 
@@ -386,7 +398,8 @@ def getGameForPlayer(gameKey, connectionId):
                     lat: e.lat,
                     destinationIndex: e.destinationIndex,
                     points: e.points,
-                    hidingState: v.hidingState
+                    hidingState: v.hidingState,
+                    isPremium: v.isPremium
                 }
         )[0]
 

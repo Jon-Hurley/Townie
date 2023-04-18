@@ -30,13 +30,15 @@ def getVerifyJWTData(token):
         algorithms=["HS256"]
     )
 
-def getUserFromToken(token):
-    user = jwt.decode(
+def getUserFromTokenNoCheck(token):
+    return jwt.decode(
         token,
         os.environ.get('JWT_TOKEN_SECRET'),
         algorithms=["HS256"]
     )
 
+def getUserFromToken(token):
+    user = getUserFromTokenNoCheck(token)
     t = time.time()
 
     # not past expiration time
@@ -86,6 +88,10 @@ def returnUserPublic(user):
     del user['login2FA']
     del user['hidingState']
     del user['phone']
+    if 'stripeCustomerId' in user:
+        del user['stripeCustomerId']
+    if 'stripeSubscriptionId' in user:
+        del user['stripeSubscriptionId']
     return JsonResponse(user)
 
 def getPasswordHash(password, username):
