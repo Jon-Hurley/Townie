@@ -4,7 +4,8 @@
 
     import { acceptFriend, rejectFriend, sendFriendRequest } from "../../../../requests/friend";
 	import { userStore } from "../../../../stores";
-    import { buttonStyle, redStyle, greenStyle, blueStyle, hr, gridContainer } from '../../../../css';	
+    import { buttonStyle, redStyle, greenStyle, blueStyle, hr, gridContainer, largeTitle } from '../../../../css';	
+	import { pointsToLevel, pointsToProgress, pointsToRank } from "../../../../util";
     const title = "text-gray-700 font-semibold text-lg mt-6";
 
 	export let user, reloadUser, rank;
@@ -36,12 +37,11 @@
     };
 </script>
 
-<div class="my-5 w-full pb-4">
-    <div class="text-gray-700 font-bold text-3xl text-center">
-        <Username boldness={'bold'} user={user}/>
-    </div>
-    <div class="text-gray-700 text-md text-center mt-1">
-        {getNetworkDistanceStr()} &bull;  
+<div class="{largeTitle} pb-4">
+    <Username boldness={'bold'} user={user}/>
+    <div class="text-sm font-normal mt-1">
+        {pointsToRank(user?.cumPoints)} &bull;
+        {getNetworkDistanceStr()} &bull;
         {user.mutualFriends} Mutual Friend{user.mutualFriends == 1 ? '' : 's'}
     </div>
 </div>
@@ -93,12 +93,17 @@
     </div>
 {/if}
 
-<div class={title}>Rank</div>
-<hr class={hr} />
-<div class="px-2 py-4 uppercase">
-	{rank}
+<div class={title}>
+	Level {pointsToLevel(user?.cumPoints)}
 </div>
-
+<hr class={hr} />
+<meter
+	id="xp-meter"
+	class="h-8 w-full px-2 shimmer"
+	min="0"
+	max="1"
+	value={pointsToProgress(user?.cumPoints)}
+/>
 
 <div class={title}>
     Purchases

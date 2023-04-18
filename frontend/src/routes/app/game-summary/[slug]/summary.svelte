@@ -10,9 +10,13 @@
 	export let summary, userInGame, reloadGameSummary;
 
 	const getTime = (totalSeconds) => {
-		const date = new Date(null);
-		date.setSeconds(totalSeconds);
-		return date.toISOString().slice(11, 19);
+		try {
+			const date = new Date(null);
+			date.setSeconds(totalSeconds);
+			return date.toISOString().slice(11, 19);
+		} catch (err) {
+			return '00:00:00';
+		}
 	}
 </script>
 
@@ -54,7 +58,7 @@
 				class="
 					border-[2px] border-{$primaryColor}-500
 					text-{$primaryColor}-500
-					rounded-2xl w-full p-4 pl-6
+					rounded-2xl w-full p-3 pl-6
 					relative
 					cursor-pointer
 					hover:scale-105
@@ -67,7 +71,7 @@
 				<div class="text-sm">
 					{p.points} points | {getTime(p.timeToCompletion)}s away
 				</div>
-				<div class="absolute left-[-12px] bg-white px-1">
+				<div class="absolute left-[-12px] bg-white">
 					#{p.index + 1}
 				</div>
 			</div>

@@ -1,7 +1,7 @@
 <script>
 	import { buttonStyle, indigoStyle } from '../css';
 	import { initiatePremiumSession } from '../requests/store';
-	import { primaryColor, userStore } from '../stores';
+	import { userStore } from '../stores';
 
     export let simplified = true;
 

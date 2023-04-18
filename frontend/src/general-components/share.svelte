@@ -3,6 +3,8 @@
 	import { hr } from '../css';
 	const title = 'font-semibold text-lg mt-6';
 
+	export let header;
+
 	const copyLink = () => {
 		navigator.clipboard.writeText(window.location.href);
         pushPopup({
@@ -45,7 +47,7 @@
 
 <div class="{title} flex align-center justify-between">
 	<div class="mr-2">
-		Share Game!
+		{header}
 	</div>
     
 	<button

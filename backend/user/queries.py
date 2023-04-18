@@ -240,7 +240,7 @@ def getUserWithFriendship(userKey, targetKey):
                 key: user._key,
                 rank: user.rank,
                 username: user.username,
-                points: user.points,
+                cumPoints: user.cumPoints,
                 isPremium: user.isPremium,
                 purchases,
                 friendship: f,
@@ -638,6 +638,42 @@ def getSummary(gameKey, userKey):
         }
     )
 
+def getDestination(destKey, userKey):
+    return arango_con.db.aql.execute(
+        """
+        WITH User, Destinations
+
+        FOR dest IN Destinations
+            FILTER dest._key == @destKey
+
+            LET theme = (
+                FOR theme in Themes
+                    SORT NGRAM_SIMILARITY(theme.name, dest.theme, 1) DESC
+                    LIMIT 1
+                    RETURN theme
+            )[0]
+
+            LET userRating = (
+                FOR r IN DestinationRatings
+                    FILTER r._from == CONCAT("User/", @userKey)
+                        && r._to == dest._id
+                    RETURN {
+                        rating: r.rating,
+                        lastUpdated: r.lastUpdated
+                    }
+            )[0]
+            
+            RETURN {
+                destination: dest,
+                theme,
+                userRating
+            }
+        """,
+        bind_vars={
+            'destKey': str(destKey),
+            'userKey': str(userKey)
+        }
+    )
 
 def getThemeList():
     return arango_con.db.aql.execute(
@@ -651,7 +687,7 @@ def getThemeList():
     )
 
 
-def submitRating(userKey, themeKey, newRating):
+def submitThemeRating(userKey, themeKey, newRating):
     return arango_con.db.aql.execute(
         """
         LET res = (
@@ -679,10 +715,13 @@ def submitRating(userKey, themeKey, newRating):
         FOR theme IN Themes
             FILTER theme._key == @themeKey
 
+            LET prevRatingPoints = theme.ratingPoints ? theme.ratingPoints : 0
+            LET prevNumRatings = theme.numRatings ? theme.numRatings : 0
+
             UPDATE theme
             WITH {
-                ratingPoints: theme.ratingPoints + ratingDelta,
-                numRatings: theme.numRatings + ratingAdded
+                ratingPoints: prevRatingPoints + ratingDelta,
+                numRatings: prevNumRatings + ratingAdded
             }
             IN Themes
             RETURN {
@@ -693,6 +732,55 @@ def submitRating(userKey, themeKey, newRating):
         bind_vars={
             'userKey': userKey,
             'themeKey': themeKey,
+            'newRating': newRating
+        }
+    )
+
+def submitDestRating(userKey, destKey, newRating):
+    return arango_con.db.aql.execute(
+        """
+        LET res = (
+            UPSERT {
+                _from: CONCAT("User/", @userKey),
+                _to: CONCAT("Destinations/", @destKey)
+            }
+            INSERT {
+                _from: CONCAT("User/", @userKey),
+                _to: CONCAT("Destinations/", @destKey),
+                rating: @newRating,
+                lastUpdated: DATE_NOW()
+            }
+            UPDATE {
+                rating: @newRating,
+                lastUpdated: DATE_NOW()
+            }
+            IN DestinationRatings
+            RETURN OLD
+        )[0]
+
+        LET ratingAdded = res == null ? 1 : 0
+        LET ratingDelta = ratingAdded ? @newRating : @newRating - res.rating
+
+        FOR dest IN Destinations
+            FILTER dest._key == @destKey
+
+            LET prevRatingPoints = dest.ratingPoints ? dest.ratingPoints : 0
+            LET prevNumRatings = dest.numRatings ? dest.numRatings : 0
+            
+            UPDATE dest
+            WITH {
+                ratingPoints: prevRatingPoints + ratingDelta,
+                numRatings: prevNumRatings + ratingAdded
+            }
+            IN Destinations
+            RETURN {
+                ratingAdded,
+                ratingDelta
+            }
+        """,
+        bind_vars={
+            'userKey': userKey,
+            'destKey': destKey,
             'newRating': newRating
         }
     )
@@ -726,7 +814,6 @@ def getPurchasables(userKey):
             'userKey': userKey
         }
     )
-
 
 def makePurchase(userKey, purchasableKey):
     return arango_con.db.aql.execute(
@@ -808,26 +895,4 @@ def activatePurchase(userKey, purchasableKey):
             'userKey': userKey,
             'purchasableKey': purchasableKey
         }
-    )
-
-def submitDestRating(destKey, rating, numRatings):
-    return arango_con.db.aql.execute(
-        """
-        LET x = (
-            FOR dest IN Destinations
-            FILTER dest._key == @destKey
-            UPDATE dest._key WITH {
-                rating: @rating,
-                numRatings: @numRatings
-            } IN Destinations
-            RETURN NEW
-        )[0]
-        RETURN {
-            name: x.name,
-            rating: x.rating,
-            numRatings: x.numRatings
-        }
-        """,
-        bind_vars={'destKey': destKey,
-                   'rating': rating, 'numRatings': numRatings}
     )

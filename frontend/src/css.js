@@ -49,7 +49,7 @@ export let inputStyle = `
 
 export const largeTitle = `
     my-4
-    text-2xl
+    text-3xl
     text-center
     font-bold
 `;

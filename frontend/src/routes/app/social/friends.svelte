@@ -21,7 +21,6 @@
 <div class="{largeTitle}">
     Your Friends List
 </div>
-
 <hr class="{hr}"/>
 
 {#if loading}

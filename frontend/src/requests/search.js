@@ -51,7 +51,26 @@ export const getSummary = async (gameKey) => {
         return res.data.summary;
     } catch (err) {
         const err_message = err?.response?.data?.errorMessage
-                            || 'Connection Refused. Failed to delete user. Please try again.';
+                            || 'Connection Refused. Unable to retrieve game data. Please try again.';
+        pushPopup({status: 0, message: err_message});
+        return false;
+    }
+}
+
+export const getDestination = async (destKey) => {
+    try {
+        const res = await axios.post(
+            PUBLIC_BACKEND_API + 'user/get-destination/',
+            {
+                destKey,
+                token: get(userStore)?.token || undefined
+            }
+        );
+        updateAccessToken(res);
+        return res.data.summary;
+    } catch (err) {
+        const err_message = err?.response?.data?.errorMessage
+                            || 'Connection Refused. Failed to retrieve destination data. Please try again.';
         pushPopup({status: 0, message: err_message});
         return false;
     }
@@ -82,37 +101,5 @@ export const getThemeList = async() => {
     } catch (err) {
         console.log(err);
         return null;
-    }
-}
-
-export const submitDestRating = async (destKey, rating, numRatings) => {
-    try {
-        const res = await axios.post(
-            PUBLIC_BACKEND_API + 'user/submit-dest-rating/',
-            {
-                destKey,
-                rating,
-                numRatings,
-            }
-        );
-        return res.data;
-    } catch (err) {
-        console.log(err);
-        return false;
-    }
-}
-
-export const getDestination = async (destKey) => {
-    try {
-        const res = await axios.post(
-            PUBLIC_BACKEND_API + 'user/get-destination/',
-            {
-                destKey,
-            }
-        );
-        return res.data;
-    } catch (err) {
-        console.log(err);
-        return false;
     }
 }

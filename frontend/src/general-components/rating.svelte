@@ -1,5 +1,5 @@
 <script>
-	import { indigoStyle } from '../../../../css';
+	import { indigoStyle } from '../css';
 
 	export let initialUserRating, onSubmit;
 
@@ -8,7 +8,7 @@
 
 <div class="flex justify-between items-center mt-4 px-2">
     <div class="mr-2">
-        Submit Rating:
+        Your Rating:
     </div>
 
     <div class="flex items-center w-60 justify-between">

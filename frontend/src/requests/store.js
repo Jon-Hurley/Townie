@@ -13,10 +13,8 @@ export const initiatePremiumSession = async() => {
         );
         updateAccessToken(res);
         const url = res.data.url;
-        if (url) {
-            const winder = window.open(url, '_blank');
-            if (winder?.focus) winder.focus();
-        }
+        const winder = window.open(url, '_blank');
+        if (winder?.focus) winder.focus();
     } catch (err) {
         console.log(err)
         const err_message = err?.response?.data?.errorMessage

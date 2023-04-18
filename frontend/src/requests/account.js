@@ -295,7 +295,27 @@ export const submitThemeRating = async (themeKey, newRating) => {
         return true;
     } catch (err) {
         const err_message = err?.response?.data?.errorMessage
-                            || 'Connection Refused. Failed to delete user. Please try again.';
+                            || 'Unable to submit rating. Please try again.';
+        pushPopup({status: 0, message: err_message});
+        return false;
+    }
+}
+
+export const submitDestRating = async (destKey, newRating) => {
+    try {
+        console.log({ destKey, newRating })
+        const res = await axios.post(
+            PUBLIC_BACKEND_API + 'user/submit-dest-rating/',
+            {
+                token: get(userStore).token,
+                destKey,
+                newRating
+            }
+        );
+        return true;
+    } catch (err) {
+        const err_message = err?.response?.data?.errorMessage
+                            || 'Unable to submit rating. Please try again.';
         pushPopup({status: 0, message: err_message});
         return false;
     }

@@ -71,8 +71,24 @@ def getSummary(request):
 
 @csrf_exempt
 def getDestination(request):
-    data = json.loads(request.body)
-    print(data)
-    destKey = data['destKey']
-    data = queries.getDestination(destKey).batch()[0]
-    return JsonResponse(data)
+    body = json.loads(request.body)
+    destKey = body['destKey']
+
+    if 'token' in body:
+        token = body['token']
+        user, newToken = util.getUserFromToken(token)
+        if user is None:
+            return util.returnError('Invalid token.', 401)
+        
+        print(destKey, user['key'])
+        res = queries.getDestination(destKey, user['key']).batch()[0]
+        return JsonResponse({
+            'summary': res,
+            'token': newToken
+        })
+    
+    else:
+        res = queries.getDestination(destKey, user['key']).batch()[0]
+        return JsonResponse({
+            'summary': res
+        })

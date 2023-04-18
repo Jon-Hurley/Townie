@@ -1,13 +1,14 @@
 <script>
 	import { onMount } from 'svelte';
-	import { buttonStyle, greenStyle, blueStyle, hr } from '../../../css';
+	import { buttonStyle, greenStyle, blueStyle, hr, largeTitle } from '../../../css';
 	
 	import Username from '../../../general-components/username.svelte';
 	import Delete from './delete.svelte';
 	import Premium from '../../../general-components/premium.svelte';
+	import Purchases from './purchases.svelte';
 
 	import { pushPopup, userStore } from '../../../stores';
-	import Purchases from './purchases.svelte';
+	import { pointsToLevel, pointsToProgress, pointsToRank } from './../../../util'
 
 	const title = 'font-semibold text-lg mt-6';
 
@@ -30,8 +31,11 @@
 	})
 </script>
 
-<div class="my-5 w-full pb-4 text-center text-gray-700 font-bold text-3xl">
+<div class="{largeTitle} pb-4">
 	<Username boldness={'bold'}/>
+	<div class="text-sm font-normal mt-1">
+		{pointsToRank($userStore?.cumPoints)}
+	</div>
 </div>
 
 <div class="flex flex-wrap justify-center gap-2">
@@ -77,12 +81,20 @@
 	<Premium simplified={false}/>
 </div>
 
-<div class={title}>Rank</div>
-<hr class={hr} />
-<div class="pl-2 uppercase">
-	{$userStore?.rank}
+<div class={title}>
+	Level {pointsToLevel($userStore.cumPoints)}
 </div>
+<hr class={hr} />
+<meter
+	id="xp-meter"
+	class="h-8 w-full px-2 shimmer"
+	min="0"
+	max="1"
+	value={pointsToProgress($userStore.cumPoints)}
+/>
 
-<div class={title}>Purchases</div>
+<div class={title}>
+	Purchases
+</div>
 <hr class={hr} />
 <Purchases/>
