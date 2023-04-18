@@ -109,12 +109,24 @@ export const localLogin = async() => {
     return true;
 }
 
-export const logout = async () => {
+export const autoLogout = async () => {
+    console.log("auto logging out");
+
     Game.leave();
-    console.log("logging out")
     sessionStorage.removeItem('token');
     userStore.set(null);
-    await localLogin();
+
+    const success = await localLogin();
+};
+
+export const manualLogout = async () => {
+    console.log("manual logging out");
+
+    Game.leave();
+    localStorage.removeItem('username');
+    localStorage.removeItem('password');
+    sessionStorage.removeItem('token');
+    userStore.set(null);
 };
 
 export const signup = async (phone, username) => {
@@ -270,7 +282,7 @@ export const deleteUser = async() => {
         pushPopup({
             status: 1,
             message: 'Account Deleted Successfully!',
-            onOk: () => logout()
+            onOk: () => manualLogout()
         });
         return true;
     } catch (err) {

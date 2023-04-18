@@ -1,40 +1,36 @@
 <script>
 	import '../app.css';
-
     import { onMount } from 'svelte';
     import { goto } from '$app/navigation';
-    import { page } from '$app/stores';
 
 	import Loading from '../general-components/loading.svelte';
 	import Modal from '../general-components/modal.svelte';
-    
+    import ColorLoader from './color-loader.svelte';
+
 	import { popupQueue, userStore } from '../stores';
     import { autoLogin } from '../requests/account';
-	import ColorLoader from './color-loader.svelte';
-    $: console.log('NEW USER: ', $userStore);
 
     let loaded = false;
+
+    const redirectOnUserUpdate = (v) => {
+        if (v) {
+            goto('/app/game');
+        } else {
+            goto('/login');
+        }
+    };
+
 	onMount(async () => {
         loaded = false;
-        if (!$userStore) {
-            const res = await autoLogin();
-            if (!res) {
-                goto('/login');
-            }
-        }
-        loaded = true;
-	});
+        
+        userStore.subscribe(redirectOnUserUpdate);
 
-	let prevUser = false;
-	$: {
-        if (!prevUser && $userStore) {
-            console.log($page?.route?.id)
-            if ($page?.route?.id && !$page.route.id.includes('app')) {
-                goto('/app/game');
-            }
+        if (!$userStore) {
+            const success = await autoLogin();
         }
-		prevUser = $userStore;
-	}
+
+        loaded = true;
+	});  
 </script>
 
 {#if loaded}

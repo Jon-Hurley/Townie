@@ -1,10 +1,12 @@
-import { writable, get } from 'svelte/store';
-import { pushPopup, userStore } from '../stores.js';
-import { PUBLIC_BACKEND_WS } from '$env/static/public';
-import { Location } from './Location.js';
-import { goto } from '$app/navigation';
-import { logout } from '../requests/account.js';
 import * as turf from '@turf/turf';
+
+import { writable, get } from 'svelte/store';
+import { PUBLIC_BACKEND_WS } from '$env/static/public';
+import { goto } from '$app/navigation';
+
+import { pushPopup, userStore } from '../stores.js';
+import { Location } from './Location.js';
+
 import { Map } from './Map.js';
 
 export class Game {

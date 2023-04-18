@@ -1,9 +1,11 @@
 <script>
 	import { goto } from '$app/navigation';
-	import { primaryColor } from '../../stores';
-	import { logout } from '../../requests/account';
-	import Username from '../../general-components/username.svelte';
+	
+    import Username from '../../general-components/username.svelte';
 	import Premium from '../../general-components/premium.svelte';
+
+    import { primaryColor } from '../../stores';
+	import { manualLogout } from '../../requests/account';
 
 	$: pages = [
 		{
@@ -33,7 +35,7 @@
                 hover:scale-125 hover:bg-${$primaryColor}-50
                 p-2 m-2
             `,
-			tooltip: 'Logout',
+			tooltip: 'logout',
 			svg: 'M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75'
 		}
 	];
@@ -81,7 +83,7 @@
                         return;
                     }
                     if (page === '/logout') {
-                        logout();
+                        manualLogout();
                         return;
                     }
                     goto(page);

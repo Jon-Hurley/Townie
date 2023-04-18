@@ -1,5 +1,5 @@
 import { get, writable } from 'svelte/store';
-import { logout } from './requests/account';
+import { autoLogout } from './requests/account';
 
 export const userStore = writable();
 
@@ -19,7 +19,7 @@ export const handlePurchaseUpdates = (user) => {
     let newPrimaryColor = 'indigo';
     let newPrimaryAudio = null;
 
-    for (const p of user.purchases) {
+    for (const p of user?.purchases) {
         if (!p?.isActive) continue;
         switch (p.category) {
             case 'Color': {
@@ -61,14 +61,14 @@ export const pushPopup = (popupObject) => {
             popPopup();
             if (popupObject.onOk) popupObject.onOk();
             if (popupObject.message.includes('Invalid token')) {
-                logout();
+                autoLogout();
             }
         },
         onCancel: () => {
             popPopup();
             if (popupObject.onCancel) popupObject.onCancel();
             if (popupObject.message.includes('Invalid token')) {
-                logout();
+                autoLogout();
             }
         }
     })
