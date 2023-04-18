@@ -32,7 +32,7 @@
     }
 
     const _closeJoin = async(i) => {
-        notifs.splice(i, 1); // DOES NOT CLOSE MIDDLE NOTIFS
+        notifs.splice(i, 1); // DOES NOT CLOSE THE RIGHT NOTIFS
         notifs = notifs;
     }
 
@@ -79,7 +79,7 @@
                         n={n}
                         acceptFriend={() => _acceptFriend(i, n.key)}
                         rejectFriend={() => _rejectFriend(i, n.key)}
-                        closeJoin={() => _closeJoin()}
+                        closeJoin={() => _closeJoin(i)}
                         joinGame={() => _joinGame(n.gameKey)}
                     />
                 {/each}

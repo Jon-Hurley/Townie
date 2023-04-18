@@ -169,6 +169,11 @@ def getUserWithFriendship(userKey, targetKey):
     return arango_con.db.aql.execute(
         """
         LET userId = CONCAT("User/", @userKey)
+        LET inGame = (
+            FOR player IN Players
+                FILTER player._from == CONCAT("User/", @targetKey) && player.connectionId
+                RETURN player.connectionId
+        )[0]
 
         LET f = (
             FOR v, e IN 1..1 ANY userId GRAPH Friendships
@@ -213,7 +218,8 @@ def getUserWithFriendship(userKey, targetKey):
                 purchases: user.purchases,
                 friendship: f,
                 mutualFriends,
-                networkDistance
+                networkDistance, 
+                inGame: inGame
             }
         """,
         bind_vars={
