@@ -3,6 +3,9 @@ import { pushPopup, userStore } from '../stores.js';
 import { PUBLIC_BACKEND_WS } from '$env/static/public';
 import { Location } from './Location.js';
 import { goto } from '$app/navigation';
+import { logout } from '../requests/account.js';
+import * as turf from '@turf/turf';
+import { Map } from './Map.js';
 
 export class Game {
     static store = writable();
@@ -11,6 +14,7 @@ export class Game {
     static interval = undefined;
     static timeStore = writable(null);
     static messageStore = writable([]);
+    static formatStore = writable("");
 
     static send(method, data) {
         const objStr = JSON.stringify({ method, ...data });
@@ -28,6 +32,73 @@ export class Game {
         if (!data) return;
         data.destinations.sort((a, b) => a.index - b.index);
         Game.store.set(data);
+    }
+    // TODO: continue experimenting with this
+    static shrinkRadius() {
+        console.log("SHRINKING RADIUS")
+        const startTime = Date.now();
+        const timeLeft = Game?.nextDestination?.timeToCompletion * 1000;
+        let timeComputation = -1;
+        let currTime = startTime;
+        let interval = setInterval(() => {
+            currTime += timeLeft / 5.0;
+            console.log("DESTINATION SCALAR:", get(Map.settings).destinationRadiusScalar);
+            console.log("Time left:", (startTime + timeLeft));
+            console.log("Current time:", currTime);
+            console.log("RADIUS AS I KNOW IT:", get(Map.settings).destinationRadius);
+            if (get(Map.settings).destinationRadius * get(Map.settings).destinationRadiusScalar < 0.1 || Game.timeStore) {
+                if (Game.timeStore) { 
+                    console.log("TIME STORE IS TRUE");
+                }
+                console.log("CLEARING INTERVAL");
+                clearInterval(interval);
+            }
+            if (currTime > (timeLeft + startTime)) {
+                timeComputation = (currTime - startTime) / timeLeft;
+            }
+            if (timeComputation < 1.2 && timeComputation > 1) {
+                Map.updateDestinationRadiusScalar(x => x * 0.85);
+            }
+            else if (timeComputation < 1.4 && timeComputation > 1) {
+                Map.updateDestinationRadiusScalar(x => x * 0.70);
+            }
+            else if (timeComputation < 1.6 && timeComputation > 1) {
+                Map.updateDestinationRadiusScalar(x => x * 0.55);
+            }
+            else if (timeComputation < 1.8 && timeComputation > 1) {
+                Map.updateDestinationRadiusScalar(x => x * 0.40);
+            }
+            else if (timeComputation < 2 && timeComputation > 1) {
+                Map.updateDestinationRadiusScalar(x => x * 0.15);
+            }
+            else if  (timeComputation > 2) {
+                Map.updateDestinationRadiusScalar(x => x = 0);
+                Map.updateDestinationCircle();
+                clearInterval(interval);
+            }
+            
+            Map.updateDestinationCircle();
+        }, timeLeft / 5.0);
+    }
+
+    static handleRadiusUpdate() {
+
+        const currLat = Location.lat;
+        const currLng = Location.lng;
+
+        const destLat = Game.nextDestination.lat;
+        const destLng = Game.nextDestination.lon;
+
+        const from = turf.point([currLng, currLat]);
+        const to = turf.point([destLng, destLat]);
+        let distance = turf.distance(from, to, {units: 'kilometers'}) / 2.0;
+
+        console.log("DISTANCE:", distance);
+
+        console.log("SUCCESSFULLY UPDATED RADIUS");
+        Map.updateDestinationRadius(x => x = distance);
+
+        
     }
 
     static handleLocationUpdate(data) {
@@ -53,7 +124,7 @@ export class Game {
             // open destination page.
             const baseUrl = window.location.protocol + "//" + window.location.host + "/";
             console.log(baseUrl);
-            window.open(baseUrl + 'destination/' + achievedDest._key, '_blank');
+            window.open(baseUrl + 'app/destination/' + achievedDest._key, '_blank');
 
             pushPopup({
                 status: 1,
@@ -65,6 +136,8 @@ export class Game {
                 `,
                 onOk: () => {
                     Game.player.destinationIndex++;
+                    Game.formatStore.set(Game.updateDestTime());
+                    //Map.updateDestinationRadiusScalar(x => x = 1);
                 }
             });
 
@@ -78,6 +151,25 @@ export class Game {
         }
     }
 
+    static updateDestTime() {
+        const totalTime = Game.nextDestination.timeToCompletion;
+
+        const dHours = `00${Math.floor((totalTime / 60 / 60) % 60)}`.slice(-2);
+        const dMinutes = `00${Math.floor((totalTime / 60) % 60)}`.slice(-2);
+        const dSeconds = `00${Math.floor((totalTime) % 60)}`.slice(-2);
+
+        let formattedTime = "";
+
+        if (dHours !== '00')
+            formattedTime = `${dHours}:${dMinutes}:${dSeconds}`;
+        else if (dHours === '00' && dMinutes !== '00')
+            formattedTime = `${dMinutes}:${dSeconds}`;
+        else if (dHours === '00' && dMinutes === '00')
+            formattedTime = `${dSeconds} seconds`;
+
+        return formattedTime;
+    }
+
     static setDefaultEvents() {
         Game.ws.onmessage = (m) => {
             try {
@@ -86,10 +178,13 @@ export class Game {
                 switch (method) {
                     case 'get-game':
                     case 'update-game': {
-                        Game.handleGameUpdate(data); return;
+                        Game.handleGameUpdate(data);  
+                        return;
                     }
                     case 'update-location': {
-                        Game.handleLocationUpdate(data); return;
+                        Game.handleLocationUpdate(data);
+                        Game.handleRadiusUpdate();
+                        return;
                     }
                     case 'new-message': {
                         Game.handleNewMessage(data); return;
@@ -174,6 +269,10 @@ export class Game {
                 Game.ws.onopen = (e) => res(e);
             });
 
+            if (!Game.ws) {
+                throw { message: "Unable to create websocket. Try again." }
+            }
+
             const res = await Game.getGame(gameKey);
             if (!res?.player) {
                 throw { message: "Unable to connect to game. Your session token may be expired." }
@@ -231,11 +330,13 @@ export class Game {
                 Game.ws.onerror = rej;
             });
             Game.resumePolling();
+             // TODO: continue experimenting with this
+            Game.shrinkRadius();
             return true;
         } catch (err) {
             pushPopup({
                 status: 0,
-                message: "Unable to start game. Please try again.",
+                message: "Unable to start game. Please try again. You may need to change your settings.",
                 onOk: () => Game.resumePolling()
             });
             return false;

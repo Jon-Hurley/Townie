@@ -15,7 +15,8 @@ def createUser(username, passwordHash, phoneNumber):
             'weeklyGamePlayed': False,
             'nextAvailableGame': 0,
             'hidingState': False,
-            'isPremium': False
+            'isPremium': False,
+            'showTimes': False
         },
         return_new=True
     )
@@ -70,7 +71,7 @@ def getUserFromPhoneOrUsername(phone, username):
     )
 
 def updateInfo(userKey, newUsername, newPhone, newPasswordHash,
-               newLogin2FA, newHidingState):
+               newLogin2FA, newHidingState, newShowTimes):
     return arango_con.db.aql.execute(
         """
             LET purchases = (
@@ -87,7 +88,8 @@ def updateInfo(userKey, newUsername, newPhone, newPasswordHash,
                 phone: @newPhone,
                 passwordHash: @newPasswordHash,
                 login2FA: @newLogin2FA,
-                hidingState: @newHidingState
+                hidingState: @newHidingState,
+                showTimes: @newShowTimes
             } IN User
             RETURN MERGE(NEW, { purchases })
         """,
@@ -97,7 +99,8 @@ def updateInfo(userKey, newUsername, newPhone, newPasswordHash,
             'newPhone': newPhone,
             'newPasswordHash': newPasswordHash,
             'newLogin2FA': newLogin2FA,
-            'newHidingState': newHidingState
+            'newHidingState': newHidingState,
+            'newShowTimes': newShowTimes
         }
     )
 
@@ -195,6 +198,11 @@ def getUserWithFriendship(userKey, targetKey):
     return arango_con.db.aql.execute(
         """
         LET userId = CONCAT("User/", @userKey)
+        LET inGame = (
+            FOR player IN Players
+                FILTER player._from == CONCAT("User/", @targetKey) && player.connectionId
+                RETURN player.connectionId
+        )[0]
 
         LET f = (
             FOR v, e IN 1..1 ANY userId GRAPH Friendships
@@ -245,7 +253,8 @@ def getUserWithFriendship(userKey, targetKey):
                 purchases,
                 friendship: f,
                 mutualFriends,
-                networkDistance
+                networkDistance, 
+                inGame: inGame
             }
         """,
         bind_vars={
@@ -429,6 +438,70 @@ def getFriendsList(key):
             }
         """,
         bind_vars={'key': key}
+    )
+
+def getUsersInGame(userKey):
+    return arango_con.db.aql.execute(
+        """
+        LET userId = CONCAT("User/", @userKey)
+
+        LET friends = (
+            FOR friend, e IN 1..1 ANY userId GRAPH Friendships
+                FILTER e.status
+                RETURN friend
+        )
+
+        LET onlineFriends = (
+            FOR friend in friends
+                LET isOnline = (
+                    FOR v, e IN 1..1 ANY friend._id GRAPH Playerships
+                        FILTER e.connectionId != NULL
+                        FILTER v != NULL
+                        RETURN v._key
+                )
+                FILTER LENGTH(isOnline) != 0
+                
+                RETURN {
+                    username: friend.username,
+                    key: friend._key,
+                    isPremium: friend.isPremium,
+                    gameKey: isOnline[0]
+                }
+        )
+
+        LET prevPlayers = (
+            FOR playerUser IN 2..2 ANY userId GRAPH Playerships
+                RETURN DISTINCT playerUser
+        )
+
+        LET onlinePrevPlayers = (
+            FOR playerUser IN prevPlayers
+                LET isFriend = LENGTH(
+                    FOR f in friends
+                        FILTER f._key == playerUser._key
+                        RETURN f
+                ) != 0
+                FILTER !isFriend
+                
+                LET isOnline = (
+                    FOR v, e IN 1..1 ANY playerUser._id GRAPH Playerships
+                        FILTER e.connectionId != NULL
+                        FILTER v != NULL
+                        RETURN v._key
+                )
+                FILTER LENGTH(isOnline) != 0
+                
+                RETURN {
+                    username: playerUser.username,
+                    key: playerUser._key,
+                    isPremium: playerUser.isPremium,
+                    gameKey: NULL
+                }
+        )
+
+        RETURN APPEND(onlinePrevPlayers, onlineFriends)
+        """,
+        bind_vars={'userKey': userKey}
     )
 
 
@@ -895,4 +968,38 @@ def activatePurchase(userKey, purchasableKey):
             'userKey': userKey,
             'purchasableKey': purchasableKey
         }
+
+    )
+
+def incrementIndex(connectionID): # FLAG --> change to group
+    return arango_con.db.aql.execute(
+        """
+        FOR p IN Players
+            FILTER p.connectionId == @connectionId && p.connectionId != null
+            LET newIndex = p.destinationIndex + 1
+            UPDATE p
+            WITH {
+                destinationIndex: newIndex
+            }
+            IN Players
+        """,
+        bind_vars={'connectionId': connectionID}
+    )
+
+def updatePoints(userKey, option): # FLAG --> change name and go to group
+    return arango_con.db.aql.execute(
+        """
+        FOR u IN User
+            FILTER u._key == @_key
+            LET dp = @option == 0 ? 750 : 1500
+            FILTER u.points >= dp
+            LET newPoints = u.points - dp
+            UPDATE u
+            WITH {
+                points: newPoints
+            }
+            IN User
+            RETURN NEW
+        """,
+        bind_vars={"_key": userKey, "option": option}
     )

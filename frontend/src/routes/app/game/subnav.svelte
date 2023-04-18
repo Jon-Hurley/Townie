@@ -5,7 +5,7 @@
 	import MapSettings from './map/mapSettings.svelte';
 	import LobbySettings from './lobby/lobbySettings.svelte';
 	import Chat from './chat.svelte';
-
+    import Locations from './locations.svelte'
     import { Game } from '../../../classes/Game';
     const gameStore = Game.store;
 
@@ -19,12 +19,17 @@
             flex
             w-full justify-between
             pt-4 gap-2
+            z-50
         "
     >
         <Chat/>
 
         {#if gamePage === 'map'}
-            <Leaderboard/>
+            {#if $gameStore.game.settings.casual}
+                <Locations/>
+            {:else}
+                <Leaderboard/>
+            {/if}
         {/if}
 
         {#if gamePage === 'lobby'}

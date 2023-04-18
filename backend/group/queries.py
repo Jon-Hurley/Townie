@@ -1,6 +1,6 @@
 import arango_con
 import time
-from . import scraper
+from . import scraper, scraperfsq
 
 
 def createGame(lon, lat):
@@ -20,7 +20,8 @@ def createGame(lon, lat):
                 desiredCompletionTime: 180,
                 budget: 1,
                 lon: @lon,
-                lat: @lat
+                lat: @lat,
+                casual: False
             }
         }
         INTO Games
@@ -45,6 +46,8 @@ def addPlayer(gameKey, userKey, connectionId, lat, lon):
                     RETURN e.connectionId
             )
 
+            
+
             UPSERT {
                 _from: CONCAT("User/", @userKey),
                 _to: CONCAT("Games/", @gameKey)
@@ -54,6 +57,7 @@ def addPlayer(gameKey, userKey, connectionId, lat, lon):
                 _to: CONCAT("Games/", @gameKey),
                 connectionId: @connectionId,
                 destinationIndex: 0,
+                numCompleted: 0,
                 time: 0,
                 dist: 0,
                 totalDist: 0,
@@ -87,20 +91,27 @@ def addPlayer(gameKey, userKey, connectionId, lat, lon):
     )
 
 
-def leaveGame(connectionId):
+def leaveGame(connectionId, finished):
     return arango_con.db.aql.execute(
         """
             FOR p IN Players
                 FILTER p.connectionId == @connectionId
                     && p.connectionId != null
 
+                LET casual = (
+                    FOR g IN Games
+                        FILTER g._id == p._to
+                        RETURN g.settings.casual
+                )[0]
+
+                LET dp = casual ? 0 : p.points - p.addedPoints
                 LET u = (
                     FOR u in User
                         FILTER u._id == p._from
                         UPDATE u
                         WITH {
-                            points: u.points + (p.points - p.addedPoints),
-                            cumPoints: u.cumPoints + (p.points - p.addedPoints)
+                            points: u.points + dp,
+                            cumPoints: u.cumPoints + dp
                         }
                         IN User
                         RETURN NEW
@@ -131,7 +142,12 @@ def startGame(gameKey, settings):
     # settings = lobbyRes['settings']
 
     # TRIGGER WEB-SCRAPER: (get destinations & auto add to the DB)
-    trueCompletionTime = scraper.generate(settings, gameKey)
+    trueCompletionTime = scraperfsq.generate(settings, gameKey)
+
+    # IF NO DESTINATIONS FOUND, THROW ERROR
+    if (trueCompletionTime == 0):
+        raise Exception("No destinations found")
+    
     # trueCompletionTime = 100
 
     return arango_con.db.aql.execute(
@@ -214,7 +230,11 @@ def updatePlayerLocation(connectionId, lon, lat):
             LET newTime = p.time + dt
             LET newTimeSec = newTime / 1000
             LET pMult = 1 - (newTimeSec / newDestDelta.trueTime) / 2
-            LET dp = arrived ? ROUND(MAX([pMult, 0]) * newDestDelta.points) : 0
+            LET dp = arrived ? 
+                MAX(
+                    [ROUND(MAX([pMult, 0]) * newDestDelta.points), 0]
+                )
+                : 0
 
             UPDATE p
             WITH {
@@ -222,6 +242,7 @@ def updatePlayerLocation(connectionId, lon, lat):
                 lat: @lat,
                 prevTime: t,
 
+                numCompleted: p.numCompleted + arrived,
                 destinationIndex: p.destinationIndex + arrived,
                 points: p.points + dp,
                 dist: arrived ? 0 : p.time + dx,
@@ -283,9 +304,10 @@ def getGame(gameKey):
                 RETURN {
                     index: e.index,
                     points: e.points,
+                    timeToCompletion: e.timeToCompletion,
                     name: v.name,
                     lon: v.longitude,
-                    lat: v.latitude
+                    lat: v.latitude,
                 }
         )
 
@@ -360,6 +382,7 @@ def getGameForPlayer(gameKey, connectionId):
                 RETURN {
                     index: e.index,
                     points: e.points,
+                    timeToCompletion: e.timeToCompletion,
                     name: v.name,
                     lon: v.longitude,
                     lat: v.latitude
@@ -382,32 +405,75 @@ def getGameForPlayer(gameKey, connectionId):
     )
 
 
-def createDestination(lat, lng, name, theme):
-    try:
-        list = [lat, lng]
-        return arango_con.destinationCollection.insert({
-            'latitude': lat,
-            'longitude': lng,
-            'name': name,
-            'theme': theme
-        })
-    except:
-        pass
+def createDestination(lat, lng, name, theme, tips):
+    
+    # list = [lat, lng]
+    # arango_con.destinationCollection.insert(
+    #     {
+    #     'latitude': lat,
+    #     'longitude': lng,
+    #     'name': name,
+    #     'theme': theme,
+    #     'tips': [tips]
+    #     }, 
+    #     False, 
+    #     True, 
+    #     True, 
+    #     True, 
+    #     False, 
+    #     "update"
+    # )
+    arango_con.db.aql.execute(
+            """
+        UPSERT {
+            name: @name
+        }
+        INSERT {
+            name: @name,
+            latitude: @lat,
+            longitude: @lng,
+            theme: @theme,
+            tips: @tips,
+            rating: 0,
+            numRatings: 0
+        }
+        UPDATE {
+            name: @name,
+            latitude: @lat,
+            longitude: @lng,
+            theme: @theme,
+            tips: @tips,
+        }
+        IN Destinations
+        RETURN {
+            oldDoc: OLD
+        }
+        """,
+            bind_vars={
+                'name': name,
+                'lat': lat,
+                'lng': lng,
+                'theme': theme,
+                'tips': tips
+            }
+        )
 
 
-def getNearbyDestinations(lat, lng, radius):
+def getNearbyDestinations(lat, lng, radius, theme):
     return arango_con.db.aql.execute(
         """
         FOR x IN Destinations
             FILTER GEO_DISTANCE([@lat, @lng], [x.latitude, x.longitude]) <= @radius
             FILTER GEO_DISTANCE([@lat, @lng], [x.latitude, x.longitude]) >= 100
+            FILTER x.theme == @theme
             LIMIT 50
             RETURN x
         """,
         bind_vars={
             'lat': lat,
             'lng': lng,
-            'radius': radius
+            'radius': radius,
+            'theme': theme
         }
     )
 
@@ -572,10 +638,10 @@ def updateTrueTime(gameKey, settings):
     new_true_time = 0
     if new_desired_time < game1[0]['settings']['desiredCompletionTime']:
         print("decrease")
-        new_true_time = scraper.truncateGame(settings, gameKey)
+        new_true_time = scraperfsq.truncateGame(settings, gameKey)
     elif new_desired_time > game1[0]['settings']['desiredCompletionTime']:
         print("increase")
-        new_true_time = scraper.extendGame(settings, gameKey)
+        new_true_time = scraperfsq.extendGame(settings, gameKey)
     game1[0]['settings'] = settings
     game1[0]['trueCompletionTime'] = new_true_time
     return arango_con.gameCollection.update_match(dict(_key=game1[0]['_key']), game1[0])

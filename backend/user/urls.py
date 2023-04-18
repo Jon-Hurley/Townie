@@ -15,10 +15,12 @@ urlpatterns = [
 
     path('search/', search.searchUsers),
     path('profile/<str:key>/', search.getUser),
-    path('game-log/', search.getGameLog),
+    path('game-log/', search.getGameLog), 
+    path('increment-index/', search.incrementIndex), # change to group
 
     path('friends/', friend.getFriends),
     path('pending-friends/', friend.getPendingFriends),
+    path('online-users/', friend.getUsersInGames),
     path('accept-friend/', friend.acceptFriend),
     path('reject-friend/', friend.rejectFriend),
     path('request-friend/', friend.requestFriend),
@@ -37,5 +39,6 @@ urlpatterns = [
 
     path('get-theme-list/', search.getThemeList),
     path('get-summary/', search.getSummary),
-    path('get-destination/', search.getDestination)
+    path('get-destination/', search.getDestination),
+    path('spend-points/', account.updatePoints),
 ]

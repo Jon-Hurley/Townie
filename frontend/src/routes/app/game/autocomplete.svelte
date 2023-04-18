@@ -16,9 +16,15 @@
 
 <Geocoder
     accessToken={PUBLIC_MAPBOX_TOKEN}
-    on:result={(loc) => {
-        console.log(loc);
-        settings.lat = loc.lat;
-        settings.lon = loc.lng;
+    options = {{
+        proximity: {
+            longitude: settings.lon,
+            latitude: settings.lat
+        }
+    }}
+    on:result={(e) => {
+        console.log("LOC: ", e);
+        settings.lat = e.detail.result.center[1];
+        settings.lon = e.detail.result.center[0];
     }}
 />

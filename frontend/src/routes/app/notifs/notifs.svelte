@@ -1,12 +1,14 @@
 <script>
     import { onMount } from 'svelte';
     
+    import { goto } from '$app/navigation';
     import Notif from './notif.svelte';
     import Loading from '../../../general-components/loading.svelte';
 	
     import { acceptFriend, loadNotifications, rejectFriend } from '../../../requests/friend';	
 	import { hr, largeTitle, listItem } from '../../../css';
 	import { userStore } from '../../../stores';
+	import { Game } from '../../../classes/Game';
 
     let notifs = [];
     let loading = true;
@@ -29,9 +31,30 @@
         }
     }
 
+    const _closeJoin = async(i) => {
+        notifs.splice(i, 1); // DOES NOT CLOSE THE RIGHT NOTIFS
+        notifs = notifs;
+    }
+
+    const _joinGame = async(lobbyInput) => {
+        // goto('/app/game');
+        // pushPopup(
+        //     0,
+        //     "Are you sure about that?",
+        //     () => {
+        //         Game.join(lobbyInput);
+        //     }
+        // );
+        const res = await Game.join(lobbyInput);
+        if (!res) {
+            goto('/app/game');
+        }
+    }
+
     onMount(async() => {
         if (!$userStore) return;
         notifs = await loadNotifications();
+        console.log({notifs})
         loading = false;
     });
 </script>
@@ -57,6 +80,8 @@
                         n={n}
                         acceptFriend={() => _acceptFriend(i, n.key)}
                         rejectFriend={() => _rejectFriend(i, n.key)}
+                        closeJoin={() => _closeJoin(i)}
+                        joinGame={() => _joinGame(n.gameKey)}
                     />
                 {/each}
             {:else}

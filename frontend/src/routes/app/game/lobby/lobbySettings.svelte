@@ -255,7 +255,7 @@
 		<div
 			class="
             flex justify-between items-center
-            bg-white p-3
+            bg-white p-3 mb-2
             border-2 border-gray-200 rounded
         "
 		>
@@ -273,8 +273,7 @@
 				value={form.budget}
 				class="w-40"
 			>
-				<option value={0}>Free</option>
-				<option value={1}>10 dollars</option>
+				<option value={1}>Most affordable</option>
 				<option value={2}>25 dollars</option>
 				<option value={3}>50 dollars</option>
 				<option value={4}>Splurge!</option>
@@ -297,7 +296,7 @@
 						}
 						const budget1 = Math.abs(v);
 						if (budget1 == 0) {
-							form.budget = 0;
+							form.budget = 1;
 						} else if (budget1 <= 10) {
 							form.budget = 1;
 						} else if (budget1 <= 25) {
@@ -312,7 +311,22 @@
 			{/if}
 		</div>
 
-		<hr class="{hr}"/>
+		<div
+			class="
+                flex justify-between items-center
+                bg-white p-3
+                border-2 border-gray-200 rounded
+            "
+		>
+		<div class="font-semibold">Casual Mode</div>
+			<input 
+				type="checkbox" 
+				value = "form.casual"
+				bind:checked={form.casual}
+				class="w-4 h-4 border border-gray-300 rounded focus:ring-3 focus:ring-indigo-600 accent-indigo-600"/>
+		</div>
+
+		<hr class="{hr} my-4" />
 		<div class="flex ">
 			<button
 				class="{buttonStyle} {blueStyle} w-full mr-2"

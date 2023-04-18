@@ -103,3 +103,14 @@ export const getThemeList = async() => {
         return null;
     }
 }
+
+export const incrementDestinationIndex = async (connectionID) => {
+    // This is used to increment destination index for the case of skipping a destination.
+    // I don't know if there's a better way but this works -- Jack
+    const res = await axios.post(
+        PUBLIC_BACKEND_API + "user/increment-index/",
+        {
+            connectionID
+        }
+    );
+}
