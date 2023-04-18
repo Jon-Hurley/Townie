@@ -15,7 +15,8 @@ def createUser(username, passwordHash, phoneNumber):
             'weeklyGamePlayed': False,
             'nextAvailableGame': 0,
             'hidingState': False,
-            'isPremium': False
+            'isPremium': False,
+            'showTimes': False
         },
         return_new=True
     )
@@ -28,7 +29,7 @@ def getUserByUsername(username):
 
 
 def updateInfo(userKey, newUsername, newPhone, newPasswordHash,
-               newLogin2FA, newHidingState):
+               newLogin2FA, newHidingState, newShowTimes):
     return arango_con.db.aql.execute(
         """
             UPDATE {
@@ -37,7 +38,8 @@ def updateInfo(userKey, newUsername, newPhone, newPasswordHash,
                 phone: @newPhone,
                 passwordHash: @newPasswordHash,
                 login2FA: @newLogin2FA,
-                hidingState: @newHidingState
+                hidingState: @newHidingState,
+                showTimes: @newShowTimes
             } IN User
             RETURN NEW
         """,
@@ -47,7 +49,8 @@ def updateInfo(userKey, newUsername, newPhone, newPasswordHash,
             'newPhone': newPhone,
             'newPasswordHash': newPasswordHash,
             'newLogin2FA': newLogin2FA,
-            'newHidingState': newHidingState
+            'newHidingState': newHidingState,
+            'newShowTimes': newShowTimes
         }
     )
 
@@ -624,4 +627,37 @@ def submitRating(theme, rating, numRatings):
         }
         """,
         bind_vars={'theme': theme, 'rating': rating, 'numRatings': numRatings}
+    )
+
+def incrementIndex(connectionID):
+    return arango_con.db.aql.execute(
+        """
+        FOR p IN Players
+            FILTER p.connectionId == @connectionId && p.connectionId != null
+            LET newIndex = p.destinationIndex + 1
+            UPDATE p
+            WITH {
+                destinationIndex: newIndex
+            }
+            IN Players
+        """,
+        bind_vars={'connectionId': connectionID}
+    )
+
+def updatePoints(userKey, option):
+    return arango_con.db.aql.execute(
+        """
+        FOR u IN User
+            FILTER u._key == @_key
+            LET dp = @option == 0 ? 750 : 1500
+            FILTER u.points >= dp
+            LET newPoints = u.points - dp
+            UPDATE u
+            WITH {
+                points: newPoints
+            }
+            IN User
+            RETURN NEW
+        """,
+        bind_vars={"_key": userKey, "option": option}
     )

@@ -10,7 +10,8 @@
 		newUsername: $userStore?.username,
 		newPhone: $userStore?.phone,
 		newLogin2FA: $userStore?.login2FA,
-		newHidingState: $userStore?.hidingState
+		newHidingState: $userStore?.hidingState,
+		newShowTimes: $userStore?.showTimes
 	};
 
 	const _updateUser = async() => {
@@ -22,7 +23,8 @@
 		}
 		await updateAccount(
 			form.password, form.newUsername,
-			form.newPhone, form.newLogin2FA, form.newHidingState
+			form.newPhone, form.newLogin2FA, form.newHidingState,
+			form.newShowTimes
 		);
 	};
 </script>
@@ -76,6 +78,17 @@
 		bind:checked={form.newHidingState}
 	/>
 </div>
+
+<div class={title}>Gameplay Preferences</div>
+<hr class={hr} />
+<div class="px-2 flex justify-between">
+	Give Estimated Times Between Destinations
+	<input
+		type="checkbox"
+		bind:checked={form.newShowTimes}
+	/>
+</div>
+
 
 <div class={title}>Confirm Password</div>
 <hr class={hr} />

@@ -19,6 +19,7 @@
             flex
             w-full justify-between
             pt-4 gap-2
+            z-50
         "
     >
         <Chat/>

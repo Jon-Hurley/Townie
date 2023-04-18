@@ -45,6 +45,8 @@ def addPlayer(gameKey, userKey, connectionId, lat, lon):
                     RETURN e.connectionId
             )
 
+            
+
             UPSERT {
                 _from: CONCAT("User/", @userKey),
                 _to: CONCAT("Games/", @gameKey)
@@ -54,6 +56,7 @@ def addPlayer(gameKey, userKey, connectionId, lat, lon):
                 _to: CONCAT("Games/", @gameKey),
                 connectionId: @connectionId,
                 destinationIndex: 0,
+                numCompleted: 0,
                 time: 0,
                 dist: 0,
                 totalDist: 0,
@@ -87,7 +90,7 @@ def addPlayer(gameKey, userKey, connectionId, lat, lon):
     )
 
 
-def leaveGame(connectionId):
+def leaveGame(connectionId, finished):
     return arango_con.db.aql.execute(
         """
             FOR p IN Players
@@ -228,8 +231,7 @@ def updatePlayerLocation(connectionId, lon, lat):
             LET pMult = 1 - (newTimeSec / newDestDelta.trueTime) / 2
             LET dp = arrived ? 
                 MAX(
-                    [ROUND(MAX([pMult, 0]) * newDestDelta.points),
-                    0]
+                    [ROUND(MAX([pMult, 0]) * newDestDelta.points), 0]
                 )
                 : 0
 
@@ -239,6 +241,7 @@ def updatePlayerLocation(connectionId, lon, lat):
                 lat: @lat,
                 prevTime: t,
 
+                numCompleted: p.numCompleted + arrived,
                 destinationIndex: p.destinationIndex + arrived,
                 points: p.points + dp,
                 dist: arrived ? 0 : p.time + dx,

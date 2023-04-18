@@ -14,6 +14,7 @@ export class Game {
     static interval = undefined;
     static timeStore = writable(null);
     static messageStore = writable([]);
+    static formatStore = writable("");
 
     static send(method, data) {
         const objStr = JSON.stringify({ method, ...data });
@@ -113,7 +114,6 @@ export class Game {
             const achievedDest = Game.nextDestination;
             const displayTime = Math.round(10 * oldTime / (1000 * 60)) / 10;
             const displayDist = Math.round(oldDist / 100) / 10;
-           
             pushPopup(
                 1,
                 (!Game.game.settings.casual?
@@ -125,6 +125,7 @@ export class Game {
                     You took ${displayTime} minutes and traveled ${displayDist} meters.`),
                 () => {
                     Game.player.destinationIndex++;
+                    Game.formatStore.set(Game.updateDestTime());
                 }
             );
             if (achievedDest.index === Game.destinations.length - 1) {
@@ -134,6 +135,25 @@ export class Game {
                 );
             }
         }
+    }
+
+    static updateDestTime() {
+        const totalTime = Game.nextDestination.timeToCompletion;
+
+        const dHours = `00${Math.floor((totalTime / 60 / 60) % 60)}`.slice(-2);
+        const dMinutes = `00${Math.floor((totalTime / 60) % 60)}`.slice(-2);
+        const dSeconds = `00${Math.floor((totalTime) % 60)}`.slice(-2);
+
+        let formattedTime = "";
+
+        if (dHours !== '00')
+            formattedTime = `${dHours}:${dMinutes}:${dSeconds}`;
+        else if (dHours === '00' && dMinutes !== '00')
+            formattedTime = `${dMinutes}:${dSeconds}`;
+        else if (dHours === '00' && dMinutes === '00')
+            formattedTime = `${dSeconds} seconds`;
+
+        return formattedTime;
     }
 
     static setDefaultEvents() {
@@ -228,6 +248,10 @@ export class Game {
                 Game.ws.onerror = () => rej({ message: 'Unable to connect to web-socket.' });
                 Game.ws.onopen = (e) => res(e);
             });
+
+            if (!Game.ws) {
+                throw { message: "Unable to create websocket. Try again." }
+            }
 
             const res = await Game.getGame(gameKey);
             if (!res?.player) {

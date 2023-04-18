@@ -17,6 +17,7 @@ urlpatterns = [
     path('profile/<str:key>/', search.getUser),
     path('rating/', search.getRating),
     path('gameLog/', search.getGameLog),
+    path('increment-index/', search.incrementIndex),
 
     path('friends/', friend.getFriends),
     path('pending-friends/', friend.getPendingFriends),
@@ -30,5 +31,6 @@ urlpatterns = [
 
     path('stripe-web-hook/', account.handleStripeWebhookEvent),
     path('initiate-subscription/', account.initiateStripeSession),
-    path('cancel-subscription/', account.cancelStripeSubscription)
+    path('cancel-subscription/', account.cancelStripeSubscription),
+    path('spend-points/', account.updatePoints),
 ]
