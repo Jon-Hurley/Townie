@@ -42,15 +42,7 @@ export class Game {
         let currTime = startTime;
         let interval = setInterval(() => {
             currTime += timeLeft / 5.0;
-            console.log("DESTINATION SCALAR:", get(Map.settings).destinationRadiusScalar);
-            console.log("Time left:", (startTime + timeLeft));
-            console.log("Current time:", currTime);
-            console.log("RADIUS AS I KNOW IT:", get(Map.settings).destinationRadius);
-            if (get(Map.settings).destinationRadius * get(Map.settings).destinationRadiusScalar < 0.1 || Game.timeStore) {
-                if (Game.timeStore) { 
-                    console.log("TIME STORE IS TRUE");
-                }
-                console.log("CLEARING INTERVAL");
+            if (get(Map.settings).destinationRadius * get(Map.settings).destinationRadiusScalar < 0.1 || get(Game.timeStore)) {
                 clearInterval(interval);
             }
             if (currTime > (timeLeft + startTime)) {
@@ -93,9 +85,6 @@ export class Game {
         const to = turf.point([destLng, destLat]);
         let distance = turf.distance(from, to, {units: 'kilometers'}) / 2.0;
 
-        console.log("DISTANCE:", distance);
-
-        console.log("SUCCESSFULLY UPDATED RADIUS");
         Map.updateDestinationRadius(x => x = distance);
 
         
@@ -137,7 +126,6 @@ export class Game {
                 onOk: () => {
                     Game.player.destinationIndex++;
                     Game.formatStore.set(Game.updateDestTime());
-                    //Map.updateDestinationRadiusScalar(x => x = 1);
                 }
             });
 
