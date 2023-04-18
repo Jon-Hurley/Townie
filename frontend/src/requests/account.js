@@ -280,11 +280,11 @@ export const deleteUser = async() => {
     }
 }
 
-export const submitRating = async (themeKey, newRating) => {
+export const submitThemeRating = async (themeKey, newRating) => {
     try {
         console.log({ themeKey, newRating })
         const res = await axios.post(
-            PUBLIC_BACKEND_API + 'user/submit-rating/',
+            PUBLIC_BACKEND_API + 'user/submit-theme-rating/',
             {
                 token: get(userStore).token,
                 themeKey,

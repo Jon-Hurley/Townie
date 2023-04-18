@@ -1,7 +1,7 @@
 <script>
 	import Username from '../../../../general-components/username.svelte';
-	import Share from './share.svelte';
-	import Rating from './rating.svelte';
+	import Share from '../../../../general-components/share.svelte';
+	import ThemeRating from './themeRating.svelte';
 
 	import { primaryColor } from '../../../../stores';
 	import { redStyle, greenStyle, hr, largeTitle } from '../../../../css';
@@ -32,10 +32,11 @@
 
 <Share/>
 
-<Rating
-	{userInGame}
-	{summary}
-	{reloadGameSummary}
+<ThemeRating
+	initialUserRating={summary?.userRating?.rating || 0}
+	showRateable={userInGame}
+	theme={summary.theme}
+	reload={reloadGameSummary}
 />
 
 <div class={title}>Destinations</div>

@@ -175,7 +175,7 @@ def createGame(request):
         'token': newToken
     })
 
-# GET REQUEST: GET GAME DATA
+# GET REQUEST: GET GAME DATA, FOR IN-GAME USE ONLY
 
 @csrf_exempt
 def getGame(request):
@@ -199,11 +199,3 @@ def getGame(request):
 #         'password': password,
 #         'token': newToken
 #     })
-
-@csrf_exempt
-def getDestination(request):
-    data = json.loads(request.body)
-    print(data)
-    destKey = data['destKey']
-    data = queries.getDestination(destKey).batch()[0]
-    return JsonResponse(data)

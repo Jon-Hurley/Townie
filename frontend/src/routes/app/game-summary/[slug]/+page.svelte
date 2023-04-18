@@ -11,7 +11,7 @@
 	let loading = false;
 
 	let summary;
-	$: userInGame = !!summary?.players?.find(x => x?.username == $userStore.username);
+	$: userInGame = !!summary?.players?.find(x => x?.username == $userStore?.username);
 
 	const _loadGameSummary = async () => {
 		loading = true;

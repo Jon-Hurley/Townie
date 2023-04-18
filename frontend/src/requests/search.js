@@ -101,3 +101,18 @@ export const submitDestRating = async (destKey, rating, numRatings) => {
         return false;
     }
 }
+
+export const getDestination = async (destKey) => {
+    try {
+        const res = await axios.post(
+            PUBLIC_BACKEND_API + 'user/get-destination/',
+            {
+                destKey,
+            }
+        );
+        return res.data;
+    } catch (err) {
+        console.log(err);
+        return false;
+    }
+}

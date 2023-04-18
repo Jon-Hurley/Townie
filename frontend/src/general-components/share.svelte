@@ -1,6 +1,6 @@
 <script>
-	import { pushPopup } from '../../../../stores';
-	import { hr } from '../../../../css';
+	import { pushPopup } from '../stores';
+	import { hr } from '../css';
 	const title = 'font-semibold text-lg mt-6';
 
 	const copyLink = () => {

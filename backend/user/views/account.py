@@ -249,7 +249,7 @@ def completePasswordReset(request):
     return JsonResponse({})
 
 @csrf_exempt
-def submitRating(request):
+def submitThemeRating(request):
     data = json.loads(request.body)
     themeKey = data['themeKey']
     newRating = data['newRating']
@@ -269,3 +269,16 @@ def submitRating(request):
     return JsonResponse({
         "token": newToken
     })
+
+
+@csrf_exempt
+def submitDestRating(request):
+    data = json.loads(request.body)
+    destKey = data['destKey']
+    rating = data['rating']
+    numRatings = data['numRatings']
+    try:
+        queries.submitDestRating(destKey, rating, numRatings)
+    except:
+        return util.returnError("Invalid theme or rating.", 400)
+    return JsonResponse({})
