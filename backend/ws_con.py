@@ -14,8 +14,7 @@ client = boto3.client(
     endpoint_url=os.environ.get('WS_ENDPOINT'),
 )
 
-# PROPOGATE CHANGES BACK TO USERS VIA WS API
-# FUCK DJANGO AND ITS BS CONCURRENCY REQS.
+# PROPOGATE CHANGES BACK TO USERS VIA AWS WS API
 
 def propogateUpdates(data, conExcl={}):
     players = data['players']

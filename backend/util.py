@@ -6,7 +6,10 @@ import os
 import time
 dotenv.load_dotenv()
 
+
+# TOKEN EXPIRATION TIME
 dt = 60 * 60
+
 
 def returnError(errorMessage, errCode):
     return JsonResponse(
@@ -16,29 +19,72 @@ def returnError(errorMessage, errCode):
         status=errCode
     )
 
-def getVerifyJWT(data):
+def returnUserPrivate(user):
+    del user['_id']
+    del user['_rev']
+    user['key'] = user['_key']
+    del user['_key']
+    purchases = user['purchases']
+    del user['purchases'] # remove purchases info from token
+
+    t = time.time()
+    user['expiration'] = t + dt
+
+    token = _encodeUserJWT(user)
+    user['token'] = token
+    user['purchases'] = purchases # restore purchases info
+
+    del user['passwordHash']
+    return JsonResponse(user)
+
+def returnUserPublic(user):
+    del user['_id']
+    del user['_rev']
+    del user['passwordHash']
+    del user['login2FA']
+    del user['hidingState']
+    del user['phone']
+    user['key'] = user['_key']
+    del user['_key']
+
+    if 'stripeCustomerId' in user:
+        del user['stripeCustomerId']
+    if 'stripeSubscriptionId' in user:
+        del user['stripeSubscriptionId']
+    
+    return JsonResponse(user)
+
+
+def encodeVerifyJWT(data):
     return jwt.encode(
         data,
         os.environ.get('REFRESH_TOKEN_SECRET'),
         algorithm="HS256"
     )
 
-def getVerifyJWTData(token):
+def decodeVerifyJWT(token):
     return jwt.decode(
         token,
         os.environ.get('REFRESH_TOKEN_SECRET'),
         algorithms=["HS256"]
     )
 
-def getUserFromTokenNoCheck(token):
+def _decodeUserJWT(token):
     return jwt.decode(
         token,
         os.environ.get('JWT_TOKEN_SECRET'),
         algorithms=["HS256"]
     )
 
-def getUserFromToken(token):
-    user = getUserFromTokenNoCheck(token)
+def _encodeUserJWT(user):
+    return jwt.encode(
+        user,
+        os.environ.get('JWT_TOKEN_SECRET'),
+        algorithm="HS256"
+    )
+
+def decodeUserJWT(token):
+    user = _decodeUserJWT(token)
     t = time.time()
 
     # not past expiration time
@@ -58,42 +104,7 @@ def getUserFromToken(token):
     )
     
     return user, newToken
-    
-def returnUserPrivate(user):
-    del user['_id']
-    user['key'] = user['_key']
-    del user['_key']
-    del user['_rev']
 
-    t = time.time()
-
-    user['expiration'] = t + dt
-
-    token = jwt.encode(
-        user,
-        os.environ.get('JWT_TOKEN_SECRET'),
-        algorithm="HS256"
-    )
-    user['token'] = token
-
-    del user['passwordHash']
-    print("user is: ", user)
-    return JsonResponse(user)
-
-def returnUserPublic(user):
-    del user['_id']
-    del user['_rev']
-    del user['passwordHash']
-    user['key'] = user['_key']
-    del user['_key']
-    del user['login2FA']
-    del user['hidingState']
-    del user['phone']
-    if 'stripeCustomerId' in user:
-        del user['stripeCustomerId']
-    if 'stripeSubscriptionId' in user:
-        del user['stripeSubscriptionId']
-    return JsonResponse(user)
 
 def getPasswordHash(password, username):
     saltedPassword = f'{password}:{username}:hJ)R-PQ*CS'

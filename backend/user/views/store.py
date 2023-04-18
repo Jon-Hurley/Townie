@@ -12,7 +12,7 @@ def makePurchase(request):
     data = json.loads(request.body)
     purchasableKey = data['purchasableKey']
 
-    user, newToken = util.getUserFromToken(data['token'])
+    user, newToken = util.decodeUserJWT(data['token'])
     if user is None:
         return util.returnError("Invalid token.", 401)
 
@@ -40,7 +40,7 @@ def activatePurchase(request):
     data = json.loads(request.body)
     purchasableKey = data['purchasableKey']
 
-    user, newToken = util.getUserFromToken(data['token'])
+    user, newToken = util.decodeUserJWT(data['token'])
     if user is None:
         return util.returnError("Invalid token.", 401)
 
@@ -60,7 +60,7 @@ def activatePurchase(request):
 def getPurchasables(request):
     data = json.loads(request.body)
 
-    user, newToken = util.getUserFromToken(data['token'])
+    user, newToken = util.decodeUserJWT(data['token'])
     if user is None:
         return util.returnError("Invalid token.", 401)
 
@@ -75,7 +75,7 @@ def getPurchasables(request):
 def initiateStripeSession(request):
     # Get user data from token
     data = json.loads(request.body)
-    user, newToken = util.getUserFromToken(data['token'])
+    user, newToken = util.decodeUserJWT(data['token'])
     if user is None:
         return util.returnError('Invalid token.', 401)
     
@@ -162,7 +162,7 @@ def handleSubscriptionEvent(eventType, eventData):
 @csrf_exempt
 def cancelStripeSubscription(request):
     data = json.loads(request.body)
-    user, newToken = util.getUserFromToken(data['token'])
+    user, newToken = util.decodeUserJWT(data['token'])
     if user is None:
         return util.returnError('Invalid token.', 401)
 

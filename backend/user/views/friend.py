@@ -9,7 +9,7 @@ import util
 def getFriends(request):
     body = json.loads(request.body)
 
-    user, newToken = util.getUserFromToken(body['token'])
+    user, newToken = util.decodeUserJWT(body['token'])
     if user is None:
         return util.returnError('Invalid token.', 401)
     
@@ -27,7 +27,7 @@ def getUsersInGames(request):
     print("HELLO WORLD")
     body = json.loads(request.body)
 
-    user, newToken = util.getUserFromToken(body['token'])
+    user, newToken = util.decodeUserJWT(body['token'])
     if user is None:
         return util.returnError('Invalid token.', 401)
     
@@ -45,7 +45,7 @@ def getUsersInGames(request):
 def getPendingFriends(request):
     body = json.loads(request.body)
 
-    user, newToken = util.getUserFromToken(body['token'])
+    user, newToken = util.decodeUserJWT(body['token'])
     if user is None:
         return util.returnError('Invalid token.', 401)
 
@@ -63,7 +63,7 @@ def getPendingFriends(request):
 def acceptFriend(request):
     body = json.loads(request.body)
 
-    user, newToken = util.getUserFromToken(body['token'])
+    user, newToken = util.decodeUserJWT(body['token'])
     if user is None:
         return util.returnError('Invalid token.', 401)
     
@@ -85,7 +85,7 @@ def acceptFriend(request):
 def rejectFriend(request):
     body = json.loads(request.body)
 
-    user, newToken = util.getUserFromToken(body['token'])
+    user, newToken = util.decodeUserJWT(body['token'])
     if user is None:
         return util.returnError('Invalid token.', 401)
     
@@ -109,7 +109,7 @@ def requestFriend(request):
     toKey = body['toKey']
     fromKey = body['fromKey']
 
-    user, newToken = util.getUserFromToken(body['token'])
+    user, newToken = util.decodeUserJWT(body['token'])
     if user is None:
         return util.returnError('Invalid token.', 401)
 

@@ -84,7 +84,7 @@ def login(request):
     if user['login2FA']:
         res = twilio_con.sendVerification(user['phone'])
         return JsonResponse({
-            'verifyToken': util.getVerifyJWT(user)
+            'verifyToken': util.encodeVerifyJWT(user)
         })
     
     return util.returnUserPrivate(user)
@@ -95,7 +95,7 @@ def verifyLogin(request):
     otp = data['otp']
 
     verifyToken = data['verifyToken']
-    user = util.getVerifyJWTData(verifyToken)
+    user = util.decodeVerifyJWT(verifyToken)
     phone = user['phone']
 
     res = twilio_con.testVerification(phone, otp)
@@ -108,7 +108,7 @@ def verifyLogin(request):
 def loginWithToken(request):
     data = json.loads(request.body)
 
-    user, newToken = util.getUserFromToken(data['token'])
+    user, newToken = util.decodeUserJWT(data['token'])
     if user is None:
         return util.returnError('Invalid token.', 401)
 
@@ -134,7 +134,7 @@ def updateInfo(request):
     newHidingState = data['newHidingState']
     newShowTimes = data['newShowTimes']
     
-    user, newToken = util.getUserFromToken(data['token'])
+    user, newToken = util.decodeUserJWT(data['token'])
     if user is None:
         return util.returnError('Invalid token.', 401)
     key = user['key']
@@ -180,7 +180,7 @@ def updatePlayableTime(request):
 def deleteUser(request):
     data = json.loads(request.body)
 
-    user, newToken = util.getUserFromToken(data['token'])
+    user, newToken = util.decodeUserJWT(data['token'])
     if user is None:
         return util.returnError('Invalid token.', 401)
 
@@ -258,7 +258,7 @@ def submitThemeRating(request):
     print(themeKey, newRating)
 
     token = data['token']
-    user, newToken = util.getUserFromToken(token)
+    user, newToken = util.decodeUserJWT(token)
     if user is None:
         return util.returnError('Invalid token.', 401)
 
@@ -280,7 +280,7 @@ def submitDestRating(request):
     newRating = data['newRating']
 
     token = data['token']
-    user, newToken = util.getUserFromToken(token)
+    user, newToken = util.decodeUserJWT(token)
     if user is None:
         return util.returnError('Invalid token.', 401)
     
@@ -302,7 +302,7 @@ def updatePoints(request): # FLAG --> change name
     data = json.loads(request.body)
     option = data['option']
 
-    user, newToken = util.getUserFromToken(data['token'])
+    user, newToken = util.decodeUserJWT(data['token'])
     if user is None:
         return util.returnError('Invalid token.', 401)
 

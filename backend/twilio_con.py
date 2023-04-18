@@ -28,7 +28,6 @@ def testVerification(phone, otp):
 
 # It's fine if it errors, so let it if it happens to.
 def sendNotification(phone, message):
-    return
     try:
         t = Client(
             username=os.environ.get('TWILIO_SID_2'),

@@ -50,7 +50,7 @@ def getSummary(request):
 
     if 'token' in body:
         token = body['token']
-        user, newToken = util.getUserFromToken(token)
+        user, newToken = util.decodeUserJWT(token)
         if user is None:
             return util.returnError('Invalid token.', 401)
         
@@ -76,7 +76,7 @@ def getDestination(request):
 
     if 'token' in body:
         token = body['token']
-        user, newToken = util.getUserFromToken(token)
+        user, newToken = util.decodeUserJWT(token)
         if user is None:
             return util.returnError('Invalid token.', 401)
         

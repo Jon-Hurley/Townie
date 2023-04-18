@@ -24,7 +24,7 @@ def onConnect(request):
     print(gameKey, token, connectionId, lat, lon)
 
     # get user key from token
-    user, newToken = util.getUserFromToken(token)
+    user, newToken = util.decodeUserJWT(token)
     if user is None:
         return util.returnError('Invalid token.', 401)
 
@@ -118,7 +118,7 @@ def onDefault(request):
         token = body['token']
         connectionIds = body['connectionIds']
 
-        user = util.getUserFromTokenNoCheck(token)
+        user = util._decodeUserJWT(token)
         messageObj = {
             'message': body['message'],
             'key': user['key'],
@@ -164,7 +164,7 @@ def createGame(request):
     lon = data['lon']
     lat = data['lat']
 
-    user, newToken = util.getUserFromToken(data['token'])
+    user, newToken = util.decodeUserJWT(data['token'])
     if user is None:
         return util.returnError('Invalid token', 401)
 
@@ -190,7 +190,7 @@ def getGame(request):
 #     body = json.loads(request.body)
 #     gameKey = body['gameKey']
 
-#     user, newToken = util.getUserFromToken(body['token'])
+#     user, newToken = util.decodeUserJWT(body['token'])
 #     if user is None:
 #         return util.returnError('Invalid token.', 401)
 
