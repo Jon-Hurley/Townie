@@ -134,6 +134,7 @@ def updateInfo(request):
     newLogin2FA = data['newLogin2FA']
     newPhone = data['newPhone']
     newHidingState = data['newHidingState']
+    newShowTimes = data['newShowTimes']
     
     user, newToken = util.getUserFromToken(data['token'])
     if user is None:
@@ -152,7 +153,7 @@ def updateInfo(request):
     try:
         docs = queries.updateInfo(
             key, newUsername, newPhone, newPasswordHash, newLogin2FA,
-            newHidingState
+            newHidingState, newShowTimes
         ).batch()
     except Exception as e:
         em = e.error_message
@@ -366,3 +367,23 @@ def cancelStripeSubscription(request):
     return JsonResponse({
         'token': newToken
     })
+
+def updatePoints(request):
+    data = json.loads(request.body)
+    option = data['option']
+
+    user, newToken = util.getUserFromToken(data['token'])
+    if user is None:
+        return util.returnError('Invalid token.', 401)
+
+    try:
+        docs = queries.updatePoints(user['key'], option).batch()
+    except Exception as e:
+        return util.returnError(e.error_message, e.http_code)
+    
+    print(docs)
+
+    # if len(docs) == 0:
+    #     return 
+
+    return util.returnUserPrivate(docs[0])

@@ -77,6 +77,7 @@ def returnUserPrivate(user):
     user['token'] = token
 
     del user['passwordHash']
+    print("user is: ", user)
     return JsonResponse(user)
 
 def returnUserPublic(user):
