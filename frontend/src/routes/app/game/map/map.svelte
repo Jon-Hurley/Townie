@@ -54,7 +54,7 @@
 
 <Timer/>
 
-<Options/>
+<!-- <Options/> -->
 
 <Mapbox
     accessToken={PUBLIC_MAPBOX_TOKEN}

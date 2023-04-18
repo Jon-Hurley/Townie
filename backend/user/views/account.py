@@ -313,7 +313,18 @@ def updatePoints(request): # FLAG --> change name
     
     print(docs)
 
-    # if len(docs) == 0:
-    #     return 
+    pointsNeeded = ""
+
+    if (option == 0):
+        pointsNeeded = str(750) + " points,"
+    elif (option == 1):
+        pointsNeeded = str(1500) + " points,"
+    elif (option == 2):
+        pointsNeeded = str(1750) + " points,"
+    else:
+        pointsNeeded = "Townie Premium,"
+
+    if len(docs) == 0:
+        return util.returnError('Unfortunately, you needed ' + pointsNeeded + " but you don't have that. You currently have " + str(user['points']) + " points.", 404)
 
     return util.returnUserPrivate(docs[0])

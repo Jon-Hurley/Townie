@@ -50,12 +50,15 @@
 		const addLat = Math.random();
 
 		const randPos = (Math.random() * distance / 2.0);
+		console.log(randPos);
 		let finalLat;
 		if (addLat > 0.5) {
-			finalLat = currLat + randPos;
+			finalLat = destLat + randPos;
+			console.log("added")
 			console.log(finalLat);
 		} else {
-			finalLat = currLat - randPos;
+			finalLat = destLat - randPos;
+			console.log("subtracted");
 			console.log(finalLat);
 		}
 		
@@ -75,15 +78,18 @@
 		const distance = turf.distance(from, to, options);
 		const addLat = Math.random();
 
-		const randPos = (Math.random() * distance / 20.0);
+		const randPos = (Math.random() * distance / 50.0);
 		let finalLat;
 		if (addLat > 0.5) {
-			finalLat = currLat + randPos;
+			finalLat = destLat + randPos;
 			console.log(finalLat);
 		} else {
-			finalLat = currLat - randPos;
+			finalLat = destLat - randPos;
 			console.log(finalLat);
 		}
+
+		// const finalLat = Game.nextDestination.lat;
+		// const destLng = Game.nextDestination.lon;
 		
 		exportNav = finalLat + "," + destLng;
 		url = "https://www.google.com/maps/dir/?api=1&dir_action=navigate&destination=" + exportNav;
@@ -111,10 +117,18 @@
                     : "Do you want to skip this destination? If you do, you will not gain points for this destination.";
     }
 
-    const peekAtLocation = async(pointsSpent) => {
+    const spendPointsHere = async(pointsSpent) => {
         let user = get(userStore);
 
-        let option = pointsSpent == 750 ? 0 : 1;
+        //let option = pointsSpent == 750 ? 0 : 1;
+		let option = 0;
+		if (pointsSpent == 750) {
+			option = 0;
+		} else if (pointsSpent == 1500) {
+			option = 1;
+		} else if (pointsSpent == 1750) {
+			option = 2;
+		}
 
         let success = await spendPoints(option);
         if (!success) {
@@ -128,13 +142,15 @@
             Map.setCenterToCurrent();
             Map.updateDestinationCircle();
             Map.updateBounds();
-        } else {
+        } else if (pointsSpent == 1500) {
 			isOpen = false;
             Map.updateDestinationRadiusScalar(x => 0);
             Map.setCenterToCurrent();
             Map.updateDestinationCircle();
             Map.updateBounds();
-        }
+        } else {
+			_getAccurateNavigation();
+		}
         
         return 0;
     }
@@ -257,7 +273,7 @@
                         id="skip-btn"
                         on:click={() => {
                             shrinkPopupOpen = false;
-                            let res = peekAtLocation(750);
+                            let res = spendPointsHere(750);
                             // if (res == -1) {
                             //     pushPopup(0, 
                             //     "You don't have enough points to shrink the destination radius.",
@@ -321,7 +337,7 @@
 							id="skip-btn"
 							on:click={() => {
                                 exactLocationPopupOpen = false;
-                                let res = peekAtLocation(1500);
+                                let res = spendPointsHere(1500);
                                 // if (res == -1) {
                                 //     pushPopup(0, 
                                 //     "You don't have enough points to show the exact location.",
@@ -456,13 +472,14 @@
 			<button
 				class="{buttonStyle} {blueStyle} w-full mr-2"
 				on:click={() => {
-					pushPopup(
-						2, 'This will not be an exact navigation.',
-						() => {
-							isOpen = false;
-							_getNavigation();
+					pushPopup({
+						status: 2, 
+						message: 'This will not be an exact navigation.',
+						onOk: () => {
+								isOpen = false;
+								_getNavigation();
 						}
-					)
+					});
 				}
 			}>
 			Get Navigation
@@ -470,13 +487,15 @@
 			<button
 				class="{buttonStyle} {blueStyle} w-full mr-2"
 				on:click={() => {
-					pushPopup(
-						2, 'This will be an exact navigation.',
-						() => {
-							isOpen = false;
-							_getAccurateNavigation();
+					pushPopup({
+						status: 2, 
+						message: 'This will be an exact navigation.',
+						onOk: () => {
+								isOpen = false;
+								//_getAccurateNavigation();
+								spendPointsHere(1750);
 						}
-					)
+					});
 				}
 			}>
 			Get Exact Navigation

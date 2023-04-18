@@ -331,10 +331,6 @@ export const spendPoints = async(option) => {
                 option: option
             }
         )
-        if (!res.data) {
-            pushPopup(0, 'Connection Refused. Failed to spend points. Please try again.');
-            return false;
-        }
         updateAccessToken(res);
         console.log(res);
         userStore.set(res.data);
@@ -342,7 +338,7 @@ export const spendPoints = async(option) => {
     } catch (err) {
         const err_message = err?.response?.data?.errorMessage
                             || 'Connection Refused. Failed to spend points. Please try again.';
-        pushPopup(0, err_message);
+        pushPopup({status: 0, message: err_message});
         return false;
     }
 }

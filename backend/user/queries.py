@@ -991,7 +991,7 @@ def updatePoints(userKey, option): # FLAG --> change name and go to group
         """
         FOR u IN User
             FILTER u._key == @_key
-            LET dp = @option == 0 ? 750 : 1500
+            LET dp = (@option == 0 ? 750 : (@option == 1 ? 1500 : 1750))
             FILTER u.points >= dp
             LET newPoints = u.points - dp
             UPDATE u
