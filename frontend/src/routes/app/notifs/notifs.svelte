@@ -37,18 +37,16 @@
     }
 
     const _joinGame = async(lobbyInput) => {
-        // goto('/app/game');
-        // pushPopup(
-        //     0,
-        //     "Are you sure about that?",
-        //     () => {
-        //         Game.join(lobbyInput);
-        //     }
-        // );
-        const res = await Game.join(lobbyInput);
-        if (!res) {
-            goto('/app/game');
-        }
+        pushPopup({
+            status: 0,
+            message: "Are you sure about that?",
+            onOk: async() => {
+                const success = await Game.join(lobbyInput);
+                if (success) {
+                    goto('/app/game');
+                }
+            }
+        });
     }
 
     onMount(async() => {

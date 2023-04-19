@@ -237,7 +237,7 @@ export const initiatePasswordReset = async(phone) => {
     } catch (err) {
         const err_message = err?.response?.data?.errorMessage
                             || 'Connection Refused. Failed to update user. Please try again.'
-        pushPopup(0, err_message);
+        pushPopup({status: 0, message: err_message});
         return false;
     }
 };

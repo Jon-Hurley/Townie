@@ -274,11 +274,6 @@
                         on:click={() => {
                             shrinkPopupOpen = false;
                             let res = spendPointsHere(750);
-                            // if (res == -1) {
-                            //     pushPopup(0, 
-                            //     "You don't have enough points to shrink the destination radius.",
-                            //     () => {} );
-                            // }
                         }}
                         class="px-4 py-2 bg-red-600 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-400"
                     >
@@ -338,11 +333,6 @@
 							on:click={() => {
                                 exactLocationPopupOpen = false;
                                 let res = spendPointsHere(1500);
-                                // if (res == -1) {
-                                //     pushPopup(0, 
-                                //     "You don't have enough points to show the exact location.",
-                                //     () => {} );
-                                // }
                             }}
 							class="px-4 py-2 bg-red-600 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-400"
 						>

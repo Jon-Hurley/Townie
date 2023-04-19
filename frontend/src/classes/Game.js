@@ -318,6 +318,7 @@ export class Game {
 
             Game.store.set(res);
             Game.resumePolling();
+            return true;
         } catch (err) {
             console.log(err);
             Game.ws?.close();
@@ -327,6 +328,7 @@ export class Game {
                 status: 0,
                 message: err?.message || "Unable to connect to lobby. Please try again."
             });
+            return false;
         }
     }
 
