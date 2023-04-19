@@ -7,7 +7,7 @@
 	
     import { acceptFriend, loadNotifications, rejectFriend } from '../../../requests/friend';	
 	import { hr, largeTitle, listItem } from '../../../css';
-	import { userStore } from '../../../stores';
+	import { pushPopup, userStore } from '../../../stores';
 	import { Game } from '../../../classes/Game';
 
     let notifs = [];
@@ -38,7 +38,7 @@
 
     const _joinGame = async(lobbyInput) => {
         pushPopup({
-            status: 0,
+            status: 2,
             message: "Are you sure about that?",
             onOk: async() => {
                 const success = await Game.join(lobbyInput);

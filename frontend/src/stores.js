@@ -6,7 +6,7 @@ export const userStore = writable();
 export const updateAccessToken = (res) => {
     const token = res?.data?.token;
     if (!token) return;
-    console.log("NEW TOKEN:", token);
+    // console.log("NEW TOKEN:", token);
     userStore.set({ ...get(userStore), token });
 };
 
