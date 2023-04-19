@@ -7,6 +7,7 @@
 	let timeStore = Game.timeStore;
 	let formattedDestTime = Game.formatStore;
 	let user = userStore;
+	let distanceStore = Game.distanceStore;
 
 	$: paused = $timeStore;
     $: console.log({paused})
@@ -54,6 +55,7 @@
 	$: formattedTotalTime = `${gHours}:${gMinutes}:${gSeconds}`;
 
 	onMount(() => {
+		distanceStore.set(Game.updateDistance());
 		interval = setInterval(() => {
 			if (paused) {
 				shrinkingRadius = false;
@@ -94,4 +96,11 @@
 	</h1>
 	{$formattedDestTime}
 	{/if}
+
+	<h1 class="border-b border-gray-400">
+		Distance:
+	</h1>
+	{$distanceStore} miles
+	
+
 </button>

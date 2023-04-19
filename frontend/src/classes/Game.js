@@ -17,6 +17,7 @@ export class Game {
     static timeStore = writable(null);
     static messageStore = writable([]);
     static formatStore = writable("");
+    static distanceStore = writable(0);
 
     static send(method, data) {
         const objStr = JSON.stringify({ method, ...data });
@@ -28,6 +29,17 @@ export class Game {
             ...get(Game.messageStore),
             data
         ]);
+    }
+
+    static updateDistance() {
+        const currLat = Location.lat;
+        const currLng = Location.lng;
+        const destLat = Game.nextDestination.lat;
+        const destLng = Game.nextDestination.lon;
+        const from = turf.point([currLng, currLat]);
+        const to = turf.point([destLng, destLat]);
+        let distance = turf.distance(from, to, {units: 'miles'}); 
+        return Math.round(distance);
     }
 
     static handleGameUpdate(data) {
@@ -52,22 +64,59 @@ export class Game {
             }
             if (timeComputation < 1.2 && timeComputation > 1) {
                 Map.updateDestinationRadiusScalar(x => x * 0.85);
+                pushPopup({
+                    status: 3,
+                    message: `You are running out of time! Hurry up!\n
+                    The destination radius is now 85% of its original size.`,
+                    onOk: () => {}
+                });
             }
             else if (timeComputation < 1.4 && timeComputation > 1) {
                 Map.updateDestinationRadiusScalar(x => x * 0.70);
+                pushPopup({
+                    status: 3,
+                    message: `You are running out of time! Hurry up!\n
+                    The destination radius is now 70% of its original size.`,
+                    onOk: () => {}
+                });
             }
             else if (timeComputation < 1.6 && timeComputation > 1) {
                 Map.updateDestinationRadiusScalar(x => x * 0.55);
+                pushPopup({
+                    status: 3,
+                    message: `You are running out of time! Hurry up!\n
+                    The destination radius is now 55% of its original size.`,
+                    onOk: () => {}
+                });
             }
             else if (timeComputation < 1.8 && timeComputation > 1) {
                 Map.updateDestinationRadiusScalar(x => x * 0.40);
+                pushPopup({
+                    status: 3,
+                    message: `You are running out of time! Hurry up!\n
+                    The destination radius is now 40% of its original size.`,
+                    onOk: () => {}
+                });
             }
             else if (timeComputation < 2 && timeComputation > 1) {
                 Map.updateDestinationRadiusScalar(x => x * 0.15);
+                pushPopup({
+                    status: 3,
+                    message: `You are running out of time! Hurry up!\n
+                    The destination radius is now 15% of its original size.`,
+                    onOk: () => {}
+                });
             }
             else if  (timeComputation > 2) {
                 Map.updateDestinationRadiusScalar(x => x = 0);
                 Map.updateDestinationCircle();
+                pushPopup({
+                    status: 3,
+                    message: `You are out of time! This destination is now worth zero points.\n
+                    You can still visit it, but you will not receive any points.\n
+                    Luckily, you now have its exact location!`,
+                    onOk: () => {}
+                });
                 clearInterval(interval);
             }
             
@@ -171,6 +220,7 @@ export class Game {
                     case 'update-location': {
                         Game.handleLocationUpdate(data);
                         Game.handleRadiusUpdate();
+                        Game.distanceStore.set(Game.updateDistance());
                         return;
                     }
                     case 'new-message': {
@@ -243,6 +293,7 @@ export class Game {
             Game.messageStore.set([]);
 
             const userLocation = await Location.getCurrentLocation();
+            Location.store.set(userLocation);
             const params = {
                 'gameKey': gameKey,
                 'token': "\"" + get(userStore).token + "\"",

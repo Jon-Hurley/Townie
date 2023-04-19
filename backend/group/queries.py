@@ -91,7 +91,7 @@ def addPlayer(gameKey, userKey, connectionId, lat, lon):
     )
 
 
-def leaveGame(connectionId, finished):
+def leaveGame(connectionId):
     return arango_con.db.aql.execute(
         """
             FOR p IN Players
