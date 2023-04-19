@@ -76,7 +76,6 @@ export class Game {
     }
 
     static handleRadiusUpdate() {
-
         const currLat = Location.lat;
         const currLng = Location.lng;
 
@@ -88,8 +87,6 @@ export class Game {
         let distance = turf.distance(from, to, {units: 'kilometers'}) / 2.0;
 
         Map.updateDestinationRadius(x => x = distance);
-
-        
     }
 
     static handleLocationUpdate(data) {
@@ -208,18 +205,18 @@ export class Game {
         Game.setDefaultEvents();
         Game.stopPolling();
 
-        Game.interval = setInterval(() => {
-            if (get(Game?.store)?.game) {
-                Game.send('get-game', {
-                    gameKey: get(Game.store).game._key
-                });
-            }
-        }, 10000);
+        // Game.interval = setInterval(() => {
+        //     if (get(Game?.store)?.game) {
+        //         Game.send('get-game', {
+        //             gameKey: get(Game.store).game._key
+        //         });
+        //     }
+        // }, 10000);
     }
 
     static stopPolling() {
-        clearInterval(Game.interval);
-        Game.interval = undefined;
+        // clearInterval(Game.interval);
+        // Game.interval = undefined;
     }
 
     static async getGame(gameKey) {

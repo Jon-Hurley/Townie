@@ -2,9 +2,10 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 import group.queries as queries
-from ws_con import propogateUpdates, forceDisconnect, propogateNewMessage
+import ws_con
 import util
 import time
+import asyncio
 
 # CONNECT: JOIN GAME
 
@@ -36,17 +37,14 @@ def onConnect(request):
     print(oldConnectionIds)
     for oldConnectionId in oldConnectionIds:
         try:
-            forceDisconnect(oldConnectionId)
+            ws_con.forceDisconnect(oldConnectionId)
         except Exception as err:
             print(err)
 
     # relay game all game data to all players (except the new one)
     data = queries.getGame(gameKey).batch()[0]
     print(data)
-    propogateAllUpdates(
-        conExcl={connectionId},
-        data=data
-    )
+    propogateAllUpdates(data)
 
     # send game data to new player
     return JsonResponse(data)
@@ -62,7 +60,8 @@ def onDisconnect(request):
     res = queries.leaveGame(connectionId).batch()
     if len(res):
         gameKey = res[0]['gameId'][6:]  # [6:] = id -> key
-        propogateAllUpdates(gameKey, {connectionId})
+        propogateAllUpdates(gameKey)
+        
     return JsonResponse({})
 
 
@@ -71,8 +70,8 @@ def onDefault(request):
     data = json.loads(request.body)
     connectionId = data['connectionId']
     body = data['body']
-    print(connectionId, body)
     method = body['method']
+    # print(method, connectionId, body)
 
     if method == 'get-game':
         gameKey = body['gameKey']
@@ -126,21 +125,32 @@ def onDefault(request):
             'isPremium': user['isPremium'],
             'timestamp': int(time.time() * 1000)
         }
-
-        propogateNewMessage(messageObj, connectionIds)
+        asyncio.run(
+            ws_con.propogateToUsers(
+                connectionIds,
+                data = json.dumps({
+                    'method': 'new-message',
+                    'data': messageObj
+                })
+            )
+        )
         return JsonResponse({})
 
     if method == 'update-location':
         lon = body['lon']
         lat = body['lat']
+        gameKey = body['gameKey']
 
         for i in range(3):
             try:
                 res = queries.updatePlayerLocation(
-                    connectionId, lon, lat).batch()[0]
+                    connectionId, lon, lat
+                ).batch()[0]
                 break
             except Exception as err:
                 print(err)
+            
+        propogateAllUpdates(gameKey)
 
         return JsonResponse({
             'method': 'update-location',
@@ -150,13 +160,16 @@ def onDefault(request):
     return JsonResponse({})
 
 
-def propogateAllUpdates(gameKey=None, conExcl={}, data=None):
+def propogateAllUpdates(gameKey=None, data=None):
     if data is None:
         data = queries.getGame(gameKey).batch()[0]
-    propogateUpdates(data, conExcl)
+    
+    asyncio.run(
+        ws_con.propogateToPlayers(data)
+    )
 
-# GET REQUEST: CREATE A LOBBY/GAME
 
+# NOTE: ALL HTTP REQUESTS BELOW ARE FOR IN-GAME USE ONLY
 
 @csrf_exempt
 def createGame(request):
@@ -174,8 +187,6 @@ def createGame(request):
         'key': res['_key'],
         'token': newToken
     })
-
-# GET REQUEST: GET GAME DATA, FOR IN-GAME USE ONLY
 
 @csrf_exempt
 def getGame(request):

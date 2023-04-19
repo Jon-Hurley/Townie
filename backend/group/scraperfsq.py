@@ -183,7 +183,7 @@ def generate(settings, gameKey):
         total_time = total_time - temp['time']
     
     listDict = dict(Destinations=orderedList, trueCompletionTime=total_time)
-    print("LIST DICT: " + str(listDict))
+    # print("LIST DICT: " + str(listDict))
     queries.insertIntoItinerary(listDict, gameKey)
     return total_time
 
@@ -207,7 +207,7 @@ def extendGame(settings, gameKey):
     origin = dict(lat=player1['lat'], lng=player1['lon'])
     dests_to_compute = []
     dests_to_compute.append(origin)
-    print(new_dests)
+    # print(new_dests)
     for i in range(len(new_dests)):
         location_dict = dict(lat=new_dests[i]['latitude'], lng=new_dests[i]['longitude'])
         dests_to_compute.append(location_dict)
@@ -231,7 +231,7 @@ def extendGame(settings, gameKey):
             if distances['rows'][i]['elements'][j]['status'] == "OK":
                 if distances['rows'][i]['elements'][j]['duration']['value'] != 0 and distances['rows'][i]['elements'][j]['duration']['value'] < min_time and j not in marked_indices and j != 0:
                     min_time = distances['rows'][i]['elements'][j]['duration']['value']
-                    print(min_time)
+                    # print(min_time)
                     index = j
                     added = True
         if added:
@@ -241,9 +241,9 @@ def extendGame(settings, gameKey):
     game = queries.getGame(gameKey)
     game1 = [doc for doc in game]
     total_time = game1[0]['game']['trueCompletionTime']
-    print(marked_indices)
-    print(min_times)
-    print(new_dests)
+    # print(marked_indices)
+    # print(min_times)
+    # print(new_dests)
     for i in range(len(marked_indices)): # used to be len(marked_indices) - 1
         if (total_time < settings['desiredCompletionTime'] * 60):
             new_itinerary = dict(destination=new_dests[marked_indices[i]], time=min_times[i])
@@ -273,7 +273,7 @@ def truncateGame(settings, gameKey):
 
     while settings['desiredCompletionTime'] * 60 < total_time:
         removed_dest = actual_itinerary['destinations'].pop(0)
-        print("removed dest: " + str(removed_dest))
+        # print("removed dest: " + str(removed_dest))
         queries.removeItinerary(removed_dest, gameKey)
         total_time -= removed_dest['timeToCompletion']
         unused_itinerary.append(removed_dest)

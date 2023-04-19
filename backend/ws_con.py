@@ -1,5 +1,6 @@
 import boto3
 import os
+import asyncio
 from dotenv import load_dotenv
 import json
 
@@ -16,45 +17,40 @@ client = boto3.client(
 
 # PROPOGATE CHANGES BACK TO USERS VIA AWS WS API
 
-def propogateUpdates(data, conExcl={}):
+async def propogateToPlayers(data):
     players = data['players']
+
     for player in players:
-        connectionId = player['connectionId']
-        if connectionId not in conExcl:
-            propogateUpdate(connectionId, player, data=data)
-    return True
+        data['player'] = player # add player's own data to their game data
+        try:
+            data['nextDestination'] = data['destinations'][player['destinationIndex']]
+        except Exception as err:
+            print(err)
+        
+        asyncio.create_task(
+            propogateToUser(
+                connectionId = player['connectionId'],
+                data = json.dumps({
+                    'method': 'update-game',
+                    'data': data,
+                })
+            )
+        )
 
-def propogateUpdate(connectionId, player, data):
-    data['player'] = player
-    data = json.dumps({
-        'method': 'update-game',
-        'data': data,
-    })
+async def propogateToUsers(connectionIds, data):
+    for connectionId in connectionIds:
+        asyncio.create_task(
+            propogateToUser(connectionId, data)
+        )
 
+async def propogateToUser(connectionId, data):
     try:
-        print("Emitting to: ", connectionId)
-        response = client.post_to_connection(
+        client.post_to_connection(
             Data=data,
             ConnectionId=connectionId
         )
-        return response
     except Exception as err:
         print(err)
-        return None
-
-def propogateNewMessage(messageObj, connectionIds):
-    data = json.dumps({
-        'method': 'new-message',
-        'data': messageObj
-    })
-    for connectionId in connectionIds:
-        try:
-            client.post_to_connection(
-                Data=data,
-                ConnectionId=connectionId
-            )
-        except Exception as err:
-            print(err)
 
 def forceDisconnect(connectionId):
     try:

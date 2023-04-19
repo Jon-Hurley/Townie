@@ -389,13 +389,16 @@ def getGameForPlayer(gameKey, connectionId):
                 }
         )
 
+        LET nextDestination = destinations[player.destinationIndex]
+
         FOR game IN Games
         FILTER game._key == @key
         RETURN {
             game,
             players,
             destinations,
-            player
+            player,
+            nextDestination
         }
     """,
         bind_vars={
