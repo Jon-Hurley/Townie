@@ -620,6 +620,8 @@ def getGameLog(targetKey):
         FOR v, e IN 1..1 ANY
         CONCAT("User/", @targetKey)
         GRAPH Playerships
+            FILTER v != null
+            
             LET theme = (
                 FOR theme in Themes
                     SORT NGRAM_SIMILARITY(theme.name, v.settings.theme, 1) DESC
