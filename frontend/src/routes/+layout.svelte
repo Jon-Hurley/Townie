@@ -11,13 +11,17 @@
     import { autoLogin } from '../requests/account';
 
     let loaded = false;
+    let prevUser = null;
 
     const redirectOnUserUpdate = (v) => {
         if (v) {
-            goto('/app/game');
+            if (!prevUser) {
+                goto('/app/game');
+            }
         } else {
             goto('/login');
         }
+        prevUser = v;
     };
 
 	onMount(async () => {
