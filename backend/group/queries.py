@@ -46,8 +46,6 @@ def addPlayer(gameKey, userKey, connectionId, lat, lon):
                     RETURN e.connectionId
             )
 
-            
-
             UPSERT {
                 _from: CONCAT("User/", @userKey),
                 _to: CONCAT("Games/", @gameKey)

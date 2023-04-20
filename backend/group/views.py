@@ -33,7 +33,8 @@ def onConnect(request):
 
     # add user to game, nulling their previous connection if left open
     res = queries.addPlayer(gameKey, userKey, connectionId, lat, lon)
-    oldConnectionIds = res.batch()[0]
+    
+    oldConnectionIds = res.batch()
     print(oldConnectionIds)
     for oldConnectionId in oldConnectionIds:
         try:
@@ -42,12 +43,10 @@ def onConnect(request):
             print(err)
 
     # relay game all game data to all players (except the new one)
-    data = queries.getGame(gameKey).batch()[0]
-    print(data)
-    propogateAllUpdates(data)
+    propogateAllUpdates(gameKey)
 
     # send game data to new player
-    return JsonResponse(data)
+    return JsonResponse({})
 
 # DISCONNECT: LEAVE GAME
 

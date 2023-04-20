@@ -45,8 +45,11 @@ export class Game {
     static handleGameUpdate(data) {
         if (!data) return;
         data.destinations.sort((a, b) => a.index - b.index);
+
+        console.log("SETTING GAME STORE")
         Game.store.set(data);
     }
+
     // TODO: continue experimenting with this
     static shrinkRadius() {
         console.log("SHRINKING RADIUS")
@@ -270,8 +273,10 @@ export class Game {
     }
 
     static async getGame(gameKey) {
+        Game.stopPolling();
+
         Game.send('get-game', { gameKey });
-        return await new Promise((res, rej) => { 
+        const res = await new Promise((res, rej) => { 
             Game.ws.onerror = () => rej();
             Game.ws.onmessage = (m) => {
                 try {
@@ -286,6 +291,9 @@ export class Game {
                 }
             };
         });
+
+        Game.resumePolling();
+        return res;
     }
 
     static async join(gameKey) {
@@ -315,15 +323,13 @@ export class Game {
             if (!res?.player) {
                 throw { message: "Unable to connect to game. Your session token may be expired." }
             }
-
-            Game.store.set(res);
-            Game.resumePolling();
+            
             return true;
         } catch (err) {
             console.log(err);
             Game.ws?.close();
             Game.ws = undefined;
-            Game.store.set(null);
+            Game.store.set(undefined);
             pushPopup({
                 status: 0,
                 message: err?.message || "Unable to connect to lobby. Please try again."

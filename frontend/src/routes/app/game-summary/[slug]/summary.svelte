@@ -34,7 +34,9 @@
 	</div>
 </div>
 
-<Share/>
+<Share
+	header="Share Game!"
+/>
 
 <ThemeRating
 	initialUserRating={summary?.userRating?.rating || 0}

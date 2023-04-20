@@ -109,6 +109,7 @@ export class Map {
     }
 
     static updateDestinationCircle() {
+        if (!Map.map) return;
         const circle = Map.getDestinationCircle();
         const mapboxObj = Map.map.getMap();
         const src = mapboxObj.getSource("destCircleData");

@@ -10,7 +10,7 @@
     const _joinLobby = async() => {
         loading = true;
         const res = await Game.join(lobbyInput);
-        console.log("Err:", res);
+        console.log("Success:", res);
         loading = false;
     };
 
