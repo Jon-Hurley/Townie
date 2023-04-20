@@ -93,7 +93,7 @@ export const rejectFriend = async(friendshipKey) => {
 };
 
 const processPending = (pendingRes) => {  
-    const pendingList = pendingRes?.data?.pending || [];
+    const pendingList = pendingRes?.value?.data?.pending || [];
     console.log({pendingList})
     pendingList.forEach(
         x => {
@@ -122,7 +122,6 @@ export const loadNotifications = async() => {
                 axios.post(
                     PUBLIC_BACKEND_API + 'user/pending-friends/',
                     {
-                        key: get(userStore).key,
                         token: get(userStore).token
                     }
                 ),
@@ -135,7 +134,6 @@ export const loadNotifications = async() => {
                 )
             ]
         );
-        console.log({onlinePlayerRes})
         updateAccessToken(pendingRes);
 
         const notifs = [
