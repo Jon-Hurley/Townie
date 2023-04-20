@@ -24,13 +24,13 @@
 </script>
 
 <div class="{title}">
-    Destination
+    Rating
 </div>
 <hr class={hr} />
 
 <div class="flex justify-between items-center px-2">
     <div class="mr-2">
-        Name: {destination.name}
+        User Rating:
     </div>
 
     <div class="flex items-center w-60 justify-between">
