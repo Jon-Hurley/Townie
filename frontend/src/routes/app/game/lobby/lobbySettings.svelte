@@ -17,7 +17,7 @@
 	let otherBudget = false;
 	let randomThemeChosen = false;
 
-	let themeValue = '';
+	let themeValue = "tourist_attraction";
 
 	const _updateSettings = () => {
 		Game.updateSettings(form);
