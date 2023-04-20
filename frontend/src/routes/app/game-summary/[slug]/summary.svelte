@@ -24,6 +24,11 @@
 	<div class="mb-1">
 		Game #{summary.game._key}
 	</div>
+	{#if summary.game.settings.casual}
+		<div class="text-center text-base text-medium">
+			Casual Mode
+		</div>
+	{/if}
 	<div class="text-gray-700 text-sm text-center font-normal">
 		<div>
 			Played on {new Date(summary.game.startTime).toLocaleDateString()}
@@ -105,7 +110,11 @@
 					<Username user={r} boldness="semibold"/>
 				</a>
 				<div class="text-sm">
-					{r.points} points
+					{#if summary.game.settings.casual}
+						0 points
+					{:else}
+						{r.points} points
+					{/if}
 				</div>
 			</div>
 		{/each}
