@@ -11,7 +11,6 @@ import { Map } from './Map.js';
 
 export class Game {
     static store = writable();
-    static gamePage = writable('join');
     /** @type {WebSocket} */
     static ws = undefined;
     static interval = undefined;
@@ -49,7 +48,6 @@ export class Game {
 
         console.log("SETTING GAME STORE")
         Game.store.set(data);
-        Game.gamePage.set(data.game.page);
     }
 
     // TODO: continue experimenting with this
@@ -255,8 +253,7 @@ export class Game {
         }
         Game.ws.onclose = () => {
             Game.ws = undefined;
-            Game.store.set(undefined);
-            Game.gamePage.set('join');
+            Game.store.set(null);
         }
     }
 
@@ -336,7 +333,6 @@ export class Game {
             Game.ws?.close();
             Game.ws = undefined;
             Game.store.set(undefined);
-            Game.gamePage.set('join');
             pushPopup({
                 status: 0,
                 message: err?.message || "Unable to connect to lobby. Please try again."
@@ -352,8 +348,7 @@ export class Game {
             Game.ws = undefined;
             goto('/app/game-summary/' + Game.key);
             Game.messageStore.set([]);
-            Game.store.set(undefined);
-            Game.gamePage.set('join');
+            Game.store.set(null);
             return true;
         } catch (err) {
             console.log(err);
