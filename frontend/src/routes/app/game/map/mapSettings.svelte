@@ -356,7 +356,7 @@
 	<div
 		class="
             bg-gray-50 p-4 rounded-t-lg
-            w-full
+            w-full gap
         "
 	>
 		<div class={largeTitle}>Options</div>
@@ -365,7 +365,7 @@
 		<div
 			class="
                 flex justify-between items-center
-                bg-white p-3 mb-2
+                bg-white p-3 mb-2 
                 border-2 border-gray-200 rounded
             "
 		>
@@ -409,7 +409,7 @@
 
 		<hr class="{hr} my-4" />
 
-		<div class="flex flex-cols justify-center items-center">
+		<div class="flex flex-cols justify-center items-center gap-2 mb-2">
 			<div>
 				<div class="flex flex-cols justify-center items-center">
 					<button
@@ -460,7 +460,7 @@
 
 		<div>
 			<button
-				class="{buttonStyle} {blueStyle} w-full mr-2"
+				class="{buttonStyle} {blueStyle} w-full mr-2 mb-2"
 				on:click={() => {
 					pushPopup({
 						status: 2, 
@@ -475,7 +475,7 @@
 			Get Navigation
 			</button>
 			<button
-				class="{buttonStyle} {blueStyle} w-full mr-2"
+				class="{buttonStyle} {blueStyle} w-full mr-2 mb-2"
 				on:click={() => {
 					pushPopup({
 						status: 2, 

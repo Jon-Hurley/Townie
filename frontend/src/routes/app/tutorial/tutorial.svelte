@@ -2,7 +2,7 @@
 	import { slide, fade } from 'svelte/transition';
 	import { elasticInOut } from 'svelte/easing';
 
-	import Join from '$lib/assets/Tutorial-join.jpg';
+	import Join from '$lib/assets/Join.jpg';
 	import Settings1 from '$lib/assets/Settings-1.jpg';
 	import Settings2 from '$lib/assets/Settings-2.jpg';
 	import Settings3 from '$lib/assets/Settings-3.jpg';
@@ -11,13 +11,13 @@
   import Settings6 from '$lib/assets/Settings-6.jpg';
 	import Settings7 from '$lib/assets/Settings-7.jpg';
 	import Map from '$lib/assets/Map.jpg';
-  import inGameOptions from '$lib/assets/In-Game-Options.jpg';
+  import inGameOptions from '$lib/assets/inGame.jpg';
 	import { hr, largeTitle } from '../../../css';
 
 	const images = [
 		{
 			src: Join,
-			description: 'Join'
+			description: 'Join or create a game'
 		},
 		{
 			src: Settings1,

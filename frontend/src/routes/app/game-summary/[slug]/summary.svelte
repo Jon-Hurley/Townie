@@ -31,7 +31,11 @@
 	{/if}
 	<div class="text-gray-700 text-sm text-center font-normal">
 		<div>
-			Played on {new Date(summary.game.startTime).toLocaleDateString()}
+			{#if summary.game.startTime}
+				Played on {new Date(summary.game.startTime).toLocaleDateString()}
+			{:else}
+				Not yet played
+			{/if}
 		</div>
 		<div class="text-center text-green-600">
 			Estimated to take {getTime(summary.game.trueCompletionTime)}s
