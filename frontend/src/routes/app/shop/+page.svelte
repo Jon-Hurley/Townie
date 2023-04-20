@@ -47,6 +47,9 @@
 
 <div class="{largeTitle} pb-2">
     Shop
+    <div class="flex justify-center text-sm font-normal mt-1">
+        {$userStore.points} Points Available
+    </div>
 </div>
 
 <hr class="{hr}"/>
