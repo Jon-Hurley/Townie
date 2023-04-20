@@ -1,14 +1,16 @@
 <script>
 	import { userStore } from "../stores";
-    export let user = $userStore, boldness = 'semibold';
+    export let user = null, boldness = 'semibold';
+
+    $: realUser = user || $userStore;
 </script>
 
-{#if user.isPremium}
+{#if realUser.isPremium}
     <div class="shimmer text-amber-400 font-{boldness}">
-        {user.username}
+        {realUser.username}
     </div>
 {:else}
     <div>
-        {user.username}
+        {realUser.username}
     </div>
 {/if}
