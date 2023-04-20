@@ -112,10 +112,13 @@ def requestFriend(request):
     if user is None:
         return util.returnError('Invalid token.', 401)
 
-    docs = queries.sendFriendRequest(
-        toKey,
-        user['key']
-    ).batch()
+    try:
+        docs = queries.sendFriendRequest(
+            toKey,
+            user['key']
+        ).batch()
+    except Exception as err:
+        return util.returnError("Database connection error.", 404)
 
     if len(docs) != 1:
         return util.returnError("Invalid friend key.", 404)

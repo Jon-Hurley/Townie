@@ -18,7 +18,7 @@ def signup(request):
     try:
         docs = queries.getUserFromPhoneOrUsername(phone, username).batch()
     except Exception as e:
-        return util.returnError(e.error_message, e.http_code)
+        return util.returnError("Database connection error.", 404)
 
     if len(docs) != 0:
         return util.returnError('There already exists an account with this phone number or username.', 401)
@@ -50,10 +50,9 @@ def verifySignup(request):
     try:
         doc = queries.createUser(username, passwordHash, phone)
     except Exception as e:
-        em = e.error_message
-        if em.find('unique constraint violated') != -1:
+        if 'error_message' in e and e.error_message.find('unique constraint violated') != -1:
             return util.returnError('This username or phone number is already taken.', e.http_code)
-        return util.returnError(em, e.http_code)
+        return util.returnError("Database connection error.", 404)
 
     doc['new']['purchases'] = []
     return util.returnUserPrivate(doc['new'])
@@ -71,7 +70,7 @@ def login(request):
     try:
         docs = queries.getUserByUsername(username).batch()
     except Exception as e:
-        return util.returnError(e.error_message, e.http_code)
+        return util.returnError("Database connection error.", 404)
     
     if len(docs) == 0:
         return util.returnError('Invalid username.', 401)
@@ -116,7 +115,7 @@ def loginWithToken(request):
     try:
         docs = queries.getUserByUsername(username).batch()
     except Exception as e:
-        return util.returnError(e.error_message, e.http_code)
+        return util.returnError("Database connection error.", 404)
 
     if len(docs) == 0:
         return util.returnError('Invalid username.', 401)
@@ -154,10 +153,9 @@ def updateInfo(request):
             newHidingState, newShowTimes
         ).batch()
     except Exception as e:
-        em = e.error_message
-        if em.find('unique constraint violated') != -1:
+        if 'error_message' in e and e.error_message.find('unique constraint violated') != -1:
             return util.returnError('This username or phone number is already taken.', e.http_code)
-        return util.returnError(em, e.http_code)
+        return util.returnError("Database connection error.", 404)
 
     if len(docs) == 0:
         # NOTE: could also be invalid key, but I trust not
@@ -187,8 +185,7 @@ def deleteUser(request):
     try:
         docs = queries.deleteUser(user['key'], user['passwordHash']).batch()
     except Exception as e:
-        print(e.error_message, e.http_code)
-        return util.returnError(e.error_message, e.http_code)
+        return util.returnError("Database connection error.", 404)
 
     if len(docs) == 0:
         return util.returnError('Unauthorized.', 401)  # invalid passwordHash or key
@@ -205,7 +202,7 @@ def initiatePasswordReset(request):
     try:
         docs = queries.getUserFromPhone(phone).batch()
     except Exception as e:
-        return util.returnError(e.error_message, e.http_code)
+        return util.returnError("Database connection error.", 404)
 
     if len(docs) != 1:
         return util.returnError('Invalid phone.', 401)
@@ -230,7 +227,7 @@ def completePasswordReset(request):
     try:
         docs = queries.getUserFromPhone(phone).batch()
     except Exception as e:
-        return util.returnError(e.error_message, e.http_code)
+        return util.returnError("Database connection error.", 404)
 
     if len(docs) != 1:
         return util.returnError('Invalid phone.', 401)
@@ -315,7 +312,7 @@ def updatePoints(request): # FLAG --> change name
     try:
         docs = queries.updatePoints(user['key'], option).batch()
     except Exception as e:
-        return util.returnError(e.error_message, e.http_code)
+        return util.returnError("Database connection error.", 404)
     
     print(docs)
 
