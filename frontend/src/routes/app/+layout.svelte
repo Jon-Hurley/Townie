@@ -11,7 +11,9 @@
 
 	onMount(() => {
 		page.subscribe((page) => {
-			localStorage.setItem('lastPage', page.route.id);
+			if (page?.route?.id?.includes('app')) {
+				localStorage.setItem('lastPage', page.route.id);
+			}
 		});
 		userStore.subscribe((user) => {
 			if (user?.token) {

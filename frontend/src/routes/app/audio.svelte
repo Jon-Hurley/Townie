@@ -21,6 +21,10 @@
             audioElement.pause();
         }
     }
+
+    onDestroy(() => {
+        audioElement?.pause();
+    });
 </script>
 
 <audio

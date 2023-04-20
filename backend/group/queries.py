@@ -193,7 +193,7 @@ def updatePlayerLocation(connectionId, lon, lat):
         FOR p IN Players
             FILTER p.connectionId == @connectionId
                 && p.connectionId != null
-            
+
             LET atPrevDest = (
                 FOR v, e IN 1..1 OUTBOUND p._to Itineraries
                     FILTER e.index == p.destinationIndex - 1
@@ -234,6 +234,12 @@ def updatePlayerLocation(connectionId, lon, lat):
                 )
                 : 0
 
+            LET achievedDest = arrived ? (
+                FOR v, e IN 1..1 OUTBOUND p._to Itineraries
+                    FILTER e.index == p.destinationIndex
+                    return v
+            )[0] : null
+
             UPDATE p
             WITH {
                 lon: @lon,
@@ -265,7 +271,9 @@ def updatePlayerLocation(connectionId, lon, lat):
                 potentialPoints: dp,
                 points: newDestDelta.points,
                 trueCompletionTime: newDestDelta.trueTime,
-                destDelta
+                destDelta,
+
+                achievedDest
             }
         """,
         bind_vars={

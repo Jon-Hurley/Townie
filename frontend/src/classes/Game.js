@@ -149,7 +149,8 @@ export class Game {
             newTime, newDist, oldTime, oldDist,
             totalTime, totalDist,
             arrived, atPrevDest,
-            potentialPoints, points
+            potentialPoints, points,
+            achievedDest
         } = data;
 
         if (get(Game.timeStore) != atPrevDest) {
@@ -157,13 +158,13 @@ export class Game {
         }
 
         if (arrived) {
-            const achievedDest = Game.nextDestination;
             const displayTime = Math.round(10 * oldTime / (1000 * 60)) / 10;
             const displayDist = Math.round(oldDist / 100) / 10;
            
             // open destination page.
             const baseUrl = window.location.protocol + "//" + window.location.host + "/";
-            console.log(baseUrl);
+            console.log({achievedDest});
+            localStorage.setItem('lastPage', '/app/destination/' + achievedDest._key);
             window.open(baseUrl + 'app/destination/' + achievedDest._key, '_blank');
 
             pushPopup({

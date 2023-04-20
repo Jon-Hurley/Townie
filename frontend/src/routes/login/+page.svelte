@@ -57,7 +57,7 @@
 				Log in to Account
 			</h2>
 
-			<form class="mt-8 space-y-6">
+			<div class="mt-8 space-y-6">
 				<input type="hidden" name="remember" value="true" />
 				<div class="-space-y-px rounded-md shadow-sm">
 					<div>
@@ -130,7 +130,7 @@
 						New around here?
 					</a>
 				</div>
-			</form>
+			</div>
 		</div>
 	</div>
 {:else}
@@ -141,7 +141,7 @@
 				Verify Phone Number
 			</h2>
 
-			<form class="mt-8 space-y-6">
+			<div class="mt-8 space-y-6">
 				<input type="hidden" name="remember" value="true" />
 				<div class="-space-y-px rounded-md shadow-sm">
 					<div>
@@ -172,7 +172,7 @@
 						Quit to login
 					</a>
 				</div>
-			</form>
+			</div>
 		</div>
 	</div>
 {/if}
