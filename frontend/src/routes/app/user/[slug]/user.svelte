@@ -119,7 +119,7 @@
 	value={pointsToProgress(user?.cumPoints)}
 />
 
-<div class={title}>
+<!-- <div class={title}>
     Purchases
 </div>
 <hr class={hr}>
@@ -133,4 +133,4 @@
     <div class="flex gap-2">
         <div>You have no purchases</div>
     </div>
-{/if}
+{/if} -->
