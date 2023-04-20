@@ -55,9 +55,9 @@
 				{#each gameLog as log, i}
 					<button
 						class="
-							{log.player.finished ? greenStyle : redStyle}
-							{log.player.finished ? 'border-green-600' : 'border-red-600'}
-							{log.player.finished ? 'bg-green-100/50' : 'bg-red-100/50'}         
+							{log.player.numCompleted == log.dests.length ? greenStyle : redStyle}
+							{log.player.numCompleted == log.dests.length ? 'border-green-600' : 'border-red-600'}
+							{log.player.numCompleted == log.dests.length ? 'bg-green-100/50' : 'bg-red-100/50'}         
 							rounded border-2 p-2 flex justify-between w-56
 						"
 						on:click={() => goto('/app/game-summary/' + log.game._key)}
@@ -71,7 +71,7 @@
 						<div class="flex flex-col items-end">
 							<div class="{indigoStyle}">{log.player.points}</div>
 							<div>{getTime(log.player.totalTime)}</div>
-							<div>{log.player.destinationIndex + 1}</div>
+							<div>{log.player.numCompleted} / {log.dests.length}</div>
 							<div>{log.game.settings.theme}</div>
 						</div>
 					</button>

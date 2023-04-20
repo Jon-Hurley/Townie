@@ -9,6 +9,7 @@
 	let user = userStore;
 	let distanceStore = Game.distanceStore;
 
+	$: formattedTime = $formattedDestTime;
 	$: paused = $timeStore;
     $: console.log({paused})
 	$: if (paused) {
@@ -32,17 +33,14 @@
 		}
 	}
 
-	onMount(() => {
-		formattedDestTime.set(Game.updateDestTime());
-		prev = null;
-	})
-
     let interval;
     let lockedOntoTotalTimer;
 	let locationTime = 0;
 	let totalTime = 0;
 	let showPausedTime = false;
 	let shrinkingRadius = true;
+
+
 
 	$: lHours = `00${Math.floor((locationTime / 60 / 60) % 60)}`.slice(-2);
 	$: lMinutes = `00${Math.floor((locationTime / 60) % 60)}`.slice(-2);
@@ -56,6 +54,8 @@
 
 	onMount(() => {
 		distanceStore.set(Game.updateDistance());
+		formattedDestTime.set(Game.updateDestTime());
+		prev = null;
 		interval = setInterval(() => {
 			if (paused) {
 				shrinkingRadius = false;
@@ -94,7 +94,7 @@
 	<h1 class="border-b border-gray-400">
 		Estimated Time:
 	</h1>
-	{$formattedDestTime}
+	{formattedTime}
 	{/if}
 
 	<h1 class="border-b border-gray-400">

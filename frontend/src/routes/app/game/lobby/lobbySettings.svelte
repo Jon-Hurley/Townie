@@ -45,13 +45,17 @@
 	const _generateRandomTheme = async () => {
 		let themes = await getThemeList();
 		let realThemes = themes['themes'];
-		let index = Math.floor(2 * Math.random());
+		for (let i = 0; i < realThemes.length; i++) {
+			console.log("Theme " + i + ": " + realThemes[i]['theme'] + "")
+		}
+		let index = Math.floor(3 * Math.random());
 		let theme;
 		if (realThemes[index] != undefined) {
 			theme = realThemes[index]['theme'];
 		} else {
 			theme = 'blank';
 		}
+		console.log(theme);
 		return theme;
 	};
 </script>
@@ -131,15 +135,15 @@
 						} catch (err) {
 							console.log(err);
 							console.log('error with random theme generation');
-							v = 'Restaurants';
+							v = 'restaurant';
 						}
-                        const themeMap = {
-                            'Tourism': 'tourist-attraction',
-                            'Restaurants': 'restaurant',
-                            'Shopping': 'store',
-                            'Museums': 'museum'
-                        }
-						form.theme = themeMap[v] || 'no_theme';
+                        // const themeMap = {
+                        //     'Tourism': 'tourist-attraction',
+                        //     'Restaurants': 'restaurant',
+                        //     'Shopping': 'store',
+                        //     'Museums': 'museum'
+                        // }
+						form.theme = v || 'no_theme';
 						themeValue = 'random';
 					}
 				}}

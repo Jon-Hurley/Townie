@@ -634,11 +634,21 @@ def getGameLog(targetKey):
                     LIMIT 1
                     RETURN theme
             )[0]
+            
+            LET dests = (
+                FOR edge in Itineraries
+                    LIMIT 50
+                    FILTER edge._from == v._id
+                    RETURN edge._to
+            )
+
+            FILTER LENGTH(dests) != 0
 
             RETURN {
                 game: v,
                 player: e,
-                theme
+                theme,
+                dests
             }
         """,
         bind_vars={

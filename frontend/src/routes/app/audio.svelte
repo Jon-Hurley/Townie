@@ -2,6 +2,7 @@
     import { primaryAudio } from '../../stores';
     import Kahoot from '$lib/lobby-classic-game.mp3';
     import Moonshine from '$lib/moonshine.mp3';
+    import ThemeSong from '$lib/theme-song.mp3';
 	import { onDestroy } from 'svelte';
 
     let audioElement;
@@ -12,6 +13,7 @@
             audioElement.src = (
                 $primaryAudio === 'Kahoot' ? Kahoot
                 : $primaryAudio === 'Moonshine' ? Moonshine
+                : $primaryAudio === 'Townie Theme' ? ThemeSong
                 : ''
             );
             audioElement.play();

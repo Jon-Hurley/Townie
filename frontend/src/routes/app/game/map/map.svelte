@@ -17,6 +17,7 @@
     const gameStore = Game.store;
     const mapSettingsStore = Map.settings;
     const locationStore = Location.store;
+    let random;
 
     const title = 'text-gray-700 font-semibold text-lg mt-4';
     //let showDestination = false;
@@ -68,6 +69,7 @@
             <Marker
                 lng={player.lon}
                 lat={player.lat}
+                label={player.username}
                 color="rgb(255,0,0)"
             />
         {/if}

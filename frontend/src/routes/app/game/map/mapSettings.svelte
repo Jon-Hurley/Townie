@@ -15,6 +15,7 @@
 	let form = {
         ...$gameStore.game.settings
     };
+	let distanceStore = Game.distanceStore;
 
 	let otherCompletionTime = false;
 	let isOpen = false;
@@ -99,7 +100,7 @@
 	const _skipLocation = () => {
         Map.updateDestinationRadiusScalar(x => 1);
 		Game.handleRadiusUpdate();
-        console.log("Exact location after skip is: " + Map.settings.exactLocation);
+
         skipPopupOpen = false;
 		isOpen = false;
         if (Game.player.destinationIndex === Game.destinations.length - 1) {
@@ -110,6 +111,7 @@
         incrementDestinationIndex(Game.player.connectionId);
         Game.player.destinationIndex++;
 		Game.formatStore.set(Game.updateDestTime());
+		distanceStore.set(Game.updateDistance());
         Map.setCenterToCurrent();
         Map.updateDestinationCircle();
         Map.updateBounds();
