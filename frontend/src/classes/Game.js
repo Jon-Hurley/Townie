@@ -34,6 +34,7 @@ export class Game {
     static updateDistance() {
         const currLat = Location.lat;
         const currLng = Location.lng;
+        if (Game.nextDestination == null) return 0;
         const destLat = Game.nextDestination.lat;
         const destLng = Game.nextDestination.lon;
         const from = turf.point([currLng, currLat]);
@@ -130,10 +131,11 @@ export class Game {
     static handleRadiusUpdate() {
         const currLat = Location.lat;
         const currLng = Location.lng;
-
+        
+        if (Game.nextDestination == null) return;
         const destLat = Game.nextDestination.lat;
         const destLng = Game.nextDestination.lon;
-
+        
         const from = turf.point([currLng, currLat]);
         const to = turf.point([destLng, destLat]);
         let distance = turf.distance(from, to, {units: 'kilometers'}) / 2.0;
@@ -163,7 +165,7 @@ export class Game {
            
             // open destination page.
             const baseUrl = window.location.protocol + "//" + window.location.host + "/";
-            console.log({achievedDest});
+            console.log("ACHIEVED DEST IS: " + achievedDest.index);
             localStorage.setItem('lastPage', '/app/destination/' + achievedDest._key);
             window.open(baseUrl + 'app/destination/' + achievedDest._key, '_blank');
 
@@ -181,11 +183,11 @@ export class Game {
                     Game.player.destinationIndex++;
                     Game.player.numCompleted++;
                     Game.formatStore.set(Game.updateDestTime());
-                    distanceStore.set(Game.updateDistance());
+                    Game.distanceStore.set(Game.updateDistance());
                 }
             });
 
-            if (achievedDest.index === Game.destinations.length - 1) {
+            if (Game.player.destinationIndex === Game.destinations.length) {
                 pushPopup({
                     status: 1,
                     message: "You have reached the final destination. You won the game!",
@@ -196,6 +198,7 @@ export class Game {
     }
 
     static updateDestTime() {
+        if (Game.nextDestination == null) return "0 seconds"
         const totalTime = Game.nextDestination.timeToCompletion;
 
         const dHours = `00${Math.floor((totalTime / 60 / 60) % 60)}`.slice(-2);

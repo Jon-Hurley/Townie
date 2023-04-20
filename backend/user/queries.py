@@ -627,7 +627,8 @@ def getGameLog(targetKey):
         CONCAT("User/", @targetKey)
         GRAPH Playerships
             FILTER v != null
-            
+            LIMIT 50
+
             LET theme = (
                 FOR theme in Themes
                     SORT NGRAM_SIMILARITY(theme.name, v.settings.theme, 1) DESC
@@ -637,7 +638,6 @@ def getGameLog(targetKey):
             
             LET dests = (
                 FOR edge in Itineraries
-                    LIMIT 50
                     FILTER edge._from == v._id
                     RETURN edge._to
             )

@@ -27,6 +27,13 @@
 		date.setSeconds(totalSeconds);
 		return date.toISOString().slice(11, 19);
 	}
+
+	const themeMap = {
+		'tourist_attraction': 'Tourism',
+		'restaurant': 'Food',
+		'store': 'Shopping',
+		'museum': 'Museums'
+	}
 </script>
 
 {#if loading}
@@ -72,7 +79,7 @@
 							<div class="{indigoStyle}">{log.player.points}</div>
 							<div>{getTime(log.player.totalTime)}</div>
 							<div>{log.player.numCompleted} / {log.dests.length}</div>
-							<div>{log.game.settings.theme}</div>
+							<div>{themeMap[log.game.settings.theme]}</div>
 						</div>
 					</button>
 				{/each}

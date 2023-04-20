@@ -22,6 +22,13 @@
         }
 	};
 
+    const themeMap = {
+	    'tourist_attraction': 'Tourism',
+	    'restaurant': 'Restaurants',
+	    'store': 'Shopping',
+	    'museum': 'Museums'
+	}
+
     $: _themeRating = !theme?.numRatings ? 0 : theme?.ratingPoints / theme?.numRatings;
     $: themeRating = Math.round(_themeRating * 10) / 10;
 </script>
@@ -33,7 +40,7 @@
 
 <div class="flex justify-between items-center px-2">
     <div class="mr-2">
-        Name: {theme.name}
+        Name: {themeMap[theme.name]}
     </div>
 
     <div class="flex items-center w-60 justify-between">

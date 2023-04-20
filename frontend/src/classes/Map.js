@@ -81,6 +81,7 @@ export class Map {
     static getDestinationCircle() {
         const settings = get(Map.settings);
         const nextDest = Game.nextDestination;
+        if (!nextDest) return turf.point([ Location.lng, Location.lat ]);
         const center = [ nextDest.lon, nextDest.lat ];
         const radius = get(Map.settings).destinationRadius * get(Map.settings).destinationRadiusScalar;
         if (radius < .1) return turf.point(center);
