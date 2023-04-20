@@ -254,6 +254,7 @@ export const completePasswordReset = async (phone, otp, newPassword) => {
             }
         );
         userStore.set(res.data);
+        console.log(res);
         pushPopup({
             status: 1,
             message: "Password Reset Successfully!",

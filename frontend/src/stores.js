@@ -15,7 +15,7 @@ export const primaryAudio = writable(null);
 
 export const handlePurchaseUpdates = (user) => {
     if (!user) return;
-    
+    console.log("USER IS: ", user);
     let newPrimaryColor = 'indigo';
     let newPrimaryAudio = null;
 

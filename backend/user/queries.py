@@ -52,7 +52,7 @@ def getUserFromPhone(phone):
             RETURN MERGE(user, { purchases })
         """,
         bind_vars={
-            'phone': phone
+            'phone': str(phone)
         }
     )
 
