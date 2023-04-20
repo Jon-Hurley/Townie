@@ -25,7 +25,7 @@
 		if (prev !== paused) {
 			if (prev === true && paused === false) {
 				pushPopup({
-					status: 0,
+					status: 3,
 					message: 'You have left the current destination. Your total time will resume counting.'
 				});
 			}
