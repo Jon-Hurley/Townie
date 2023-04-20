@@ -1,39 +1,45 @@
 <script>
-    import { onMount } from 'svelte';
+	import { onMount } from 'svelte';
 
-    import Navbar from '../app/navbar.svelte';
-    import AccountBar from '../app/account-bar.svelte';
-	import Loading from '../../general-components/loading.svelte';  
+	import Navbar from '../app/navbar.svelte';
+	import AccountBar from '../app/account-bar.svelte';
+	import Loading from '../../general-components/loading.svelte';
 	import Audio from './audio.svelte';
+	import { page } from '$app/stores';
 
-    import { handlePurchaseUpdates, userStore } from '../../stores';
+	import { handlePurchaseUpdates, userStore } from '../../stores';
 
-    onMount(() => {
-        userStore.subscribe(user => {
-            if (user?.token) {
-                sessionStorage.setItem('token', user.token);
-            }
-            handlePurchaseUpdates(user);
-        }); 
+	onMount(() => {
+		page.subscribe((page) => {
+			if (page?.route?.id?.includes('app')) {
+				localStorage.setItem('lastPage', page.route.id);
+			}
+		});
+		userStore.subscribe((user) => {
+			if (user?.token) {
+				sessionStorage.setItem('token', user.token);
+			}
+			handlePurchaseUpdates(user);
+		});
 	});
 </script>
 
 {#if $userStore}
-    <AccountBar/>
-    <div
-        class="m-0 p-4"
-        style="
+	<AccountBar />
+	<div
+		class="m-0 p-4"
+		style="
             height: calc(100vh - 120px);
             max-height: calc(100vh - 120px);
             width: 100vw;
             overflow-y: auto;
         "
-    >
-        <slot/>
-    </div>
-    <Navbar/>
+	>
+		<slot />
+	</div>
+	<Navbar />
 {:else}
-    <Loading/>
+	<Loading />
 {/if}
 
-<Audio/>
+<Audio />

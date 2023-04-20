@@ -257,6 +257,9 @@ def submitThemeRating(request):
     newRating = data['newRating']
     print(themeKey, newRating)
 
+    if newRating > 5 or newRating < 0:
+        return util.returnError("Invalid rating number.", 400)
+
     token = data['token']
     user, newToken = util.decodeUserJWT(token)
     if user is None:
@@ -278,6 +281,9 @@ def submitDestRating(request):
     data = json.loads(request.body)
     destKey = data['destKey']
     newRating = data['newRating']
+
+    if newRating > 5 or newRating < 0:
+        return util.returnError("Invalid rating number.", 400)
 
     token = data['token']
     user, newToken = util.decodeUserJWT(token)

@@ -7,9 +7,8 @@
 
     import { Game } from '../../../classes/Game';
 
-    let gameStore = Game.store;
-    $: gamePage = $gameStore?.game?.page || 'join';
-    
+    let gamePage = Game.gamePage;
+
     let loading = false;
 
     const _leaveGame = async () => {
@@ -26,17 +25,17 @@
     <Loading/>
 {:else}
     <div class="flex flex-col h-full">
-        {#if gamePage === 'join'}
+        {#if $gamePage === 'join'}
             <Join/>
-        {:else if gamePage === 'lobby'}
+        {:else if $gamePage === 'lobby'}
             <Lobby/>
-        {:else if gamePage === 'map'}
+        {:else if $gamePage === 'map'}
             <Map/>
         {/if}
         <Subnav
             startGame={_startGame}
             leaveGame={_leaveGame}
-            gamePage={gamePage}
+            gamePage={$gamePage}
         />
     </div>
 {/if}

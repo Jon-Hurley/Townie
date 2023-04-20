@@ -11,12 +11,14 @@ import { Map } from './Map.js';
 
 export class Game {
     static store = writable();
+    static gamePage = writable('join');
     /** @type {WebSocket} */
     static ws = undefined;
     static interval = undefined;
     static timeStore = writable(null);
     static messageStore = writable([]);
     static formatStore = writable("");
+    static distanceStore = writable(0);
 
     static send(method, data) {
         const objStr = JSON.stringify({ method, ...data });
@@ -30,11 +32,26 @@ export class Game {
         ]);
     }
 
+    static updateDistance() {
+        const currLat = Location.lat;
+        const currLng = Location.lng;
+        const destLat = Game.nextDestination.lat;
+        const destLng = Game.nextDestination.lon;
+        const from = turf.point([currLng, currLat]);
+        const to = turf.point([destLng, destLat]);
+        let distance = turf.distance(from, to, {units: 'miles'}); 
+        return Math.round(distance);
+    }
+
     static handleGameUpdate(data) {
         if (!data) return;
         data.destinations.sort((a, b) => a.index - b.index);
+
+        console.log("SETTING GAME STORE")
         Game.store.set(data);
+        Game.gamePage.set(data.game.page);
     }
+
     // TODO: continue experimenting with this
     static shrinkRadius() {
         console.log("SHRINKING RADIUS")
@@ -52,22 +69,59 @@ export class Game {
             }
             if (timeComputation < 1.2 && timeComputation > 1) {
                 Map.updateDestinationRadiusScalar(x => x * 0.85);
+                pushPopup({
+                    status: 3,
+                    message: `You are running out of time! Hurry up!\n
+                    The destination radius is now 85% of its original size.`,
+                    onOk: () => {}
+                });
             }
             else if (timeComputation < 1.4 && timeComputation > 1) {
                 Map.updateDestinationRadiusScalar(x => x * 0.70);
+                pushPopup({
+                    status: 3,
+                    message: `You are running out of time! Hurry up!\n
+                    The destination radius is now 70% of its original size.`,
+                    onOk: () => {}
+                });
             }
             else if (timeComputation < 1.6 && timeComputation > 1) {
                 Map.updateDestinationRadiusScalar(x => x * 0.55);
+                pushPopup({
+                    status: 3,
+                    message: `You are running out of time! Hurry up!\n
+                    The destination radius is now 55% of its original size.`,
+                    onOk: () => {}
+                });
             }
             else if (timeComputation < 1.8 && timeComputation > 1) {
                 Map.updateDestinationRadiusScalar(x => x * 0.40);
+                pushPopup({
+                    status: 3,
+                    message: `You are running out of time! Hurry up!\n
+                    The destination radius is now 40% of its original size.`,
+                    onOk: () => {}
+                });
             }
             else if (timeComputation < 2 && timeComputation > 1) {
                 Map.updateDestinationRadiusScalar(x => x * 0.15);
+                pushPopup({
+                    status: 3,
+                    message: `You are running out of time! Hurry up!\n
+                    The destination radius is now 15% of its original size.`,
+                    onOk: () => {}
+                });
             }
             else if  (timeComputation > 2) {
                 Map.updateDestinationRadiusScalar(x => x = 0);
                 Map.updateDestinationCircle();
+                pushPopup({
+                    status: 3,
+                    message: `You are out of time! This destination is now worth zero points.\n
+                    You can still visit it, but you will not receive any points.\n
+                    Luckily, you now have its exact location!`,
+                    onOk: () => {}
+                });
                 clearInterval(interval);
             }
             
@@ -97,7 +151,8 @@ export class Game {
             newTime, newDist, oldTime, oldDist,
             totalTime, totalDist,
             arrived, atPrevDest,
-            potentialPoints, points
+            potentialPoints, points,
+            achievedDest
         } = data;
 
         if (get(Game.timeStore) != atPrevDest) {
@@ -105,13 +160,13 @@ export class Game {
         }
 
         if (arrived) {
-            const achievedDest = Game.nextDestination;
             const displayTime = Math.round(10 * oldTime / (1000 * 60)) / 10;
             const displayDist = Math.round(oldDist / 100) / 10;
            
             // open destination page.
             const baseUrl = window.location.protocol + "//" + window.location.host + "/";
-            console.log(baseUrl);
+            console.log({achievedDest});
+            localStorage.setItem('lastPage', '/app/destination/' + achievedDest._key);
             window.open(baseUrl + 'app/destination/' + achievedDest._key, '_blank');
 
             pushPopup({
@@ -173,6 +228,7 @@ export class Game {
                     case 'update-location': {
                         Game.handleLocationUpdate(data);
                         Game.handleRadiusUpdate();
+                        Game.distanceStore.set(Game.updateDistance());
                         return;
                     }
                     case 'new-message': {
@@ -199,7 +255,8 @@ export class Game {
         }
         Game.ws.onclose = () => {
             Game.ws = undefined;
-            Game.store.set(null);
+            Game.store.set(undefined);
+            Game.gamePage.set('join');
         }
     }
 
@@ -222,8 +279,10 @@ export class Game {
     }
 
     static async getGame(gameKey) {
+        Game.stopPolling();
+
         Game.send('get-game', { gameKey });
-        return await new Promise((res, rej) => { 
+        const res = await new Promise((res, rej) => { 
             Game.ws.onerror = () => rej();
             Game.ws.onmessage = (m) => {
                 try {
@@ -238,6 +297,9 @@ export class Game {
                 }
             };
         });
+
+        Game.resumePolling();
+        return res;
     }
 
     static async join(gameKey) {
@@ -245,6 +307,7 @@ export class Game {
             Game.messageStore.set([]);
 
             const userLocation = await Location.getCurrentLocation();
+            Location.store.set(userLocation);
             const params = {
                 'gameKey': gameKey,
                 'token': "\"" + get(userStore).token + "\"",
@@ -266,18 +329,19 @@ export class Game {
             if (!res?.player) {
                 throw { message: "Unable to connect to game. Your session token may be expired." }
             }
-
-            Game.store.set(res);
-            Game.resumePolling();
+            
+            return true;
         } catch (err) {
             console.log(err);
             Game.ws?.close();
             Game.ws = undefined;
-            Game.store.set(null);
+            Game.store.set(undefined);
+            Game.gamePage.set('join');
             pushPopup({
                 status: 0,
                 message: err?.message || "Unable to connect to lobby. Please try again."
             });
+            return false;
         }
     }
 
@@ -288,7 +352,8 @@ export class Game {
             Game.ws = undefined;
             goto('/app/game-summary/' + Game.key);
             Game.messageStore.set([]);
-            Game.store.set(null);
+            Game.store.set(undefined);
+            Game.gamePage.set('join');
             return true;
         } catch (err) {
             console.log(err);
