@@ -35,6 +35,8 @@
 	<Username boldness={'bold'}/>
 	<div class="text-sm font-normal mt-1">
 		{pointsToRank($userStore?.cumPoints)}
+		&bull;
+		{$userStore.points} Points
 	</div>
 </div>
 

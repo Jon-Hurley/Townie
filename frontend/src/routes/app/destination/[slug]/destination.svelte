@@ -3,9 +3,8 @@
 	import { buttonStyle, indigoStyle, largeTitle } from '../../../../css';
 	import { submitDestRating } from '../../../../requests/account';
 	
-	import Rating from '../../../../general-components/rating.svelte';
 	import Share from '../../../../general-components/share.svelte';
-	import ThemeRating from '../../game-summary/[slug]/themeRating.svelte';
+	import DestinationRating from './destinationRating.svelte';
 	
 	const title = 'text-gray-700 font-semibold text-lg mt-6';
 	const hr = 'my-1 bg-gray-100 h-[2px]';
@@ -14,17 +13,6 @@
 	
 	$: tips = destination?.tips || [];
 	let tipIndex = 0;
-
-	const _submitDestRating = async (userRating) => {		
-		const success = await submitDestRating(destination._key, userRating);
-		if (success) {
-			pushPopup({
-				status: 1,
-				message: 'Your rating has been received',
-				onOk: reload
-			});
-		}
-	};
 </script>
 
 <div class="my-5 w-full">
@@ -35,17 +23,10 @@
 
 <Share header="Share Destination!"/>
 
-<div class={title}>Rate Destination</div>
-<hr class={hr} />
-<Rating
+<DestinationRating
 	initialUserRating={userRating?.rating || 0}
-	onSubmit={_submitDestRating}
-/>
-
-<ThemeRating
-	initialUserRating={userRating?.rating || 0}
-	showRateable={false}
-	theme={theme}
+	showRateable={true}
+	destination={destination}
 	reload={reload}
 />
 
