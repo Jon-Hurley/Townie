@@ -12,7 +12,7 @@
 	onMount(() => {
 		page.subscribe((page) => {
 			if (page?.route?.id?.includes('app')) {
-				localStorage.setItem('lastPage', page.route.id);
+				localStorage.setItem('lastPage', page.url.pathname);
 			}
 		});
 		userStore.subscribe((user) => {
