@@ -59,8 +59,10 @@ export const hr = "bg-gray-100 h-[2px] mb-4 mt-2";
 export const gridContainer = `
     overflow-y-auto scrollbar-hide
     inline-flex flex-wrap justify-center
-    gap-2
+    gap-y-5
+    gap-x-4
     p-2
+    
     w-full
 `;
 
