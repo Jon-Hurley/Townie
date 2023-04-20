@@ -122,7 +122,8 @@ export const autoLogout = async () => {
 export const manualLogout = async () => {
     console.log("manual logging out");
 
-    Game.leave();
+    if (Game.game) Game.leave();
+    goto('/login');
     localStorage.removeItem('username');
     localStorage.removeItem('password');
     sessionStorage.removeItem('token');
