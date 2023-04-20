@@ -556,8 +556,8 @@ def sendFriendRequest(toKey, fromKey):
             }
         """,
         bind_vars={
-            'toKey': toKey,
-            'fromKey': fromKey
+            'toKey': str(toKey),
+            'fromKey': str(fromKey)
         }
     )
 
