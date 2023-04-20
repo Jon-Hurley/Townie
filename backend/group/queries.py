@@ -37,15 +37,6 @@ def createGame(lon, lat):
 def addPlayer(gameKey, userKey, connectionId, lat, lon):
     return arango_con.db.aql.execute(
         """
-            LET oldConnectionIds = (
-                FOR v, e
-                IN 1..1
-                ANY CONCAT("User/", @userKey)
-                GRAPH Playerships
-                    FILTER e.connectionId != null
-                    RETURN e.connectionId
-            )
-
             UPSERT {
                 _from: CONCAT("User/", @userKey),
                 _to: CONCAT("Games/", @gameKey)
@@ -76,8 +67,7 @@ def addPlayer(gameKey, userKey, connectionId, lat, lon):
                 prevTime: DATE_NOW()
             }
             IN Players
-
-            RETURN oldConnectionIds
+            RETURN NEW
         """,
         bind_vars={
             'gameKey': str(gameKey),
@@ -85,6 +75,27 @@ def addPlayer(gameKey, userKey, connectionId, lat, lon):
             'connectionId': str(connectionId),
             'lat': float(lat),
             'lon': float(lon)
+        }
+    )
+
+def getUserConnectionIds(userKey):
+    return arango_con.db.aql.execute(
+        """
+        FOR v, e
+        IN 1..1
+        ANY CONCAT("User/", @userKey)
+        GRAPH Playerships
+            FILTER e.connectionId != null
+
+            UPDATE e
+            WITH {
+                connectionId: null
+            }
+            IN Players
+            RETURN OLD.connectionId
+        """,
+        bind_vars={
+            'userKey': str(userKey)
         }
     )
 
@@ -193,7 +204,7 @@ def updatePlayerLocation(connectionId, lon, lat):
         FOR p IN Players
             FILTER p.connectionId == @connectionId
                 && p.connectionId != null
-
+            
             LET atPrevDest = (
                 FOR v, e IN 1..1 OUTBOUND p._to Itineraries
                     FILTER e.index == p.destinationIndex - 1
@@ -234,12 +245,6 @@ def updatePlayerLocation(connectionId, lon, lat):
                 )
                 : 0
 
-            LET achievedDest = arrived ? (
-                FOR v, e IN 1..1 OUTBOUND p._to Itineraries
-                    FILTER e.index == p.destinationIndex
-                    return v
-            )[0] : null
-
             UPDATE p
             WITH {
                 lon: @lon,
@@ -271,9 +276,7 @@ def updatePlayerLocation(connectionId, lon, lat):
                 potentialPoints: dp,
                 points: newDestDelta.points,
                 trueCompletionTime: newDestDelta.trueTime,
-                destDelta,
-
-                achievedDest
+                destDelta
             }
         """,
         bind_vars={

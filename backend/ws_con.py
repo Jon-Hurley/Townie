@@ -17,19 +17,24 @@ client = boto3.client(
 
 # PROPOGATE CHANGES BACK TO USERS VIA AWS WS API
 
-async def propogateToPlayers(data):
+async def propogateToPlayers(data, conExclusion={}):
+    print("DATA", data)
     players = data['players']
 
     for player in players:
+        connectionId = player['connectionId']
+        if connectionId in conExclusion:
+            continue
+
         data['player'] = player # add player's own data to their game data
         try:
             data['nextDestination'] = data['destinations'][player['destinationIndex']]
-        except Exception as err:
-            print(err)
+        except:
+            data['nextDestination'] = None
         
         asyncio.create_task(
             propogateToUser(
-                connectionId = player['connectionId'],
+                connectionId,
                 data = json.dumps({
                     'method': 'update-game',
                     'data': data,
@@ -50,7 +55,7 @@ async def propogateToUser(connectionId, data):
             ConnectionId=connectionId
         )
     except Exception as err:
-        print(err)
+        print("PROPOGATE ERROR:", connectionId)
 
 def forceDisconnect(connectionId):
     try:

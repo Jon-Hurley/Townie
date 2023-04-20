@@ -20,7 +20,6 @@
         if (!lobbyKey) return;
         console.log("lobby created w/ key: ", lobbyKey);
         const res = await Game.join(lobbyKey);
-        console.log("Err:", res);
         loading = false;
     };
 </script>

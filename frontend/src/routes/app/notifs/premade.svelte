@@ -83,7 +83,6 @@
         
         console.log("lobby created w/ key: ", lobbyKey);
         const res = await Game.join(lobbyKey);
-        console.log("Err:", res);
         const loc = await Location.getCurrentLocation();
         form.lat = loc.lat;
         form.lon = loc.lng;
