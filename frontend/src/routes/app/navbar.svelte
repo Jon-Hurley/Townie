@@ -5,9 +5,19 @@
 	import { primaryColor } from '../../stores';
 
     import Icon from '$lib/assets/townie-icon.jpg';
+    import VI from '$lib/assets/anim_written_in_vi.gif';
 
     $: highlightedPage = getHighlight($page.route.id);
 </script>
+
+<div class="fixed bottom-[-90px] z-[100] w-20 h-20">
+    <img
+        src={VI}
+        class="object-cover"
+        alt={''}
+        on:error={e => console.log(e)}
+    />
+</div>
 
 <div
     class="

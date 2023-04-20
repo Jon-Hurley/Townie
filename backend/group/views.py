@@ -28,22 +28,20 @@ def onConnect(request):
     user, newToken = util.decodeUserJWT(token)
     if user is None:
         return util.returnError('Invalid token.', 401)
-
+    
     userKey = user['key']
 
-    # add user to game, nulling their previous connection if left open
-    res = queries.addPlayer(gameKey, userKey, connectionId, lat, lon)
-    
-    oldConnectionIds = res.batch()
-    print(oldConnectionIds)
-    for oldConnectionId in oldConnectionIds:
-        try:
+    # prune old connection ids for this user
+    oldConnectionIds = queries.getUserConnectionIds(userKey).batch()
+    for oldConnectionId in list(oldConnectionIds):
+        if oldConnectionId != connectionId:
             ws_con.forceDisconnect(oldConnectionId)
-        except Exception as err:
-            print(err)
+
+    # add user to game, nulling their previous connection if left open
+    res = queries.addPlayer(gameKey, userKey, connectionId, lat, lon).batch()
 
     # relay game all game data to all players (except the new one)
-    propogateAllUpdates(gameKey)
+    propogateAllUpdates(gameKey, conExlusion={connectionId})
 
     # send game data to new player
     return JsonResponse({})
@@ -159,12 +157,12 @@ def onDefault(request):
     return JsonResponse({})
 
 
-def propogateAllUpdates(gameKey=None, data=None):
+def propogateAllUpdates(gameKey=None, data=None, conExlusion={}):
     if data is None:
         data = queries.getGame(gameKey).batch()[0]
     
     asyncio.run(
-        ws_con.propogateToPlayers(data)
+        ws_con.propogateToPlayers(data, conExlusion)
     )
 
 

@@ -16,10 +16,8 @@
     <hr class={hr}>
     <div
         class="
-            flex
-            w-full justify-between
-            pt-4 gap-2
-            z-50
+            flex justify-between
+            gap-2 z-50 w-full
         "
     >
         <Chat/>

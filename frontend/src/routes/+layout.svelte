@@ -66,7 +66,9 @@
 {/if}
 
 {#if $popupQueue.length}
-	<Modal {...$popupQueue[0]} />
+	{#key $popupQueue[0]}
+		<Modal {...$popupQueue[0]} />
+	{/key}
 {/if}
 
 <ColorLoader />
