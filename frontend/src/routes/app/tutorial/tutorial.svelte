@@ -3,18 +3,21 @@
 	import { elasticInOut } from 'svelte/easing';
 
 	import Join from '$lib/assets/Tutorial-join.jpg';
-	import Settings1 from '$lib/assets/Tutorial-Settings-1.jpg';
-	import Settings2 from '$lib/assets/Tutorial-Settings-2.jpg';
-	import Settings3 from '$lib/assets/Tutorial-Settings-3.jpg';
-	import Settings4 from '$lib/assets/Tutorial-Settings-4.jpg';
-	import Settings5 from '$lib/assets/Tutorial-Settings-5.jpg';
-	import Map from '$lib/assets/Tutorial-Map.jpg';
+	import Settings1 from '$lib/assets/Settings-1.jpg';
+	import Settings2 from '$lib/assets/Settings-2.jpg';
+	import Settings3 from '$lib/assets/Settings-3.jpg';
+	import Settings4 from '$lib/assets/Settings-4.jpg';
+	import Settings5 from '$lib/assets/Settings-5.jpg';
+  import Settings6 from '$lib/assets/Settings-6.jpg';
+	import Settings7 from '$lib/assets/Settings-7.jpg';
+	import Map from '$lib/assets/Map.jpg';
+  import inGameOptions from '$lib/assets/In-Game-Options.jpg';
 	import { hr, largeTitle } from '../../../css';
 
 	const images = [
 		{
 			src: Join,
-			description: 'Join-1'
+			description: 'Join'
 		},
 		{
 			src: Settings1,
@@ -36,9 +39,21 @@
 			src: Settings5,
 			description: 'Settings-5'
 		},
+    {
+			src: Settings6,
+			description: 'Settings-6'
+		},
+    {
+			src: Settings7,
+			description: 'Settings-7'
+		},
 		{
 			src: Map,
 			description: 'Map-1'
+		},
+		{
+			src: inGameOptions,
+			description: 'In-Game-Options'
 		}
 	];
 

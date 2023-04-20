@@ -116,12 +116,14 @@ export class Game {
 
             pushPopup({
                 status: 1,
-                message: `
-                    You reached destination: ${achievedDest.name}!\n
-                    You took ${displayTime} minutes and traveled ${displayDist} km.\n
+                message:
+                !Game.game.settings.casual?
+                    `You reached destination ${achievedDest.name}!
+                    You took ${displayTime} minutes and traveled ${displayDist} meters.
                     You received ${potentialPoints}/${points} points.\n
-                    Your total time has been paused and will resume once you leave the destination.
-                `,
+                    Your total time has been paused and will resume once you leave the destination.`:
+                    `You reached destination ${achievedDest.name}!
+                    You took ${displayTime} minutes and traveled ${displayDist} meters.`,
                 onOk: () => {
                     Game.player.destinationIndex++;
                     Game.formatStore.set(Game.updateDestTime());
