@@ -2,6 +2,7 @@
 	import '../app.css';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
 
 	import Loading from '../general-components/loading.svelte';
 	import Modal from '../general-components/modal.svelte';
@@ -12,6 +13,8 @@
 
 	let loaded = false;
 	let prevUser = null;
+
+	$: console.log($page);
 
 	const redirectOnUserUpdate = (v) => {
 		if (v) {
@@ -31,6 +34,13 @@
 
 	onMount(async () => {
 		loaded = false;
+
+		page.subscribe((page) => {
+			if (page?.route?.id?.includes('app')) {
+				let url = page.url.href;
+				localStorage.setItem('lastPage', url);
+			}
+		});
 
 		userStore.subscribe(redirectOnUserUpdate);
 

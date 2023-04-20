@@ -10,11 +10,6 @@
 	import { handlePurchaseUpdates, userStore } from '../../stores';
 
 	onMount(() => {
-		page.subscribe((page) => {
-			if (page?.route?.id?.includes('app')) {
-				localStorage.setItem('lastPage', page.route.id);
-			}
-		});
 		userStore.subscribe((user) => {
 			if (user?.token) {
 				sessionStorage.setItem('token', user.token);
