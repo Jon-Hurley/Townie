@@ -97,11 +97,7 @@ def decodeUserJWT(token):
     
     # past expiration time by less than 60 minutes: refresh token
     user['expiration'] = t + dt
-    newToken = jwt.encode(
-        user,
-        os.environ.get('JWT_TOKEN_SECRET'),
-        algorithm="HS256"
-    )
+    newToken = _encodeUserJWT(user)
     
     return user, newToken
 

@@ -94,7 +94,7 @@ def rejectFriend(request):
         body['key']
     ).batch()[0]
     
-    message = res['originUsername'] + ' has rescinded your friendship! No one likes you :(.'
+    message = res['originUsername'] + ' has rejected your friendship! No one likes you :(.'
     twilio_con.sendNotification(
         phone=res['targetPhone'],
         message=message
@@ -107,7 +107,6 @@ def rejectFriend(request):
 def requestFriend(request):
     body = json.loads(request.body)
     toKey = body['toKey']
-    fromKey = body['fromKey']
 
     user, newToken = util.decodeUserJWT(body['token'])
     if user is None:
@@ -115,7 +114,7 @@ def requestFriend(request):
 
     docs = queries.sendFriendRequest(
         toKey,
-        fromKey
+        user['key']
     ).batch()
 
     if len(docs) != 1:

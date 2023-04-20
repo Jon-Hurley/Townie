@@ -30,7 +30,6 @@ export const sendFriendRequest = async(toKey) => {
         const res = await axios.post(
             PUBLIC_BACKEND_API + 'user/request-friend/',
             {
-                fromKey: get(userStore).key,
                 toKey: toKey,
                 token: get(userStore).token
             }
