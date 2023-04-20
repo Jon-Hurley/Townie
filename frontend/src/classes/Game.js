@@ -331,7 +331,7 @@ export class Game {
             if (!res?.player) {
                 throw { message: "Unable to connect to game. Your session token may be expired." }
             }
-            
+
             return true;
         } catch (err) {
             console.log(err);
@@ -348,6 +348,7 @@ export class Game {
 
     static leave() {
         try {
+            Map.map = null;
             Game.stopPolling();
             Game.ws?.close();
             Game.ws = undefined;

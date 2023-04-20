@@ -44,17 +44,9 @@ export class Map {
         Map.updateDestinationCircle();
     }
 
-    // static updateExactLocation(f) {
-    //     console.log(f(Map.settings.exactLocation))
-    //     Map.settings.update(settings => {
-    //         Map.settings.exactLocation = f(Map.settings.exactLocation);
-    //         return settings;
-    //     });
-    //     Map.updateDestinationCircle();
-    // }
-
     static setCenter(loc) {
-        if (!loc || !loc.lat || !loc.lng || !Map.map) return;
+        if (!Map.map || !get(Game.store)) return;
+        if (!loc || !loc.lat || !loc.lng) return;
         Map.map.flyTo({
             center: [ loc.lng, loc.lat ]
         });
@@ -79,6 +71,8 @@ export class Map {
     };
 
     static getDestinationCircle() {
+        if (!Map.map || !get(Game.store)) return;
+
         const settings = get(Map.settings);
         const nextDest = Game.nextDestination;
         if (!nextDest) return turf.point([ Location.lng, Location.lat ]);
@@ -90,6 +84,8 @@ export class Map {
     }
 
     static setDestinationCircle() {
+        if (!Map.map || !get(Game.store)) return;
+
         const circle = Map.getDestinationCircle();
         const mapboxObj = Map.map.getMap();
         console.log(mapboxObj);
@@ -110,7 +106,7 @@ export class Map {
     }
 
     static updateDestinationCircle() {
-        if (!Map.map) return;
+        if (!Map.map || !get(Game.store)) return;
         const circle = Map.getDestinationCircle();
         const mapboxObj = Map.map.getMap();
         const src = mapboxObj.getSource("destCircleData");
@@ -118,6 +114,7 @@ export class Map {
     }
 
     static updateBounds() {
+        if (!Map.map || !get(Game.store)) return;
         // Map.setCenterToCurrent();
         const mapboxObj = Map.map.getMap();
         console.log(Map.map, mapboxObj);
