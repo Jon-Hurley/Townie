@@ -329,5 +329,9 @@ def updatePoints(request): # FLAG --> change name
 
     if len(docs) == 0:
         return util.returnError('Unfortunately, you needed ' + pointsNeeded + " but you don't have that. You currently have " + str(user['points']) + " points.", 404)
+    
+    userDocs = queries.getUserByUsername(user['username']).batch()
+    if (len(userDocs) == 0):
+        return util.returnError("Unable to purchase item. Your account seems to have been terminated.", 404)
 
-    return util.returnUserPrivate(docs[0])
+    return util.returnUserPrivate(userDocs[0])
