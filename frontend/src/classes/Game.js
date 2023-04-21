@@ -84,7 +84,7 @@ export class Game {
                 });
             }
             else if (timeComputation <= 1.4 && timeComputation > 1) {
-                Map.updateDestinationRadiusScalar(x => x * 0.70);
+                Map.updateDestinationRadiusScalar(x => (x / 0.85) * 0.70);
                 pushPopup({
                     status: 3,
                     message: `You are running out of time! Hurry up!\n
@@ -93,7 +93,7 @@ export class Game {
                 });
             }
             else if (timeComputation <= 1.6 && timeComputation > 1) {
-                Map.updateDestinationRadiusScalar(x => x * 0.55);
+                Map.updateDestinationRadiusScalar(x => (x / 0.70) * 0.55);
                 pushPopup({
                     status: 3,
                     message: `You are running out of time! Hurry up!\n
@@ -102,7 +102,7 @@ export class Game {
                 });
             }
             else if (timeComputation <= 1.8 && timeComputation > 1) {
-                Map.updateDestinationRadiusScalar(x => x * 0.40);
+                Map.updateDestinationRadiusScalar(x => (x / 0.55) * 0.40);
                 pushPopup({
                     status: 3,
                     message: `You are running out of time! Hurry up!\n
@@ -111,7 +111,7 @@ export class Game {
                 });
             }
             else if (timeComputation <= 2 && timeComputation > 1) {
-                Map.updateDestinationRadiusScalar(x => x * 0.15);
+                Map.updateDestinationRadiusScalar(x => (x / 0.40) * 0.15);
                 pushPopup({
                     status: 3,
                     message: `You are running out of time! Hurry up!\n
