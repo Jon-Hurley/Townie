@@ -102,16 +102,16 @@
 		clearInterval(Game?.timerInterval);
 		console.log("skipping location");
         
-		Map.updateDestinationRadiusScalar(x => 1);
-		Game.handleRadiusUpdate();
-		Game.shrinkRadius();
 
         if (Game.player.destinationIndex === Game.destinations.length - 1) {
             Game.leave();
             return;
         }
 
-        incrementDestinationIndex(Game.player.connectionId);       
+        incrementDestinationIndex(Game.player.connectionId);
+		Map.updateDestinationRadiusScalar(x => 1);
+		Game.handleRadiusUpdate();
+		Game.shrinkRadius();       
     }
 
     const spendPointsHere = async(pointsSpent) => {
@@ -337,7 +337,8 @@
 									: Game.game.settings.casual
 									? "Do you want to skip this destination?"
 									: "Do you want to skip this destination? If you do, you will not gain points for this destination.",
-								onOk: _skipLocation
+								onOk: _skipLocation,
+								includeCancel: true,
 							});
 						}}
 						name="skipLocationButton"

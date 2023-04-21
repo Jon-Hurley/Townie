@@ -53,9 +53,10 @@ export class Game {
 
         Map.updateDestinationCircle();
         Map.updateBounds();
-
-        Game.formatStore.set(Game.updateDestTime());
-		distanceStore.set(Game.updateDistance());
+        if (Map.map?.getMap()) {
+            Game.formatStore.set(Game.updateDestTime());
+            Game.distanceStore.set(Game.updateDistance());
+        }
     }
 
     // TODO: continue experimenting with this
