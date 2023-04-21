@@ -118,7 +118,8 @@ export class Map {
         if (!Map.map || !get(Game.store)) return;
         // Map.setCenterToCurrent();
         const mapboxObj = Map.map.getMap();
-        console.log(Map.map, mapboxObj);
+        if (!mapboxObj) return;
+        // console.log(Map.map, mapboxObj);
         
         const features = [
             turf.point([ Location.lng, Location.lat ])
