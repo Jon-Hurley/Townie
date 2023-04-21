@@ -109,6 +109,7 @@ export class Map {
         if (!Map.map || !get(Game.store)) return;
         const circle = Map.getDestinationCircle();
         const mapboxObj = Map.map.getMap();
+        if (!mapboxObj) return;
         const src = mapboxObj.getSource("destCircleData");
         src?.setData(circle);
     }
