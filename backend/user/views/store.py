@@ -124,6 +124,7 @@ def handleCheckoutSessionEvent(eventType, eventData):
         redis_con.deletePaymentSession(sessionId)
 
         user = queries.activatePremium(userKey, customerId, subscriptionId)['new']
+        print(user)
         twilio_con.sendNotification(
             user['phone'],
             'Your Townie premium subscription has been activated. Thank you for your support!'

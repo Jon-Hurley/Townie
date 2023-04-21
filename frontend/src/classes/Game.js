@@ -50,6 +50,12 @@ export class Game {
 
         console.log("SETTING GAME STORE")
         Game.store.set(data);
+
+        Map.updateDestinationCircle();
+        Map.updateBounds();
+
+        Game.formatStore.set(Game.updateDestTime());
+		distanceStore.set(Game.updateDistance());
     }
 
     // TODO: continue experimenting with this
