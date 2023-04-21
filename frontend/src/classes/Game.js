@@ -18,6 +18,7 @@ export class Game {
     static messageStore = writable([]);
     static formatStore = writable("");
     static distanceStore = writable(0);
+    static timerInterval = undefined;
 
     static send(method, data) {
         const objStr = JSON.stringify({ method, ...data });
@@ -58,15 +59,16 @@ export class Game {
         const timeLeft = Game?.nextDestination?.timeToCompletion * 1000;
         let timeComputation = -1;
         let currTime = startTime;
-        let interval = setInterval(() => {
+        Game.timerInterval = setInterval(() => {
             currTime += timeLeft / 5.0;
+            console.log("INTERVAL")
             if (get(Map.settings).destinationRadius * get(Map.settings).destinationRadiusScalar < 0.1 || get(Game.timeStore)) {
-                clearInterval(interval);
+                clearInterval(Game.timerInterval);
             }
             if (currTime > (timeLeft + startTime)) {
                 timeComputation = (currTime - startTime) / timeLeft;
             }
-            if (timeComputation < 1.2 && timeComputation > 1) {
+            if (timeComputation <= 1.2 && timeComputation > 1) {
                 Map.updateDestinationRadiusScalar(x => x * 0.85);
                 pushPopup({
                     status: 3,
@@ -75,7 +77,7 @@ export class Game {
                     onOk: () => {}
                 });
             }
-            else if (timeComputation < 1.4 && timeComputation > 1) {
+            else if (timeComputation <= 1.4 && timeComputation > 1) {
                 Map.updateDestinationRadiusScalar(x => x * 0.70);
                 pushPopup({
                     status: 3,
@@ -84,7 +86,7 @@ export class Game {
                     onOk: () => {}
                 });
             }
-            else if (timeComputation < 1.6 && timeComputation > 1) {
+            else if (timeComputation <= 1.6 && timeComputation > 1) {
                 Map.updateDestinationRadiusScalar(x => x * 0.55);
                 pushPopup({
                     status: 3,
@@ -93,7 +95,7 @@ export class Game {
                     onOk: () => {}
                 });
             }
-            else if (timeComputation < 1.8 && timeComputation > 1) {
+            else if (timeComputation <= 1.8 && timeComputation > 1) {
                 Map.updateDestinationRadiusScalar(x => x * 0.40);
                 pushPopup({
                     status: 3,
@@ -102,7 +104,7 @@ export class Game {
                     onOk: () => {}
                 });
             }
-            else if (timeComputation < 2 && timeComputation > 1) {
+            else if (timeComputation <= 2 && timeComputation > 1) {
                 Map.updateDestinationRadiusScalar(x => x * 0.15);
                 pushPopup({
                     status: 3,
@@ -121,7 +123,7 @@ export class Game {
                     Luckily, you now have its exact location!`,
                     onOk: () => {}
                 });
-                clearInterval(interval);
+                clearInterval(Game.timerInterval);
             }
             
             Map.updateDestinationCircle();
@@ -350,6 +352,7 @@ export class Game {
     static leave() {
         try {
             Map.map = null;
+            clearInterval(Game.timerInterval);
             Game.stopPolling();
             Game.ws?.close();
             Game.ws = undefined;
