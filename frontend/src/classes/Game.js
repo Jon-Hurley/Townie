@@ -183,8 +183,6 @@ export class Game {
                     `You reached destination ${achievedDest.name}!
                     You took ${displayTime} minutes and traveled ${displayDist} meters.`,
                 onOk: () => {
-                    Game.player.destinationIndex++;
-                    Game.player.numCompleted++;
                     Game.formatStore.set(Game.updateDestTime());
                     Game.distanceStore.set(Game.updateDistance());
                 }

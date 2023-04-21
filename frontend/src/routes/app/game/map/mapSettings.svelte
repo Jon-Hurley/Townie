@@ -113,7 +113,7 @@
         }
         console.log(Game.player.connectionId);
         incrementDestinationIndex(Game.player.connectionId);
-        Game.player.destinationIndex++;
+        
 		Game.formatStore.set(Game.updateDestTime());
 		distanceStore.set(Game.updateDistance());
         Map.setCenterToCurrent();
