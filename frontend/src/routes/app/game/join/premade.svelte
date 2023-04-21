@@ -2,13 +2,13 @@
     import { onMount } from 'svelte';
     import { goto } from '$app/navigation';
 
-    import { userStore } from "../../../stores";
-    import { Game } from "../../../classes/Game";
-    import { Location } from "../../../classes/Location";
-    import { updatePlayableGame } from "../../../requests/account";
-    import { createGame } from "../../../requests/group";
-	import { blueStyle, buttonStyle } from "../../../css";
-    import { primaryColor } from '../../../stores';
+    import { userStore } from '../../../../stores';
+    import { Game } from '../../../../classes/Game';
+    import { Location } from '../../../../classes/Location';
+    import { updatePlayableGame } from '../../../../requests/account';
+    import { createGame } from '../../../../requests/group';
+	import { buttonStyle } from '../../../../css';
+    import { primaryColor } from '../../../../stores';
     
     const currentTime = Math.floor(Date.now() / 1000)
 
@@ -23,7 +23,7 @@
     const budget_options = ["Most Affordable", "10", "25", "50", "Splurge!"];
 
     onMount(() => {
-        if (!playable || currentTime - prevTime > 604800) {
+        //if (!playable || currentTime - prevTime > 604800) {
             let transportation = Math.floor(Math.random() * 4);
             let desiredCompletionTime = Math.floor(Math.random() * 5);
             let theme = Math.floor(Math.random() * 4)
@@ -74,7 +74,7 @@
             form.budget = budget;
             display.budget = budget_options[budget];
             console.log(form)
-        }
+        //}
     })
 
     const _updatePlayable = async() => {
@@ -93,8 +93,8 @@
     }
 </script>
 
-{#if (currentTime - prevTime > 604800)}
-    <div class="flex">
+<!--{#if (currentTime - prevTime > 604800)}-->
+    <div class="flex w-full">
         <ul bind:this={display}
             class=" {buttonStyle} text-{$primaryColor}-500 border-{$primaryColor}-500 w-full mb-2"
         >
@@ -106,7 +106,7 @@
             
         </ul>
     </div>
-    <div class="flex ">
+    <div class="flex w-full">
         <button
             on:click={() => {
                 _updatePlayable()
@@ -116,4 +116,4 @@
             Create premade lobby!
         </button>
     </div>
-{/if}
+<!--{/if}-->

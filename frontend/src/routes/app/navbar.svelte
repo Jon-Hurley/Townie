@@ -30,7 +30,7 @@
 >
     {#each pages as { page, tooltip, svg }, i}
         {#if i == 2}
-            <div class="bg-white ring-4 ring-white mb-6 rounded-b-full">
+            <div class="bg-white ring-4 ring-white mb-6 rounded-t-lg rounded-3xl">
                 <button
                     type="button"
                     class="
@@ -42,7 +42,7 @@
                         width: 55px;
                         height: 55px;
                         background-size: cover;
-                        border-radius: 8px 8px 50% 50%;
+                        border-radius: 8px 8px 45% 45%;
                     "
                     data-bs-toggle="tooltip" 
                     data-bs-placement="top"
