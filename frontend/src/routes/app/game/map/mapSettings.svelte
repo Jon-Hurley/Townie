@@ -101,26 +101,17 @@
 	const _skipLocation = () => {
 		clearInterval(Game?.timerInterval);
 		console.log("skipping location");
-        Map.updateDestinationRadiusScalar(x => 1);
+        
+		Map.updateDestinationRadiusScalar(x => 1);
 		Game.handleRadiusUpdate();
 		Game.shrinkRadius();
 
-        skipPopupOpen = false;
-		isOpen = false;
         if (Game.player.destinationIndex === Game.destinations.length - 1) {
             Game.leave();
             return;
         }
-        console.log(Game.player.connectionId);
-        incrementDestinationIndex(Game.player.connectionId);
-        
-		Game.formatStore.set(Game.updateDestTime());
-		distanceStore.set(Game.updateDistance());
-        Map.setCenterToCurrent();
-        Map.updateDestinationCircle();
-        Map.updateBounds();
-        tempText = (Game.player.destinationIndex === Game.destinations.length - 1) ? "WARNING: This is the final destination! If you skip this, you will be sent to the game summary page!" 
-                    : "Do you want to skip this destination? If you do, you will not gain points for this destination.";
+
+        incrementDestinationIndex(Game.player.connectionId);       
     }
 
     const spendPointsHere = async(pointsSpent) => {
@@ -339,14 +330,14 @@
 					<button
 						on:click={() => {
 							pushPopup({
-								status: 2, 
-								message: Game.game.settings.casual?"Do you want to skip this destination?": (Game.player.destinationIndex === Game.destinations.length - 1)
-								? "WARNING: This is the final destination! If you skip this, you will be sent to the game summary page!"
-								: "Do you want to skip this destination? If you do, you will not gain points for this destination.",
-								onOk: () => {
-										isOpen = false;
-										_skipLocation();
-								}
+								status: 3, 
+								message: 
+									Game.player.destinationIndex === Game.destinations.length - 1
+									? "WARNING: This is the final destination! If you skip this, you will be sent to the game summary page!"
+									: Game.game.settings.casual
+									? "Do you want to skip this destination?"
+									: "Do you want to skip this destination? If you do, you will not gain points for this destination.",
+								onOk: _skipLocation
 							});
 						}}
 						name="skipLocationButton"
