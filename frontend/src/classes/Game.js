@@ -57,6 +57,12 @@ export class Game {
             Game.formatStore.set(Game.updateDestTime());
             Game.distanceStore.set(Game.updateDistance());
         }
+
+        if (!Game.timerInterval) {
+            Map.updateDestinationRadiusScalar(x => 1);
+            Game.handleRadiusUpdate();
+            Game.shrinkRadius();
+        }
     }
 
     // TODO: continue experimenting with this

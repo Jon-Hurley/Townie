@@ -99,19 +99,17 @@
 	}
 
 	const _skipLocation = () => {
-		clearInterval(Game?.timerInterval);
 		console.log("skipping location");
-        
 
+		clearInterval(Game?.timerInterval);
+		Game.timerInterval = null;
+		
         if (Game.player.destinationIndex === Game.destinations.length - 1) {
             Game.leave();
             return;
         }
 
         incrementDestinationIndex(Game.player.connectionId);
-		Map.updateDestinationRadiusScalar(x => 1);
-		Game.handleRadiusUpdate();
-		Game.shrinkRadius();       
     }
 
     const spendPointsHere = async(pointsSpent) => {
