@@ -396,6 +396,7 @@ def getGameForPlayer(gameKey, connectionId):
 
         LET destinations = (
             FOR v, e IN 1..1 OUTBOUND CONCAT("Games/", @key) Itineraries
+                SORT e.index ASC
                 RETURN {
                     index: e.index,
                     points: e.points,

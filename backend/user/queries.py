@@ -333,7 +333,8 @@ def getUsersBySubstring(substr, userKey):
                     key: user._key,
                     username: user.username,
                     isPremium: user.isPremium,
-                    dist
+                    dist,
+                    starts
                 }
         )
 
@@ -357,7 +358,8 @@ def getUsersBySubstring(substr, userKey):
 
             LET unionLength = LENGTH(UNION_DISTINCT(userFriends, targetFriends))
             LET jaccardIndex = unionLength == 0 ? 0 : mutualFriends / unionLength
-
+            SORT mutualFriends DESC, jaccardIndex DESC
+            
             RETURN {
                 key: user1.key,
                 username: user1.username,
