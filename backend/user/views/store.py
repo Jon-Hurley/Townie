@@ -118,7 +118,8 @@ def handleCheckoutSessionEvent(eventType, eventData):
     subscriptionId = eventData['subscription']
 
     # USER FINISHES CHECKOUT
-    if eventType == 'checkout.session.completed':           
+    if eventType == 'checkout.session.completed': 
+        print(eventData)          
         userKey = redis_con.getSessionUser(sessionId)
         redis_con.deletePaymentSession(sessionId)
 

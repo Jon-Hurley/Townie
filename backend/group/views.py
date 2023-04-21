@@ -157,6 +157,19 @@ def onDefault(request):
     return JsonResponse({})
 
 
+@csrf_exempt
+def incrementIndex(request):
+    data = json.loads(request.body)
+    connectionID = data['connectionID']
+    gameKey = data['gameKey']
+    res = queries.incrementIndex(connectionID)
+    # gameKey = res[0][6:]  # [6:] = id -> key
+    print(res)
+
+    propogateAllUpdates(gameKey)
+    return JsonResponse({})
+
+
 def propogateAllUpdates(gameKey=None, data=None, conExlusion={}):
     if data is None:
         data = queries.getGame(gameKey).batch()[0]

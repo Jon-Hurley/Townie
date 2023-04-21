@@ -92,6 +92,7 @@ def getDestination(request):
         return JsonResponse({
             'summary': res
         })
+
 def submitRating(request):
     data = json.loads(request.body)
     theme = data['theme']
@@ -102,12 +103,3 @@ def submitRating(request):
     except:
         return util.returnError("Invalid theme or rating.", 400)
     return JsonResponse({})
-
-@csrf_exempt
-def incrementIndex(request):
-    data = json.loads(request.body)
-    print("data is " + str(data))
-    connectionID = data['connectionID']
-    queries.incrementIndex(connectionID)
-    return JsonResponse({})
-

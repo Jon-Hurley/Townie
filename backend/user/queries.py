@@ -991,21 +991,6 @@ def activatePurchase(userKey, purchasableKey):
 
     )
 
-def incrementIndex(connectionID): # FLAG --> change to group
-    return arango_con.db.aql.execute(
-        """
-        FOR p IN Players
-            FILTER p.connectionId == @connectionId && p.connectionId != null
-            LET newIndex = p.destinationIndex + 1
-            UPDATE p
-            WITH {
-                destinationIndex: newIndex
-            }
-            IN Players
-        """,
-        bind_vars={'connectionId': connectionID}
-    )
-
 def updatePoints(userKey, option): # FLAG --> change name and go to group
     return arango_con.db.aql.execute(
         """

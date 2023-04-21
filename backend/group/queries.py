@@ -480,6 +480,23 @@ def createDestination(lat, lng, name, theme, tips):
         )
 
 
+def incrementIndex(connectionID):
+    return arango_con.db.aql.execute(
+        """
+        FOR p IN Players
+            FILTER p.connectionId == @connectionId && p.connectionId != null
+            LET newIndex = p.destinationIndex + 1
+            UPDATE p
+            WITH {
+                destinationIndex: newIndex
+            }
+            IN Players
+            RETURN p._to
+        """,
+        bind_vars={'connectionId': connectionID}
+    )
+
+
 def getNearbyDestinations(lat, lng, radius, theme):
     return arango_con.db.aql.execute(
         """

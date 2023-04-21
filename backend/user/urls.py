@@ -16,7 +16,6 @@ urlpatterns = [
     path('search/', search.searchUsers),
     path('profile/<str:key>/', search.getUser),
     path('game-log/', search.getGameLog), 
-    path('increment-index/', search.incrementIndex), # change to group
 
     path('friends/', friend.getFriends),
     path('pending-friends/', friend.getPendingFriends),
