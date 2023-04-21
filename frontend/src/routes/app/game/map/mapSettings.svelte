@@ -322,7 +322,7 @@
 						<button
 							id="cancel-btn"
 							on:click={() => {
-								skipPopupOpen = false;
+								exactLocationPopupOpen = false;
 							}}
 							class="px-4 py-2 border border-red-600 text-red-600 text-base font-medium rounded-md w-full shadow-sm hover:border-red-800 focus:outline-none focus:ring-2 focus:ring-red-400"
 						>
@@ -338,7 +338,7 @@
                             }}
 							class="px-4 py-2 bg-red-600 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-400"
 						>
-							Yes
+							YES
 						</button>
 					</div>
 				</div>

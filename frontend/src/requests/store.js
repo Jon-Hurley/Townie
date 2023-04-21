@@ -50,6 +50,7 @@ export const makePurchase = async (purchasableKey) => {
             }
         );
         updateAccessToken(res);
+        console.log(res.data);
         userStore.set(res.data);
         return true;
     } catch (err) {
