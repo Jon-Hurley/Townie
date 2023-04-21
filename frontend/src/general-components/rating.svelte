@@ -1,5 +1,5 @@
 <script>
-	import { indigoStyle } from '../css';
+	import { primaryColor } from "../stores";
 
 	export let initialUserRating, onSubmit;
 
@@ -32,7 +32,7 @@
         <button
             class="
                 border-2 py-1 px-3 rounded-full
-                {indigoStyle} hover:scale-105
+                text-{$primaryColor}-500 border-{$primaryColor}-500 hover:scale-105
             "
             on:click={() => onSubmit(userRating)}
         >

@@ -37,7 +37,7 @@
 
 <button
     type="button"
-    class="{buttonStyle} {blueStyle}"
+    class="{buttonStyle} text-{$primaryColor}-500 border-{$primaryColor}-500"
     on:click={() => isOpen = true}
 >
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
@@ -117,12 +117,12 @@
         <form class="flex gap-2 mt-4" on:submit={sendMessage}>
             <input
                 bind:value={input}
-                class="{inputStyle}"
+                class="{inputStyle} focus:ring-{$primaryColor}-500"
                 placeholder="Type a message..."
                 on:enter
             />
             <button
-                class="{buttonStyle} {blueStyle}"
+                class="{buttonStyle} text-{$primaryColor}-500 border-{$primaryColor}-500"
                 on:click={sendMessage}
             >
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">

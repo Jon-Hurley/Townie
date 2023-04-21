@@ -52,7 +52,7 @@
             timeout = setTimeout(updateResults, 500);
         }}
         type="text"
-        class="{inputStyle}"
+        class="{inputStyle} focus:ring-{$primaryColor}-500"
         placeholder="Search Users"
         on:focusin={(e) => {
             e.stopPropagation();

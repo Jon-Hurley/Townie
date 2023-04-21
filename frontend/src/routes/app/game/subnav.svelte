@@ -1,5 +1,6 @@
 <script>
-    import { buttonStyle, hr, indigoStyle, redStyle } from '../../../css';
+    import { buttonStyle, greenStyle, hr, redStyle } from '../../../css';
+    import { primaryColor } from '../../../stores';
 
     import Leaderboard from './leaderboard.svelte';
 	import MapSettings from './map/mapSettings.svelte';
@@ -45,7 +46,7 @@
 
         {#if gamePage === 'lobby'}
             <button
-                class="{buttonStyle} {indigoStyle} w-24"
+                class="{buttonStyle} {greenStyle} w-24"
                 on:click={startGame}
             >
                 Start

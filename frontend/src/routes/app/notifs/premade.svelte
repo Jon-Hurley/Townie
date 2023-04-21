@@ -8,6 +8,7 @@
     import { updatePlayableGame } from "../../../requests/account";
     import { createGame } from "../../../requests/group";
 	import { blueStyle, buttonStyle } from "../../../css";
+    import { primaryColor } from '../../../stores';
     
     const currentTime = Math.floor(Date.now() / 1000)
 
@@ -95,7 +96,7 @@
 {#if (currentTime - prevTime > 604800)}
     <div class="flex">
         <ul bind:this={display}
-            class=" {buttonStyle} {blueStyle} w-full"
+            class=" {buttonStyle} text-{$primaryColor}-500 border-{$primaryColor}-500 w-full mb-2"
         >
             <li>Theme: {display.theme}</li>
             <li>Length: {display.desiredCompletionTime} minutes</li>
@@ -110,7 +111,7 @@
             on:click={() => {
                 _updatePlayable()
             }}
-            class="{buttonStyle} {blueStyle} w-full"
+            class="{buttonStyle} text-{$primaryColor}-500 border-{$primaryColor}-500 w-full"
         >
             Create premade lobby!
         </button>

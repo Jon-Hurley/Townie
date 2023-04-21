@@ -32,7 +32,7 @@
     }
 
     const _closeJoin = async(i) => {
-        notifs.splice(i, 1); // DOES NOT CLOSE THE RIGHT NOTIFS
+        notifs.splice(i, 1);
         notifs = notifs;
     }
 

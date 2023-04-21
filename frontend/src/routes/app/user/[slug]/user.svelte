@@ -1,10 +1,9 @@
 <script>	
     import Username from "../../../../general-components/username.svelte";
-	import Purchase from "../../../../general-components/purchase.svelte";
 
     import { acceptFriend, rejectFriend, sendFriendRequest } from "../../../../requests/friend";
 	import { userStore } from "../../../../stores";
-    import { buttonStyle, redStyle, greenStyle, blueStyle, hr, gridContainer, largeTitle } from '../../../../css';	
+    import { buttonStyle, redStyle, greenStyle, blueStyle, hr, largeTitle } from '../../../../css';	
 	import { pointsToLevel, pointsToProgress, pointsToRank } from "../../../../util";
     const title = "text-gray-700 font-semibold text-lg mt-6";
 
@@ -64,7 +63,7 @@
     <div class="flex justify-center flex-wrap">
         <!-- <button
             disabled
-            class="{indigoStyle} {buttonStyle} m-1"
+            class="text-{$primaryColor}-500 border-{$primaryColor}-500 {buttonStyle} m-1"
         >
             Message
         </button> -->

@@ -165,6 +165,7 @@ export class Game {
            
             // open destination page.
             const baseUrl = window.location.protocol + "//" + window.location.host + "/";
+            console.log(achievedDest);
             console.log("ACHIEVED DEST IS: " + achievedDest.index);
             localStorage.setItem('lastPage', '/app/destination/' + achievedDest._key);
             window.open(baseUrl + 'app/destination/' + achievedDest._key, '_blank');

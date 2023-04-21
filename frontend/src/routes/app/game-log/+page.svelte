@@ -4,7 +4,8 @@
 
 	import Loading from '../../../general-components/loading.svelte';
 
-	import { buttonStyle, indigoStyle, redStyle, greenStyle, largeTitle, hr } from '../../../css';
+	import { buttonStyle, redStyle, greenStyle, largeTitle, hr } from '../../../css';
+	import { primaryColor } from '../../../stores';
 	import { getGameLog } from '../../../requests/search';
 	import { userStore } from '../../../stores';
 
@@ -70,13 +71,13 @@
 						on:click={() => goto('/app/game-summary/' + log.game._key)}
 					>
 						<div class="flex flex-col items-start">
-							<div class="{indigoStyle}">Points Gained</div>
+							<div class="text-{$primaryColor}-500 border-{$primaryColor}-500">Points Gained</div>
 							<div>Elapsed Time</div>
 							<div>Dest Completed</div>
 							<div>Theme</div>
 						</div>
 						<div class="flex flex-col items-end">
-							<div class="{indigoStyle}">{log.player.points}</div>
+							<div class="text-{$primaryColor}-500 border-{$primaryColor}-500">{log.player.points}</div>
 							<div>{getTime(log.player.totalTime)}</div>
 							<div>{log.player.numCompleted} / {log.dests.length}</div>
 							<div>{themeMap[log.game.settings.theme]}</div>

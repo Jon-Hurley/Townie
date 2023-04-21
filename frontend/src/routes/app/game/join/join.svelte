@@ -1,9 +1,10 @@
 <script>
-    import { buttonStyle, blueStyle, indigoStyle, inputStyle } from '../../../../css';
+    import { buttonStyle, inputStyle } from '../../../../css';
     import { createGame } from '../../../../requests/group';
     import { Game } from '../../../../classes/Game';
 	import Loading from '../../../../general-components/loading.svelte';
-	
+	import { primaryColor } from '../../../../stores';
+
     let lobbyInput;
     let loading = false;
 
@@ -42,11 +43,11 @@
             <input
                 bind:value={lobbyInput}
                 type="text"
-                class="{inputStyle}"
+                class="{inputStyle} focus:ring-{$primaryColor}-500"
                 placeholder="Enter Lobby ID"
             />
             <button
-                class="{buttonStyle} {indigoStyle} w-full mt-2"
+                class="{buttonStyle} text-{$primaryColor}-500 border-{$primaryColor}-500 w-full mt-2"
                 on:click={_joinLobby}
             >
                 Join Lobby
@@ -54,7 +55,7 @@
         </div>
 
         <button
-            class="{buttonStyle} {blueStyle} w-full mt-4"
+            class="{buttonStyle} text-{$primaryColor}-500 border-{$primaryColor}-500 w-full mt-4"
             on:click={_createLobby}
         >
             Create Lobby

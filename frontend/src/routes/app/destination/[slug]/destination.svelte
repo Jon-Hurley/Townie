@@ -1,6 +1,6 @@
 <script>
 	import { primaryColor, pushPopup } from '../../../../stores';
-	import { buttonStyle, indigoStyle, largeTitle } from '../../../../css';
+	import { buttonStyle, largeTitle } from '../../../../css';
 	import { submitDestRating } from '../../../../requests/account';
 	
 	import Share from '../../../../general-components/share.svelte';
@@ -71,7 +71,7 @@
 
 <hr class={hr} />
 <button
-	class="{buttonStyle} {indigoStyle} my-4"
+	class="{buttonStyle} text-{$primaryColor}-500 border-{$primaryColor}-500 my-4"
 	on:click={() => window.close()}
 >
 	Return To Game

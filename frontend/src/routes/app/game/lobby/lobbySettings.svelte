@@ -1,9 +1,11 @@
 <script>
 	import { blueStyle, buttonStyle, grayStyle, hr, largeTitle } from '../../../../css';
+	import { primaryColor } from '../../../../stores';
 	import { Game } from '../../../../classes/Game';
 	import { getThemeList } from '../../../../requests/search';
 	import Autocomplete from '../autocomplete.svelte';
 	const section = 'font-semibold text-lg text-center mb-3';
+	console.log($primaryColor)
 
     let gameStore = Game.store;
 	let form = {
@@ -98,7 +100,9 @@
 		<div class="flex justify-center gap-2" style="max-height: 100%">
 			{#each checkboxes as checkbox}
 				<button
-					class="{buttonStyle} {form[checkbox.field] ? blueStyle : grayStyle + ' opacity-25'}"
+					class="{buttonStyle} {form[checkbox.field] ? 
+					'text-' + $primaryColor + '-500 border-' + $primaryColor +'-500 bg-white' 
+					: grayStyle + ' opacity-25'}"
 					on:click={() => {
 						for (const { field } of checkboxes) {
 							form[field] = false;
@@ -327,13 +331,13 @@
 				type="checkbox" 
 				value = "form.casual"
 				bind:checked={form.casual}
-				class="w-4 h-4 border border-gray-300 rounded focus:ring-3 focus:ring-indigo-600 accent-indigo-600"/>
+				class="w-4 h-4 border border-gray-300 rounded focus:ring-3 focus:ring-{$primaryColor}-600 accent-{$primaryColor}-600"/>
 		</div>
 
 		<hr class="{hr} my-4" />
 		<div class="flex ">
 			<button
-				class="{buttonStyle} {blueStyle} w-full mr-2"
+				class="{buttonStyle} text-{$primaryColor}-500 border-{$primaryColor}-500 w-full mr-2"
 				on:click={() => {
 					isOpen = false;
 					_updateSettings();
