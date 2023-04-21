@@ -74,7 +74,7 @@ export class Game {
         let currTime = startTime;
         Game.timerInterval = setInterval(() => {
             currTime += timeLeft / 5.0;
-            console.log("INTERVAL")
+            // console.log("INTERVAL")
             if (get(Map.settings).destinationRadius * get(Map.settings).destinationRadiusScalar < 0.1 || get(Game.timeStore)) {
                 clearInterval(Game.timerInterval);
             }
