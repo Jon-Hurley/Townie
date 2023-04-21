@@ -43,7 +43,7 @@ export let inputStyle = `
     rounded border border-gray-200
     bg-gray-200
     focus:bg-white focus:outline-none
-    focus:ring-2 focus:ring-${get(primaryColor)}-500
+    focus:ring-2
     focus:border-transparent
 `;
 
