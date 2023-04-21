@@ -1,6 +1,7 @@
 <script>
 	import { Game } from "../../../classes/Game";
-	import { buttonStyle, grayStyle, hr, largeTitle, indigoStyle } from "../../../css";
+	import { blueStyle, buttonStyle, grayStyle, hr, largeTitle } from "../../../css";
+    import { primaryColor } from "../../../stores";
     const section = "font-semibold text-lg text-center mb-3";
     let isOpen = false;
     let gameStore = Game.store;
@@ -10,7 +11,7 @@
 </script>
 <button
     type="button"
-    class="{buttonStyle} {indigoStyle}"
+    class="{buttonStyle} {blueStyle}"
     on:click={() => isOpen = true}
 >
 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">

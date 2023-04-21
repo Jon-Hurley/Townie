@@ -1,6 +1,7 @@
 <script>
-	import { greenStyle, redStyle, buttonBaseStyle, listItem, indigoStyle } from "../../../css";
+	import { redStyle, buttonBaseStyle, listItem } from "../../../css";
 	import Username from "../../../general-components/username.svelte";
+	import { primaryColor } from "../../../stores";
 
     export let n, joinGame, closeJoin;
 
@@ -25,7 +26,7 @@
         {#if n.title === 'Join game'}
             <button
                 type="button"
-                class="{indigoStyle} {buttonStyle}"
+                class="text-{$primaryColor}-500 border-{$primaryColor}-500 {buttonStyle}"
                 on:click={joinGame}
             >
             Join
