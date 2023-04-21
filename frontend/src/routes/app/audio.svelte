@@ -5,6 +5,7 @@
 	import ThemeSong from '$lib/theme-song.mp3';
 	import HoundDog from '$lib/hound-dog.mp3';
 	import Munch from '$lib/munch.mp3';
+	import Flacko from '$lib/flacko.mp3';
 	import { onDestroy } from 'svelte';
 
 	let audioElement;
@@ -23,6 +24,8 @@
 					? HoundDog
 					: $primaryAudio === 'Munch'
 					? Munch
+					: $primaryAudio === 'Flacko'
+					? Flacko
 					: '';
 			audioElement.play();
 		}
