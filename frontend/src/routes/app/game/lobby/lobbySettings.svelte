@@ -19,7 +19,7 @@
 	let otherBudget = false;
 	let randomThemeChosen = false;
 
-	let themeValue = 'tourist_attraction';
+	let themeValue = 'restaurant';
 
 	const _updateSettings = () => {
 		Game.updateSettings(form);

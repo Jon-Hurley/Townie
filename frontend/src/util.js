@@ -1,4 +1,4 @@
-const LEVEL_MULT = 0.04;
+const LEVEL_MULT = 0.2;
 
 const ranks = [
     { cutoff: 5, name: 'Beginner' },
@@ -26,6 +26,7 @@ export const pointsToProgress = (points) => {
 
     const outOf = minNextPoints - minCurrPoints;
     const progress = points - minCurrPoints;
+    console.log(outOf, progress)
     return (progress / outOf) || 0;
 }
 
