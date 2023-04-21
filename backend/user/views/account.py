@@ -328,7 +328,7 @@ def updatePoints(request): # FLAG --> change name
         pointsNeeded = "Townie Premium,"
 
     if len(docs) == 0:
-        return util.returnError('Unfortunately, you needed ' + pointsNeeded + " but you don't have that. You currently have " + str(user['points']) + " points.", 404)
+        return util.returnError('Unfortunately, you needed ' + pointsNeeded + " but you don't have that.", 404)
     
     userDocs = queries.getUserByUsername(user['username']).batch()
     if (len(userDocs) == 0):

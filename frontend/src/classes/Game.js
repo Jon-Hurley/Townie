@@ -171,7 +171,7 @@ export class Game {
             console.log("ACHIEVED DEST IS: " + achievedDest.index);
             localStorage.setItem('lastPage', '/app/destination/' + achievedDest._key);
             window.open(baseUrl + 'app/destination/' + achievedDest._key, '_blank');
-
+            Map.updateDestinationRadiusScalar(x => x = 1);
             pushPopup({
                 status: 1,
                 message:
