@@ -85,7 +85,7 @@ def generate(settings, gameKey):
         tip_array = []
 
         for j in range(len(response1['results'][i]['tips'])):
-            if (j > 2):
+            if (j > 4):
                 break
             if (response1['results'][i]['tips'][j]['text'] != ""):
                 tip_array.append(response1['results'][i]['tips'][j]['text'])
@@ -127,14 +127,17 @@ def generate(settings, gameKey):
     list_copy = []
     origin = dict(lat=settings['lat'], lng=settings['lon'])
     locationList.append(origin)
+
     for i in range(len(list)):
         dest = dict(lat=list[i]['location'][0], lng=list[i]['location'][1])
         locationList.append(dest)
         list_copy.append(list[i])
+    
     orderedList = []
     lengthToUse = len(list)
     if lengthToUse > 10:
         lengthToUse = 10
+    
     unusedList = []
     for i in range(len(locationList) - lengthToUse):
         locationList.pop()

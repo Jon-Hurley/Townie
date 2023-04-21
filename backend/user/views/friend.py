@@ -24,7 +24,6 @@ def getFriends(request):
 
 @csrf_exempt
 def getUsersInGames(request):
-    print("HELLO WORLD")
     body = json.loads(request.body)
 
     user, newToken = util.decodeUserJWT(body['token'])
