@@ -99,8 +99,11 @@
 	}
 
 	const _skipLocation = () => {
+		clearInterval(Game?.timerInterval);
+		console.log("skipping location");
         Map.updateDestinationRadiusScalar(x => 1);
 		Game.handleRadiusUpdate();
+		Game.shrinkRadius();
 
         skipPopupOpen = false;
 		isOpen = false;

@@ -60,6 +60,8 @@
 			if (paused) {
 				shrinkingRadius = false;
 				locationTime++;
+				clearInterval(Game?.timerInterval);
+				console.log("clearing interval");
 			} else {
 				if (!shrinkingRadius) {
 					shrinkingRadius = true;
