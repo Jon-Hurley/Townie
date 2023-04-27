@@ -241,49 +241,49 @@
 		<div class="flex flex-cols justify-center items-center gap-2 mb-2">
 			<div>
 				<div class="flex flex-cols justify-center items-center">
-					{#if $gameStore.game.settings.casual}
-					<button
-						on:click={() => {
-							pushPopup({
-								status: 2, 
-								message: "Do you want to shrink the destination radius for the current destination?",
-								onOk: () => {
-										isOpen = false;
-										_shrinkRadius();
-								}
-							});
-						}}
-						name="shrinkRadiusButton"
-						id="shrinkRadius-btn"
-						class="{buttonStyle} text-{$primaryColor}-500 border-{$primaryColor}-500 flex z-500"
-					>
-						<div class="px-4">Shrink Radius</div>
-					</button>
+					{#if $gameStore?.game?.settings?.casual}
+						<button
+							on:click={() => {
+								pushPopup({
+									status: 2, 
+									message: "Do you want to shrink the destination radius for the current destination?",
+									onOk: () => {
+											isOpen = false;
+											_shrinkRadius();
+									}
+								});
+							}}
+							name="shrinkRadiusButton"
+							id="shrinkRadius-btn"
+							class="{buttonStyle} text-{$primaryColor}-500 border-{$primaryColor}-500 flex z-500"
+						>
+							<div class="px-4">Shrink Radius</div>
+						</button>
 					{:else}
-					<button
-						on:click={() => {
-							pushPopup({
-								status: 2, 
-								message: "Do you want to shrink the destination radius for 750 points?",
-								onOk: () => {
-										isOpen = false;
-										let res = spendPointsHere(750);
-								}
-							});
-						}}
-						name="shrinkRadiusButton"
-						id="shrinkRadius-btn"
-						class="{buttonStyle} text-{$primaryColor}-500 border-{$primaryColor}-500 flex z-500"
-					>
-						<div class="px-4">Shrink Radius</div>
-					</button>
+						<button
+							on:click={() => {
+								pushPopup({
+									status: 2, 
+									message: "Do you want to shrink the destination radius for 750 points?",
+									onOk: () => {
+											isOpen = false;
+											let res = spendPointsHere(750);
+									}
+								});
+							}}
+							name="shrinkRadiusButton"
+							id="shrinkRadius-btn"
+							class="{buttonStyle} text-{$primaryColor}-500 border-{$primaryColor}-500 flex z-500"
+						>
+							<div class="px-4">Shrink Radius</div>
+						</button>
 					{/if}
 				</div>
 			</div>
 			
 			<div>
 				<div class="flex flex-cols justify-center items-center">
-					{#if $gameStore.game.settings.casual}
+					{#if $gameStore?.game?.settings?.casual}
 						<button
 							on:click={() => {
 								pushPopup({
@@ -367,7 +367,7 @@
 			}>
 			Get Navigation
 			</button>
-			{#if $gameStore.game.settings.casual}
+			{#if $gameStore?.game?.settings?.casual}
 				<button
 					class="{buttonStyle} text-{$primaryColor}-500 border-{$primaryColor}-500 w-full mr-2 mb-2"
 					on:click={() => {

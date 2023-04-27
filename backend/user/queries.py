@@ -241,14 +241,15 @@ def getUserWithFriendship(userKey, targetKey):
                 RETURN COUNT(p.edges)
         )[0] || 5
 
-        LET purchases = (
-            FOR v, e IN 1..1 ANY userId GRAPH Consumerships
-                SORT v.category ASC, e.purchaseTime DESC
-                RETURN MERGE(v, { isActive: e.isActive })
-        )
-
         FOR user IN User
             FILTER user._key == @targetKey
+
+            LET purchases = (
+                FOR v, e IN 1..1 ANY user._id GRAPH Consumerships
+                    SORT v.category ASC, e.purchaseTime DESC
+                    RETURN MERGE(v, { isActive: e.isActive })
+            )
+
             RETURN {
                 key: user._key,
                 rank: user.rank,

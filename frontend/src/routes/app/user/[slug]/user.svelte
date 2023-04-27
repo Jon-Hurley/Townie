@@ -132,6 +132,6 @@
     </div>
 {:else}
     <div class="flex gap-2">
-        <div>You have no purchases</div>
+        <div>This user has no purchases</div>
     </div>
 {/if}
