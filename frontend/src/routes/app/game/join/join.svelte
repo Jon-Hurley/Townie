@@ -32,11 +32,12 @@
     <Loading/>
 {:else}
     <img
-        src="/images/townie-Full-Logo.jpg"
+        src="/images/Townie-Full-Logo.jpg"
         alt="Townie Logo"
         class ="rounded-md shadow-sm"
         style="width: full height: 200px"
     >
+
     <div
         class="
             flex flex-col justify-center items-center
