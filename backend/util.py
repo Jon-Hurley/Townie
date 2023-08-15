@@ -77,7 +77,6 @@ def _decodeUserJWT(token):
     )
 
 def _encodeUserJWT(user):
-    return jwt.encode(
     tokenBytes = jwt.encode(
         user,
         os.environ.get('JWT_TOKEN_SECRET'),
