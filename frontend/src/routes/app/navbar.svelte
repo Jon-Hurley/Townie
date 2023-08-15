@@ -4,15 +4,12 @@
     import { pages, getHighlight } from './navbar';
 	import { primaryColor } from '../../stores';
 
-    import Icon from '$lib/assets/townie-icon.jpg';
-    import VI from '$lib/assets/anim_written_in_vi.gif';
-
     $: highlightedPage = getHighlight($page.route.id);
 </script>
 
 <div class="fixed bottom-[-90px] z-[100] w-20 h-20">
     <img
-        src={VI}
+        src='/images/anim_written_in_vi.gif'
         class="object-cover"
         alt={''}
         on:error={e => console.log(e)}
@@ -38,7 +35,7 @@
                         border-4 border-{$primaryColor}-{highlightedPage === page ? '500' : '700'}
                     "
                     style="
-                        background-image: url({Icon});
+                        background-image: url('/images/townie-icon.jpg');
                         width: 55px;
                         height: 55px;
                         background-size: cover;

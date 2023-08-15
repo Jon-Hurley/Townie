@@ -1,58 +1,46 @@
 <script>
-	import { slide, fade } from 'svelte/transition';
-	import { elasticInOut } from 'svelte/easing';
-
-	import Join from '$lib/assets/Join.jpg';
-	import Settings1 from '$lib/assets/Settings-1.jpg';
-	import Settings2 from '$lib/assets/Settings-2.jpg';
-	import Settings3 from '$lib/assets/Settings-3.jpg';
-	import Settings4 from '$lib/assets/Settings-4.jpg';
-	import Settings5 from '$lib/assets/Settings-5.jpg';
-  import Settings6 from '$lib/assets/Settings-6.jpg';
-	import Settings7 from '$lib/assets/Settings-7.jpg';
-	import Map from '$lib/assets/Map.jpg';
-  import inGameOptions from '$lib/assets/inGame.jpg';
+	import { slide } from 'svelte/transition';
 	import { hr, largeTitle } from '../../../css';
 
 	const images = [
 		{
-			src: Join,
+			src: '/images/Join.jpg',
 			description: 'Join or create a game'
 		},
 		{
-			src: Settings1,
+			src: '/images/Settings-1.jpg',
 			description: 'Settings-1'
 		},
 		{
-			src: Settings2,
+			src: '/images/Settings-2.jpg',
 			description: 'Settings-2'
 		},
 		{
-			src: Settings3,
+			src: '/images/Settings-3.jpg',
 			description: 'Settings-3'
 		},
 		{
-			src: Settings4,
+			src: '/images/Settings-4.jpg',
 			description: 'Settings-4'
 		},
 		{
-			src: Settings5,
+			src: '/images/Settings-5.jpg',
 			description: 'Settings-5'
 		},
     {
-			src: Settings6,
+			src: '/images/Settings-6.jpg',
 			description: 'Settings-6'
 		},
     {
-			src: Settings7,
+			src: '/images/Settings-7.jpg',
 			description: 'Settings-7'
 		},
 		{
-			src: Map,
+			src: '/images/Map.jpg',
 			description: 'Map-1'
 		},
 		{
-			src: inGameOptions,
+			src: '/images/inGame.jpg',
 			description: 'In-Game-Options'
 		}
 	];

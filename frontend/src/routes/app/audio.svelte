@@ -1,11 +1,5 @@
 <script>
 	import { primaryAudio } from '../../stores';
-	import Kahoot from '$lib/lobby-classic-game.mp3';
-	import Moonshine from '$lib/moonshine.mp3';
-	import ThemeSong from '$lib/theme-song.mp3';
-	import HoundDog from '$lib/hound-dog.mp3';
-	import Munch from '$lib/munch.mp3';
-	import Flacko from '$lib/flacko.mp3';
 	import { onDestroy } from 'svelte';
 
 	let audioElement;
@@ -15,24 +9,22 @@
 			audioElement.pause();
 			audioElement.src =
 				$primaryAudio === 'Kahoot'
-					? Kahoot
+					? '/audio/lobby-classic-game.mp3'
 					: $primaryAudio === 'Moonshine'
-					? Moonshine
+					? '/audio/moonshine.mp3'
 					: $primaryAudio === 'Townie Theme'
-					? ThemeSong
+					? '/audio/theme-song.mp3'
 					: $primaryAudio === 'Hound Dog'
-					? HoundDog
+					? '/audio/hound-dog.mp3'
 					: $primaryAudio === 'Munch'
-					? Munch
+					? '/audio/munch.mp3'
 					: $primaryAudio === 'Flacko'
-					? Flacko
+					? '/audio/flacko.mp3'
 					: '';
 			audioElement.play();
 		}
 	} else {
-		if (audioElement) {
-			audioElement.pause();
-		}
+		audioElement?.pause();
 	}
 
 	onDestroy(() => {
@@ -40,4 +32,9 @@
 	});
 </script>
 
-<audio bind:this={audioElement} loop="true" autostart="true" style="height: 0px; width: 0px;" />
+<audio
+	bind:this={audioElement}
+	loop="true"
+	autostart="true"
+	style="height: 0px; width: 0px;"
+/>

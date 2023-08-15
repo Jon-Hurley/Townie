@@ -1,11 +1,11 @@
 <script>
     import { buttonStyle, inputStyle } from '../../../../css';
+	import { primaryColor } from '../../../../stores';
+    
     import { createGame } from '../../../../requests/group';
     import { Game } from '../../../../classes/Game';
+    
 	import Loading from '../../../../general-components/loading.svelte';
-	import { primaryColor } from '../../../../stores';
-    import Logo from '$lib/assets/townie-Full-Logo.jpg';
-    import Skyline from '$lib/assets/Logo-Skyline.png';
     import Premade from './premade.svelte';
 
     let lobbyInput;
@@ -32,7 +32,7 @@
     <Loading/>
 {:else}
     <img
-        src="{Logo}"
+        src="/images/townie-Full-Logo.jpg"
         alt="Townie Logo"
         class ="rounded-md shadow-sm"
         style="width: full height: 200px"
@@ -73,7 +73,7 @@
     <div
         class="absolute inset-x-0 bottom-14 rounded-md shadow-sm"
         style="
-            background-image: url({Skyline});
+            background-image: url('/images/Logo-Skyline.png');
             width: full;
             height: 200px;
             background-size: cover;
