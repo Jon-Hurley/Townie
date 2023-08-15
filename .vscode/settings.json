@@ -10,7 +10,7 @@
         "**/tests/": true,
         "**/src/*.test.js": true,
         "**/package-lock.json": true,
-        "**/*.config.*": true,
+        // "**/*.config.*": true,
 
         "**/planning-docs": true,
 
