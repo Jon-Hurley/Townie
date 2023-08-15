@@ -19,6 +19,6 @@
         "**/migrations": true,
         "**/apps.py": true,
         "**/models.py": true,
-        "**/zappa_settings.json": true,
+        // "**/zappa_settings.json": true,
     }
 }

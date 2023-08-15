@@ -78,10 +78,13 @@ def _decodeUserJWT(token):
 
 def _encodeUserJWT(user):
     return jwt.encode(
+    tokenBytes = jwt.encode(
         user,
         os.environ.get('JWT_TOKEN_SECRET'),
         algorithm="HS256"
     )
+    token = tokenBytes.decode('utf-8')
+    return token
 
 def decodeUserJWT(token):
     user = _decodeUserJWT(token)

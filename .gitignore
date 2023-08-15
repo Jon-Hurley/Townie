@@ -13,3 +13,4 @@ __pycache__
 venv
 ambient.d.ts
 internal.js
+backend/zappa_settings.json
