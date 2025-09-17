@@ -14,10 +14,13 @@ To get started:
         pip install django
         pip install twilio
         pip install redis
-        pip install Django
         pip install django-cors-headers
         pip install python-dotenv
         pip install googlemaps
         pip install python-arango
         pip install boto3
+        pip install pyjwt
 
+    Environment configuration:
+        Copy backend/.env.example to backend/.env and populate the values.
+        Copy frontend/.env.example to frontend/.env and populate the values.
